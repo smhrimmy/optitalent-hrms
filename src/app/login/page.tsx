@@ -1,14 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Eye, EyeOff, Shield, Users, BarChart3, Layers } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
-import Image from "next/image";
-import { useAuth } from "@/hooks/use-auth";
+import { AsyncButton } from "@/components/ui/async-button";
 
 export default function Login() {
   // State variables for form inputs
@@ -22,6 +15,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [retryAfter, setRetryAfter] = useState<number | null>(null);
   
   const router = useRouter();
   const { login: demoLogin } = useAuth(); // Helper for demo accounts
@@ -29,6 +23,8 @@ export default function Login() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Stop the page from reloading
+    if (isLoading || (retryAfter && Date.now() < retryAfter)) return;
+    
     setIsLoading(true);
 
     try {
@@ -75,6 +71,7 @@ export default function Login() {
         
         // Reset attempts on success
         setLoginAttempts(0);
+        setRetryAfter(null);
         router.push("/dashboard");
       }
     } catch (error: any) {
@@ -82,7 +79,13 @@ export default function Login() {
       
       let errorMessage = "Authentication failed";
       
-      if (error?.message) {
+      if (error?.status === 429) {
+          // Handle Rate Limiting
+          const retryHeader = error?.headers?.get('Retry-After') || 60; // Default to 60s if header missing
+          const cooldown = parseInt(retryHeader, 10) * 1000;
+          setRetryAfter(Date.now() + cooldown);
+          errorMessage = `Too many attempts. Please wait ${retryHeader} seconds.`;
+      } else if (error?.message) {
         // Handle common network/DNS errors
         if (error.message.includes("Failed to fetch") || error.message.includes("Network request failed")) {
              errorMessage = "Connection failed. Please check your internet connection or DNS settings.";
@@ -270,13 +273,15 @@ export default function Login() {
               </div>
             </div>
 
-            <button
+            <AsyncButton
               type="submit"
-              disabled={isLoading}
+              isLoading={isLoading}
+              retryAfter={retryAfter}
+              loadingText={isSignUp ? "Creating Account..." : "Logging In..."}
               className="w-full py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 uppercase tracking-wide"
             >
-              {isLoading ? "Please wait..." : isSignUp ? "Create Account" : "Log In"}
-            </button>
+              {isSignUp ? "Create Account" : "Log In"}
+            </AsyncButton>
           </form>
 
           <div className="mt-5 flex items-center gap-3">
