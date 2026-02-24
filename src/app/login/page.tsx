@@ -75,7 +75,22 @@ export default function Login() {
         router.push("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "Authentication failed");
+      console.error("Login Error Details:", error);
+      
+      let errorMessage = "Authentication failed";
+      
+      if (error?.message) {
+        // Handle common network/DNS errors
+        if (error.message.includes("Failed to fetch") || error.message.includes("Network request failed")) {
+             errorMessage = "Connection failed. Please check your internet connection or DNS settings.";
+        } else if (error.message.includes("ERR_NAME_NOT_RESOLVED")) {
+             errorMessage = "Server unreachable (DNS Error). Please check if the Supabase project URL is correct.";
+        } else {
+             errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
