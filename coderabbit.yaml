@@ -1,0 +1,38 @@
+
+# CodeRabbit Configuration File
+# This file configures how CodeRabbit reviews your pull requests.
+
+version: "0.1"
+
+# Review settings
+language: "en-US"
+early_access: true # Enable early access features
+reviews:
+  profile: "chill" # Tone: chill, assertive, or formal
+  request_changes_workflow: false
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "Draft"
+    labels: []
+    drafts: false
+
+# Chat settings for interaction
+chat:
+  auto_reply: true
+
+# Knowledge base for context-aware reviews
+knowledge_base:
+  learnings:
+    enabled: true
+
+# Policy-based checks (Instructions for the AI)
+policy:
+  - "Ensure all new components are responsive and support dark mode."
+  - "Verify that no sensitive keys (API keys, secrets) are hardcoded."
+  - "Check for 'use client' directive in Next.js components where hooks are used."
+  - "Ensure that Supabase RLS policies are considered for database operations."
+  - "Prioritize accessibility (a11y) in UI components."
+  - "Maintain the 'OptiTalent' branding guidelines (Purple/Slate theme)."
