@@ -176,7 +176,7 @@ export default function BackupRecoveryPage() {
                         <div className="flex items-center gap-4">
                             <Badge variant="secondary" className="hidden md:inline-flex">{bk.type}</Badge>
                             <div className="flex items-center gap-2">
-                                {bk.verified && <CheckCircle2 className="h-4 w-4 text-green-500" title="Verified Integrity"/>}
+                                {bk.verified && <div title="Verified Integrity"><CheckCircle2 className="h-4 w-4 text-green-500"/></div>}
                                 <span className="text-sm font-medium">{bk.status}</span>
                             </div>
                             <Button variant="ghost" size="sm">

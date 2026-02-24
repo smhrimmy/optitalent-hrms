@@ -5,9 +5,20 @@ import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Plus, Search, ShieldBan, Trash2, LogIn, HardDrive } from 'lucide-react';
-
-// ... imports
+import { MoreHorizontal, Plus, Search, ShieldBan, Trash2, LogIn } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 type Tenant = {
   id: string;
@@ -30,7 +41,9 @@ const initialTenants: Tenant[] = [
 ];
 
 export default function TenantManagementPage() {
-  // ... existing state ...
+  const [tenants, setTenants] = useState<Tenant[]>(initialTenants);
+  const [search, setSearch] = useState('');
+  const { toast } = useToast();
 
   const handleCreateTenant = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,16 +67,64 @@ export default function TenantManagementPage() {
     toast({ title: "Tenant Created", description: `${name} has been provisioned successfully.` });
   };
 
+  const handleAction = (id: string, action: 'Suspend' | 'Delete') => {
+      if (action === 'Suspend') {
+          setTenants(tenants.map(t => t.id === id ? { ...t, status: t.status === 'Active' ? 'Suspended' : 'Active' } : t));
+          toast({ title: "Status Updated", description: "Tenant status has been changed." });
+      } else {
+          setTenants(tenants.filter(t => t.id !== id));
+          toast({ title: "Tenant Deleted", description: "All associated data has been purged.", variant: "destructive" });
+      }
+  };
+
   const handleImpersonate = (tenant: Tenant) => {
       toast({ title: "Impersonating Owner", description: `Logging in as Root Admin for ${tenant.name}...` });
       // Logic to switch auth token would go here
   };
-  
-  // ... existing filtered logic ...
+
+  const filtered = tenants.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.domain.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="space-y-6 p-6">
-      {/* ... header ... */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold font-headline">Tenant Management</h1>
+          <p className="text-muted-foreground">Provision and manage company accounts.</p>
+        </div>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button><Plus className="mr-2 h-4 w-4"/> Create Tenant</Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Provision New Tenant</DialogTitle>
+                    <DialogDescription>This will create a new isolated database schema and admin account.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleCreateTenant} className="space-y-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="name">Company Name</Label>
+                        <Input id="name" name="name" placeholder="e.g. Globex Corporation" required />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="plan">Subscription Plan</Label>
+                        <select id="plan" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                            <option value="Starter">Starter ($499/mo)</option>
+                            <option value="Business">Business ($999/mo)</option>
+                            <option value="Enterprise">Enterprise (Custom)</option>
+                        </select>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit">Provision Tenant</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="flex items-center gap-2 max-w-sm">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search tenants..." value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
 
       <div className="rounded-md border">
         <Table>
