@@ -21,6 +21,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
   
   const router = useRouter();
   const { login: demoLogin } = useAuth(); // Helper for demo accounts
@@ -72,6 +73,8 @@ export default function Login() {
         
         if (error) throw error;
         
+        // Reset attempts on success
+        setLoginAttempts(0);
         router.push("/dashboard");
       }
     } catch (error: any) {
@@ -85,6 +88,13 @@ export default function Login() {
              errorMessage = "Connection failed. Please check your internet connection or DNS settings.";
         } else if (error.message.includes("ERR_NAME_NOT_RESOLVED")) {
              errorMessage = "Server unreachable (DNS Error). Please check if the Supabase project URL is correct.";
+        } else if (error.message.includes("Invalid login credentials")) {
+             setLoginAttempts(prev => prev + 1);
+             errorMessage = "Incorrect email or password.";
+             
+             if (loginAttempts >= 2) {
+                 errorMessage = "Incorrect password. Click 'Forgot Password?' to reset it.";
+             }
         } else {
              errorMessage = error.message;
         }
