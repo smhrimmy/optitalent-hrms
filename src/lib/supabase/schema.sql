@@ -364,31 +364,63 @@ INSERT INTO public.departments (name, description) VALUES
 ('Human Resources', 'Manages people and culture.'),
 ('Sales', 'Drives revenue.'),
 ('Marketing', 'Manages brand and communication.'),
-('Support', 'Helps customers succeed.');
+('Support', 'Helps customers succeed.')
+ON CONFLICT (name) DO NOTHING;
 
 -- Note: The `handle_new_user` trigger will automatically create a corresponding
--- entry in `public.users`. Here, we just create the auth user.
--- This section can be commented out if you use a separate seeding script.
+-- entry in `public.users`. We need to handle this to avoid duplicates and ensure correct roles.
 DO $$
 DECLARE
     admin_user_id UUID;
     hr_user_id UUID;
-    manager_user_id UUID;
 BEGIN
-    -- Create Admin user
+    -- -------------------------------------------------------------------------
+    -- SEED ADMIN USER
+    -- -------------------------------------------------------------------------
+    -- 1. Check if user exists
+    SELECT id INTO admin_user_id FROM auth.users WHERE email = 'admin@optitalent.com';
+
+    -- 2. Delete if exists (clean slate strategy)
+    IF admin_user_id IS NOT NULL THEN
+        DELETE FROM auth.users WHERE id = admin_user_id;
+    END IF;
+
+    -- 3. Create Admin user (Trigger will create public.users record)
     INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_token, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_sso_user, created_at, updated_at, phone, phone_confirmed_at, email_change, email_change_token_new, email_change_token_current, email_change_confirm_status)
     VALUES (gen_random_uuid(), gen_random_uuid(), 'authenticated', 'authenticated', 'admin@optitalent.com', crypt('password', gen_salt('bf')), now(), '', now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Admin User"}', false, now(), now(), NULL, NULL, '', '', '', 0)
     RETURNING id INTO admin_user_id;
-    -- Manually insert into users and employees for the seed
-    INSERT INTO public.users (id, email, role, full_name) VALUES (admin_user_id, 'admin@optitalent.com', 'admin', 'Admin User');
-    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) VALUES (admin_user_id, (SELECT id from departments where name='Engineering'), 'Head of Everything', 'PEP0001');
 
-    -- Create HR user
+    -- 4. Update role to admin (trigger defaults to employee)
+    UPDATE public.users SET role = 'admin' WHERE id = admin_user_id;
+
+    -- 5. Create Employee Profile
+    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) 
+    VALUES (admin_user_id, (SELECT id from departments where name='Engineering'), 'Head of Everything', 'PEP0001');
+
+
+    -- -------------------------------------------------------------------------
+    -- SEED HR USER
+    -- -------------------------------------------------------------------------
+    -- 1. Check if user exists
+    SELECT id INTO hr_user_id FROM auth.users WHERE email = 'hr@optitalent.com';
+
+    -- 2. Delete if exists
+    IF hr_user_id IS NOT NULL THEN
+        DELETE FROM auth.users WHERE id = hr_user_id;
+    END IF;
+
+    -- 3. Create HR user
     INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_token, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_sso_user, created_at, updated_at, phone, phone_confirmed_at, email_change, email_change_token_new, email_change_token_current, email_change_confirm_status)
     VALUES (gen_random_uuid(), gen_random_uuid(), 'authenticated', 'authenticated', 'hr@optitalent.com', crypt('password', gen_salt('bf')), now(), '', now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"HR User"}', false, now(), now(), NULL, NULL, '', '', '', 0)
     RETURNING id INTO hr_user_id;
-    INSERT INTO public.users (id, email, role, full_name) VALUES (hr_user_id, 'hr@optitalent.com', 'hr', 'HR User');
-    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) VALUES (hr_user_id, (SELECT id from departments where name='Human Resources'), 'HR Manager', 'PEP0002');
+
+    -- 4. Update role to hr
+    UPDATE public.users SET role = 'hr' WHERE id = hr_user_id;
+
+    -- 5. Create Employee Profile
+    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) 
+    VALUES (hr_user_id, (SELECT id from departments where name='Human Resources'), 'HR Manager', 'PEP0002');
+
 END $$;
 
 -- Enable public access for select-only on most tables if desired.
