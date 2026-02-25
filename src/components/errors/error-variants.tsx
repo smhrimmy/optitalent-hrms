@@ -13,8 +13,8 @@ export const NotFoundError = () => (
     title="Lost in Space?"
     description="This page seems to have drifted into deep space. Let's navigate you back to civilization."
     // 404 Astronaut floating
-    imageUrl="https://lottie.host/embed/986c7595-6d0e-4050-891a-051860888289/Pj08u04j80.json"
-    isLottieUrl={true}
+    imageUrl="https://illustrations.popsy.co/amber/surr-404.svg"
+    isLottieUrl={false}
     actionLabel="Take Me Home 🚀"
     onAction={() => window.location.href = '/dashboard'}
   />
@@ -27,8 +27,8 @@ export const UnauthorizedError = () => (
     title="Who Goes There?"
     description="You need the secret handshake to enter this area. Let's verify your identity first."
     // Lock animation
-    imageUrl="https://lottie.host/embed/7e997672-132d-4566-8889-195971517454/3y88y88y88.json" 
-    isLottieUrl={true}
+    imageUrl="https://illustrations.popsy.co/amber/surr-access-denied.svg" 
+    isLottieUrl={false}
     actionLabel="Log In"
     onAction={() => window.location.href = '/login'}
   />
@@ -41,8 +41,8 @@ export const ForbiddenError = () => (
     title="Access Denied"
     description="This area is restricted. You're close, but your clearance level doesn't grant access to this sector."
     // Shield/Security animation
-    imageUrl="https://lottie.host/embed/3e997672-132d-4566-8889-195971517454/security.json" 
-    isLottieUrl={true}
+    imageUrl="https://illustrations.popsy.co/amber/surr-fatal-error.svg" 
+    isLottieUrl={false}
     actionLabel="Return to Dashboard"
     onAction={() => window.location.href = '/dashboard'}
     secondaryActionLabel="Request Access"
@@ -57,8 +57,8 @@ export const ServerError = ({ errorId }: { errorId?: string }) => (
     title="System Meltdown"
     description="Our servers are having a momentary existential crisis. Our engineering team has been dispatched."
     // Server Maintenance / Robot Repair
-    imageUrl="https://lottie.host/embed/1e997672-132d-4566-8889-195971517454/repair.json"
-    isLottieUrl={true}
+    imageUrl="https://illustrations.popsy.co/amber/surr-server-down.svg"
+    isLottieUrl={false}
     actionLabel="Try Again"
     onAction={() => window.location.reload()}
     secondaryActionLabel="Contact Support"
@@ -79,8 +79,8 @@ export const MaintenanceError = () => (
     title="Under Maintenance"
     description="We're upgrading the spaceship. We'll be back shortly with a shiny new engine."
     // Construction / Maintenance
-    imageUrl="https://lottie.host/embed/2e997672-132d-4566-8889-195971517454/construction.json"
-    isLottieUrl={true}
+    imageUrl="https://illustrations.popsy.co/amber/surr-page-under-construction.svg"
+    isLottieUrl={false}
     actionLabel="Check Status"
     onAction={() => window.open('https://status.optitalent.com')}
   />
@@ -92,10 +92,10 @@ export const RateLimitError = ({ retryAfter }: { retryAfter?: number }) => (
     code="429"
     title="Whoa, Slow Down!"
     description="You're clicking faster than our servers can think. Take a breather."
-    // Speedometer / Overload
-    imageUrl="https://lottie.host/embed/4e997672-132d-4566-8889-195971517454/speed.json"
-    isLottieUrl={true}
-    actionLabel="I'm Calm Now"
+    // Speedometer / Hourglass
+    imageUrl="https://illustrations.popsy.co/amber/surr-loading.svg"
+    isLottieUrl={false}
+    actionLabel="Slow Down"
     onAction={() => window.location.reload()}
   >
       {retryAfter && (
