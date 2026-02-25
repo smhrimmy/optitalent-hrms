@@ -54,7 +54,15 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
                 // Continue without AI
             }
 
-            const { data: { user } } = await supabase.auth.getUser();
+            let userResult = await supabase.auth.getUser();
+            let user = userResult.data.user;
+            
+            if (!user) {
+                // Fallback to session if getUser fails (e.g. strict security or network issue)
+                const sessionResult = await supabase.auth.getSession();
+                user = sessionResult.data.session?.user || null;
+            }
+
             if (!user) throw new Error("Not authenticated");
 
             const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
