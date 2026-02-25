@@ -3,26 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import { faker } from '@faker-js/faker';
 import * as dotenv from 'dotenv';
 import { Database } from '../../database.types';
+import fetch from 'node-fetch';
 
 // Load environment variables
 dotenv.config({ path: '.env' });
 
 // Disable SSL verification for development/testing if needed (Fixes "fetch failed" on some networks/self-signed certs)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-// Mock fetch to bypass undici strictness if needed
-// @ts-ignore
-global.fetch = async (url, options) => {
-    const { fetch: originalFetch } = await import('undici');
-    return originalFetch(url, {
-        ...options,
-        dispatcher: new (await import('undici')).Agent({
-            connect: {
-                rejectUnauthorized: false
-            }
-        })
-    });
-};
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -37,14 +24,8 @@ const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
     persistSession: false
   },
   global: {
-    // Force node-fetch to respect process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    // or use custom fetch if needed. But usually simply disabling strict SSL works.
-    // However, sometimes 'undici' (used by newer node versions) is stricter.
-    // Let's try adding the Authorization header explicitly again just in case.
     headers: { 'Authorization': `Bearer ${supabaseServiceKey}` },
-    fetch: (url, options) => {
-        return fetch(url, { ...options, duplex: 'half' } as any);
-    }
+    fetch: fetch as any // Force node-fetch v2
   }
 });
 
@@ -163,6 +144,29 @@ async function seedUsersAndEmployees(tenants: any[]) {
         allEmployees.push(managerEmp);
     }
 
+    // Create Users for ALL roles to facilitate testing
+    const roles = [
+      { email: `recruiter@${tenant.slug}.com`, name: 'Recruiter User', role: 'recruiter', title: 'Senior Recruiter', code: 'REC' },
+      { email: `trainer@${tenant.slug}.com`, name: 'Trainer User', role: 'trainer', title: 'Training Specialist', code: 'TRN' },
+      { email: `qa@${tenant.slug}.com`, name: 'QA Analyst', role: 'qa-analyst', title: 'QA Engineer', code: 'QAA' },
+      { email: `process@${tenant.slug}.com`, name: 'Process Manager', role: 'process-manager', title: 'Process Lead', code: 'PRO' },
+      { email: `teamlead@${tenant.slug}.com`, name: 'Team Leader', role: 'team-leader', title: 'Team Lead', code: 'TEA' },
+      { email: `marketing@${tenant.slug}.com`, name: 'Marketing User', role: 'marketing', title: 'Marketing Specialist', code: 'MKT' },
+      { email: `finance@${tenant.slug}.com`, name: 'Finance User', role: 'finance', title: 'Accountant', code: 'FIN' },
+      { email: `it@${tenant.slug}.com`, name: 'IT Manager', role: 'it-manager', title: 'IT Head', code: 'ITM' },
+      { email: `ops@${tenant.slug}.com`, name: 'Ops Manager', role: 'operations-manager', title: 'Operations Lead', code: 'OPS' },
+      { email: `account@${tenant.slug}.com`, name: 'Account Manager', role: 'account-manager', title: 'Account Executive', code: 'ACT' },
+      { email: `trainee@${tenant.slug}.com`, name: 'Trainee User', role: 'trainee', title: 'Graduate Trainee', code: 'TRE' }
+    ];
+
+    for (const r of roles) {
+        const user = await createAuthUser(r.email, r.name, r.role, tenant.id);
+        if (user) {
+            const emp = await createEmployeeProfile(supabase, tenant.id, user.id, tenantDepts[0].id, r.title, `${r.code}001`);
+            allEmployees.push(emp);
+        }
+    }
+
     // Create 5 Employees per Tenant
     for (let i = 1; i <= 5; i++) {
       const email = `employee${i}@${tenant.slug}.com`;
@@ -184,7 +188,7 @@ async function createAuthUser(email: string, fullName: string, role: string, ten
   // Check if user exists first to avoid error
   for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-          const { data: { users } } = await supabase.auth.admin.listUsers();
+          const { data: { users } } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
           const existing = users.find(u => u.email === email);
           
           if (existing) {
@@ -219,13 +223,27 @@ async function createAuthUser(email: string, fullName: string, role: string, ten
           
           return data.user;
       } catch (error: any) {
+          // Handle specific errors that imply user exists
+          if (error.message?.includes("Database error creating new user") || error.status === 422 || error.message?.includes("already been registered")) {
+               console.log(`   - User ${email} exists (caught error). Fetching...`);
+               const { data: { users } } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+               const existing = users.find(u => u.email === email);
+               if (existing) {
+                   // Ensure public.users record is correct
+                   await supabase.from('users').upsert({
+                      id: existing.id,
+                      email: email,
+                      full_name: fullName,
+                      role: role as any,
+                      tenant_id: tenantId
+                   });
+                   return existing;
+               }
+          }
+          
           if (attempt === retries) {
               console.error(`Failed to create/update user ${email} after ${retries} attempts:`, error.message);
               return null;
-          }
-          // Handle specific errors that don't need retry (like user already exists caught in loop start)
-          if (error.message?.includes("Database error creating new user") || error.status === 422) {
-               // Likely a race condition or trigger issue, just continue to retry or it will be caught by 'existing' check next loop
           }
           await delay(1000 * attempt); // Exponential backoffish
       }
