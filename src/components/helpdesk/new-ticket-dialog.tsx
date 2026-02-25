@@ -45,7 +45,14 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
         }
 
         try {
-            const aiResult = await categorizeTicketAction({ subject, description });
+            let aiResult = { category: 'General Inquiry', priority: 'Medium' as 'High' | 'Medium' | 'Low' };
+            try {
+                const result = await categorizeTicketAction({ subject, description });
+                if (result) aiResult = result;
+            } catch (aiError) {
+                console.warn("AI Categorization failed, using defaults:", aiError);
+                // Continue without AI
+            }
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
@@ -62,7 +69,7 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
                 category: aiResult.category,
                 priority: aiResult.priority,
                 status: 'Open'
-            }).select().single();
+            }).select('*, ticket_number').single();
 
             if (ticketError) throw ticketError;
 
@@ -76,31 +83,24 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
 
             if (msgError) throw msgError;
 
-            // 3. Create System Message (AI Categorization)
-            // Ideally system messages shouldn't need a sender_id, or we use a system bot ID.
-            // For now, let's skip the system message in DB or use the user as sender but mark it 'system' in UI if we had a type column.
-            // Our schema requires sender_id referencing employees. 
-            // We'll skip persisting the "AI categorized" message to DB to avoid "fake" employee references, 
-            // or we could add a `is_system` boolean to messages table later.
-            // For now, just the user message is enough.
-
             const newTicket: Ticket = {
                 id: ticketData.id,
+                ticket_number: ticketData.ticket_number,
                 subject,
-                department: aiResult.category,
+                department: aiResult.category as any,
                 priority: aiResult.priority,
                 status: 'Open',
                 lastUpdate: 'Just now',
                 messages: [
                     { from: 'user', text: description, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
-                    { from: 'system', text: `AI has categorized this ticket as "${aiResult.category}" with ${aiResult.priority} priority.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+                    { from: 'system', text: `Ticket #${ticketData.ticket_number} created. AI has categorized this as "${aiResult.category}" with ${aiResult.priority} priority.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
                 ]
             };
     
             onNewTicket(newTicket);
             toast({
                 title: "Ticket Created!",
-                description: `Your ticket has been submitted and categorized by AI.`
+                description: `Ticket #${ticketData.ticket_number} submitted successfully.`
             });
             setOpen(false);
         } catch(err: any) {

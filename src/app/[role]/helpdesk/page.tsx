@@ -36,6 +36,7 @@ type Message = {
 
 export type Ticket = {
     id: string;
+    ticket_number?: number;
     subject: string;
     department: 'IT Support' | 'HR Query' | 'Payroll Issue' | 'Facilities' | 'General Inquiry';
     status: 'Open' | 'In Progress' | 'Closed';
@@ -79,6 +80,7 @@ export default function HelpdeskPage() {
               .from('helpdesk_tickets')
               .select(`
                   id,
+                  ticket_number,
                   subject,
                   category,
                   priority,
@@ -110,6 +112,7 @@ export default function HelpdeskPage() {
           if (data) {
               const mappedTickets: Ticket[] = data.map((t: any) => ({
                   id: t.id,
+                  ticket_number: t.ticket_number,
                   subject: t.subject,
                   department: t.category,
                   priority: t.priority,
@@ -267,7 +270,7 @@ export default function HelpdeskPage() {
                     <p className="font-semibold truncate">{ticket.subject}</p>
                     {getStatusBadge(ticket.status)}
                 </div>
-                <p className="text-xs text-muted-foreground">{ticket.id} &middot; {ticket.department}</p>
+                <p className="text-xs text-muted-foreground">#{ticket.ticket_number || ticket.id.slice(0, 8)} &middot; {ticket.department}</p>
                 </button>
             ))}
             </div>
@@ -291,7 +294,7 @@ export default function HelpdeskPage() {
                     )}
                     <CardTitle>{selectedTicket.subject}</CardTitle>
                     <CardDescription>
-                        Ticket ID: {selectedTicket.id} &middot; Priority: <span className={getPriorityClass(selectedTicket.priority)}>{selectedTicket.priority}</span>
+                        Ticket #{selectedTicket.ticket_number || selectedTicket.id.slice(0, 8)} &middot; Priority: <span className={getPriorityClass(selectedTicket.priority)}>{selectedTicket.priority}</span>
                     </CardDescription>
                 </div>
                 {getStatusBadge(selectedTicket.status)}
