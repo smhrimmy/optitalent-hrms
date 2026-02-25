@@ -13,7 +13,8 @@ import {
   ShieldCheck, 
   Server,
   Trash2,
-  Ban
+  Ban,
+  CheckCircle
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -29,7 +30,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { provisionTenant } from '@/lib/supabase-admin'; // We need this later
+// import { provisionTenant } from '@/lib/supabase-admin'; // We need this later
 
 export default function TenantManagement() {
   const [tenants, setTenants] = useState<any[]>([]);
