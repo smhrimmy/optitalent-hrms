@@ -39,6 +39,17 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({
   className,
   children
 }) => {
+  const [lottieData, setLottieData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    if (isLottieUrl && imageUrl && !animationData) {
+      fetch(imageUrl)
+        .then(res => res.json())
+        .then(data => setLottieData(data))
+        .catch(err => console.error("Failed to load animation:", err));
+    }
+  }, [isLottieUrl, imageUrl, animationData]);
+
   return (
     <div className={cn("min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground overflow-hidden relative", className)}>
       
@@ -57,20 +68,11 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({
           transition={{ duration: 0.5 }}
           className="w-full md:w-1/2 flex justify-center"
         >
-          {animationData ? (
+          {animationData || lottieData ? (
             <div className="w-full max-w-[400px]">
-              <Lottie animationData={animationData} loop={true} />
+              <Lottie animationData={animationData || lottieData} loop={true} />
             </div>
-          ) : isLottieUrl && imageUrl ? (
-             <div className="w-full max-w-[400px]">
-                {/* Embed Lottie Player via Iframe for external URLs to avoid CORS/Fetch issues with simple player */}
-                <iframe 
-                    src={imageUrl} 
-                    className="w-full aspect-square border-0 pointer-events-none"
-                    title="Error Animation"
-                />
-             </div>
-          ) : imageUrl ? (
+          ) : imageUrl && !isLottieUrl ? (
             <div className="relative w-full max-w-[400px] aspect-square">
                 {/* Use standard img for now to avoid next/image config issues with external URLs in this generic component */}
                 <img src={imageUrl} alt={title} className="object-contain w-full h-full drop-shadow-2xl" />
