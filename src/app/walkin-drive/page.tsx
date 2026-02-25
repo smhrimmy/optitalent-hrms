@@ -1,29 +1,77 @@
-
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
-import { MapPin, Calendar, Clock, Briefcase, LogIn } from "lucide-react";
+import { MapPin, Calendar, Clock, Briefcase, LogIn, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { supabase } from '@/lib/supabase';
 
-
-const openRoles = [
-    { title: "Chat Support Agent", description: "Provide top-notch support to customers via live chat." },
-    { title: "Voice Support Specialist (English)", description: "Assist customers over the phone with their inquiries." },
-    { title: "Voice Support Specialist (Kannada)", description: "Provide regional language support to our Kannada-speaking users." },
-    { title: "Technical Support Engineer", description: "Troubleshoot and resolve technical issues for our products." },
-];
-
+type WalkInEvent = {
+    title: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    location: string;
+    roles: { title: string; description: string }[];
+};
 
 export default function WalkInDrivePage() {
+    const [event, setEvent] = useState<WalkInEvent | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchEvent = async () => {
+            const { data } = await supabase
+                .from('walkin_events')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+            
+            if (data) {
+                setEvent({
+                    title: data.title,
+                    date: new Date(data.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                    start_time: data.start_time,
+                    end_time: data.end_time,
+                    location: data.location,
+                    roles: data.roles
+                });
+            }
+            setLoading(false);
+        };
+        fetchEvent();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    if (!event) {
+        return (
+            <div className="min-h-screen bg-muted/40 flex flex-col items-center justify-center p-4">
+                 <div className="text-center space-y-4">
+                    <Logo className="inline-flex" showText={true} />
+                    <h1 className="text-2xl font-bold">No Active Walk-In Drives</h1>
+                    <p className="text-muted-foreground">Please check back later for upcoming events.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-muted/40 flex flex-col items-center justify-center p-4">
             <div className="max-w-4xl w-full space-y-8">
                 <div className="text-center space-y-4">
                     <Logo className="inline-flex" showText={true} />
-                    <h1 className="text-4xl font-bold font-headline tracking-tight">Walk-In Drive Registration</h1>
+                    <h1 className="text-4xl font-bold font-headline tracking-tight">{event.title}</h1>
                     <p className="text-muted-foreground text-lg">
                         Join our team! We're looking for talented individuals to fill a variety of roles.
                     </p>
@@ -38,21 +86,21 @@ export default function WalkInDrivePage() {
                             <Calendar className="h-5 w-5 text-primary"/>
                             <div>
                                 <p className="font-semibold">Date</p>
-                                <p className="text-muted-foreground">Saturday, August 24, 2024</p>
+                                <p className="text-muted-foreground">{event.date}</p>
                             </div>
                         </div>
                          <div className="flex items-center gap-3">
                             <Clock className="h-5 w-5 text-primary"/>
                             <div>
                                 <p className="font-semibold">Time</p>
-                                <p className="text-muted-foreground">9:00 AM - 4:00 PM</p>
+                                <p className="text-muted-foreground">{event.start_time} - {event.end_time}</p>
                             </div>
                         </div>
                          <div className="flex items-center gap-3">
                             <MapPin className="h-5 w-5 text-primary"/>
                             <div>
                                 <p className="font-semibold">Location</p>
-                                <p className="text-muted-foreground">OptiTalent Towers, Bangalore</p>
+                                <p className="text-muted-foreground">{event.location}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -64,7 +112,7 @@ export default function WalkInDrivePage() {
                         <CardDescription>We are hiring for the following positions. Register now to apply.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {openRoles.map((role, index) => (
+                        {event.roles.map((role, index) => (
                             <div key={index} className="p-4 border rounded-lg flex items-start gap-4">
                                 <Briefcase className="h-6 w-6 text-primary mt-1" />
                                 <div>

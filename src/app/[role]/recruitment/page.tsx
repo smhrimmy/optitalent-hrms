@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
+import { ConfigureWalkInDialog } from "@/components/recruitment/configure-walkin-dialog";
 
 type Applicant = {
   id: string;
@@ -161,6 +162,7 @@ export default function RecruitmentPage() {
                                 <Bot className="mr-2 h-4 w-4" /> Parse Resume
                             </Button>
                         </Link>
+                        <ConfigureWalkInDialog />
                          <Button onClick={handleCopyWalkinLink}>
                             <Link2 className="mr-2 h-4 w-4" /> Copy Walk-in Link
                         </Button>
