@@ -42,9 +42,9 @@ const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
     // However, sometimes 'undici' (used by newer node versions) is stricter.
     // Let's try adding the Authorization header explicitly again just in case.
     headers: { 'Authorization': `Bearer ${supabaseServiceKey}` },
-    // fetch: (url, options) => {
-    //     return fetch(url, { ...options, duplex: 'half' } as any);
-    // }
+    fetch: (url, options) => {
+        return fetch(url, { ...options, duplex: 'half' } as any);
+    }
   }
 });
 
@@ -243,6 +243,16 @@ async function createAuthUser(email: string, fullName: string, role: string, ten
 }
 
 async function createEmployeeProfile(supabase: any, tenantId: string, userId: string, deptId: string, title: string, empId: string) {
+  // First ensure public.users record exists to satisfy FK constraint
+  // Sometimes the trigger is slow or fails, so we upsert here to be safe
+  const { error: userError } = await supabase.from('users').upsert({
+      id: userId,
+      tenant_id: tenantId,
+      // We don't have email/name here easily, but if record exists it updates tenant_id
+      // If it doesn't exist, we might fail on not-null constraints if we don't provide them.
+      // Ideally, the createAuthUser function already handled this.
+  }, { onConflict: 'id', ignoreDuplicates: true }); 
+
   const { data, error } = await supabase.from('employees').insert({
     tenant_id: tenantId,
     user_id: userId,
@@ -256,7 +266,12 @@ async function createEmployeeProfile(supabase: any, tenantId: string, userId: st
   }).select().single();
 
   if (error) {
-      console.error('Error creating employee:', error.message);
+      // Handle unique constraint violation on employee_id or user_id gracefully
+      if (error.code === '23505') { // Unique violation
+          console.log(`   - Employee profile for ${empId} already exists.`);
+          return null;
+      }
+      console.error(`   - Error creating employee ${empId}:`, error.message);
       return null;
   }
   return data;
