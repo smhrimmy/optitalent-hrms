@@ -128,6 +128,8 @@ export default function Login() {
              if (loginAttempts >= 2) {
                  errorMessage = "Incorrect password. Click 'Forgot Password?' to reset it.";
              }
+        } else if (error.message.includes("Email not confirmed")) {
+             errorMessage = "Please confirm your email address before logging in.";
         } else {
              errorMessage = error.message;
         }
