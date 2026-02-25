@@ -278,42 +278,124 @@ export default function TenantDashboard() {
               <p className="text-muted-foreground">Welcome back, {userName}.</p>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Request Leave
+                <Button variant="outline" onClick={() => router.push('/dashboard/profile')}>
+                    <Users className="mr-2 h-4 w-4" />
+                    My Profile
                 </Button>
             </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+             {/* Clock In/Out Widget */}
+             <Card className="md:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold text-blue-900 flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-blue-600" />
+                        Attendance
+                    </CardTitle>
+                    <CardDescription>Track your work hours</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex justify-between items-center mt-2">
+                        <div className="text-center">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Log In Time</p>
+                            <p className="text-xl font-bold text-slate-700">09:00 AM</p>
+                        </div>
+                         <div className="h-8 w-[1px] bg-slate-200"></div>
+                        <div className="text-center">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Log Out Time</p>
+                            <p className="text-xl font-bold text-slate-400">--:--</p>
+                        </div>
+                    </div>
+                    <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 shadow-md">Clock Out</Button>
+                </CardContent>
+            </Card>
+
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Leave Balance</CardTitle>
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">12 Days</div>
-                    <p className="text-xs text-muted-foreground">Remaining this year</p>
+                    <div className="text-3xl font-bold text-slate-800">12</div>
+                    <p className="text-xs text-muted-foreground">Days Remaining</p>
+                    <Button variant="link" className="p-0 h-auto text-xs mt-2 text-blue-600">Apply Leave &rarr;</Button>
                 </CardContent>
             </Card>
+            
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Next Holiday</CardTitle>
+                    <CardTitle className="text-sm font-medium">Food Coupons</CardTitle>
                     <Briefcase className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">Dec 25</div>
-                    <p className="text-xs text-muted-foreground">Christmas Day</p>
+                    <div className="text-3xl font-bold text-slate-800">2400</div>
+                    <p className="text-xs text-muted-foreground">Points Available</p>
+                    <Button variant="link" className="p-0 h-auto text-xs mt-2 text-blue-600">Redeem &rarr;</Button>
                 </CardContent>
             </Card>
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">My Team</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Company Feed / News */}
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle>Company News</CardTitle>
+                    <CardDescription>Latest updates from HR and Management.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">8</div>
-                    <p className="text-xs text-muted-foreground">Active members</p>
+                    <div className="space-y-6">
+                         <div className="flex gap-4 items-start">
+                            <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center">
+                                <FileText className="h-6 w-6 text-slate-500" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-slate-800">Q3 All Hands Meeting</h4>
+                                <p className="text-sm text-slate-600 mt-1">Join us this Friday for the quarterly all-hands meeting. We will be discussing...</p>
+                                <p className="text-xs text-slate-400 mt-2">2 hours ago</p>
+                            </div>
+                         </div>
+                         <div className="flex gap-4 items-start">
+                            <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center">
+                                <Users className="h-6 w-6 text-slate-500" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-slate-800">Welcome New Joiners!</h4>
+                                <p className="text-sm text-slate-600 mt-1">Please welcome Sarah and Mike to the Engineering team. Say hi when you see them!</p>
+                                <p className="text-xs text-slate-400 mt-2">Yesterday</p>
+                            </div>
+                         </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Birthdays & Events */}
+            <Card>
+                 <CardHeader>
+                    <CardTitle>Celebrations</CardTitle>
+                    <CardDescription>Birthdays & Work Anniversaries</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                         <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+                                <span className="text-xs font-bold">JD</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium">Jane Doe</p>
+                                <p className="text-xs text-muted-foreground">Birthday - Today! 🎂</p>
+                            </div>
+                         </div>
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                <span className="text-xs font-bold">MS</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium">Mike Smith</p>
+                                <p className="text-xs text-muted-foreground">5 Year Anniversary - Tomorrow 🎉</p>
+                            </div>
+                         </div>
+                    </div>
                 </CardContent>
             </Card>
         </div>
