@@ -85,28 +85,28 @@ export default function ProfilePage() {
           <TabsList className="w-full justify-start h-auto p-0 bg-transparent border-b border-slate-200 rounded-none gap-6 relative z-0">
           <TabsTrigger 
             value="about" 
-            className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 py-3 gap-2 text-slate-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 text-slate-500 hover:text-slate-700"
           >
             <User className="h-4 w-4" />
             About
           </TabsTrigger>
           <TabsTrigger 
             value="professional" 
-            className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 py-3 gap-2 text-slate-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 text-slate-500 hover:text-slate-700"
           >
             <Briefcase className="h-4 w-4" />
             Professional
           </TabsTrigger>
           <TabsTrigger 
             value="family" 
-            className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 py-3 gap-2 text-slate-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 text-slate-500 hover:text-slate-700"
           >
             <Heart className="h-4 w-4" />
             Family & Health
           </TabsTrigger>
           <TabsTrigger 
             value="documents" 
-            className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 py-3 gap-2 text-slate-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 text-slate-500 hover:text-slate-700"
           >
             <FileText className="h-4 w-4" />
             Documents
