@@ -178,68 +178,59 @@ async function seedUsersAndEmployees(tenants: any[]) {
   return allEmployees;
 }
 
-async function createAuthUser(email: string, fullName: string, role: string, tenantId: string) {
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function createAuthUser(email: string, fullName: string, role: string, tenantId: string, retries = 3) {
   // Check if user exists first to avoid error
-  const { data: { users } } = await supabase.auth.admin.listUsers();
-  const existing = users.find(u => u.email === email);
-  
-  if (existing) {
-      // Update metadata if needed
-      await supabase.auth.admin.updateUserById(existing.id, {
-          user_metadata: { full_name: fullName, tenant_id: tenantId },
-          password: 'password123', // Force reset password on existing users too
-          email_confirm: true
-      });
-      // Ensure public.users record is correct
-      await supabase.from('users').upsert({
-          id: existing.id,
-          email: email,
-          full_name: fullName,
-          role: role as any,
-          tenant_id: tenantId
-      });
-      return existing;
-  }
+  for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+          const { data: { users } } = await supabase.auth.admin.listUsers();
+          const existing = users.find(u => u.email === email);
+          
+          if (existing) {
+              // Update metadata if needed
+              await supabase.auth.admin.updateUserById(existing.id, {
+                  user_metadata: { full_name: fullName, tenant_id: tenantId },
+                  password: 'password123', // Force reset password on existing users too
+                  email_confirm: true
+              });
+              // Ensure public.users record is correct
+              await supabase.from('users').upsert({
+                  id: existing.id,
+                  email: email,
+                  full_name: fullName,
+                  role: role as any,
+                  tenant_id: tenantId
+              });
+              return existing;
+          }
 
-  const { data, error } = await supabase.auth.admin.createUser({
-    email,
-    password: 'password123',
-    email_confirm: true,
-    user_metadata: { full_name: fullName, tenant_id: tenantId }
-  });
+          const { data, error } = await supabase.auth.admin.createUser({
+            email,
+            password: 'password123',
+            email_confirm: true,
+            user_metadata: { full_name: fullName, tenant_id: tenantId }
+          });
 
-  if (error) {
-    // If user already exists, try to fetch them
-    if (error.message.includes("Database error creating new user") || error.status === 422 || error.message.includes("Email address already registered")) {
-       console.log(`   User ${email} might already exist or trigger failed. Fetching...`);
-       const { data: { users } } = await supabase.auth.admin.listUsers();
-       const existing = users.find(u => u.email === email);
-       if (existing) {
-           // Reset password to ensure 'password123' works
-           await supabase.auth.admin.updateUserById(existing.id, {
-               password: 'password123',
-               user_metadata: { full_name: fullName, tenant_id: tenantId }
-           });
-           
-           // Ensure public.users record exists and has correct role
-           await supabase.from('users').upsert({
-              id: existing.id,
-              email: email,
-              full_name: fullName,
-              role: role as any,
-              tenant_id: tenantId
-           });
-           return existing;
-       }
-    }
-    console.error(`Failed to create user ${email}:`, error.message);
-    return null;
+          if (error) throw error;
+          
+          // Trigger handles public.users creation, but we update role manually to be safe
+          await supabase.from('users').update({ role: role as any }).eq('id', data.user.id);
+          
+          return data.user;
+      } catch (error: any) {
+          if (attempt === retries) {
+              console.error(`Failed to create/update user ${email} after ${retries} attempts:`, error.message);
+              return null;
+          }
+          // Handle specific errors that don't need retry (like user already exists caught in loop start)
+          if (error.message?.includes("Database error creating new user") || error.status === 422) {
+               // Likely a race condition or trigger issue, just continue to retry or it will be caught by 'existing' check next loop
+          }
+          await delay(1000 * attempt); // Exponential backoffish
+      }
   }
-  
-  // Trigger handles public.users creation, but we update role manually to be safe
-  await supabase.from('users').update({ role: role as any }).eq('id', data.user.id);
-  
-  return data.user;
+  return null;
 }
 
 async function createEmployeeProfile(supabase: any, tenantId: string, userId: string, deptId: string, title: string, empId: string) {
