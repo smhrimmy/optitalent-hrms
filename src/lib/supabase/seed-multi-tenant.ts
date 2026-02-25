@@ -170,7 +170,9 @@ async function createAuthUser(email: string, fullName: string, role: string, ten
   if (existing) {
       // Update metadata if needed
       await supabase.auth.admin.updateUserById(existing.id, {
-          user_metadata: { full_name: fullName, tenant_id: tenantId }
+          user_metadata: { full_name: fullName, tenant_id: tenantId },
+          password: 'password123', // Force reset password on existing users too
+          email_confirm: true
       });
       // Ensure public.users record is correct
       await supabase.from('users').upsert({
@@ -192,11 +194,17 @@ async function createAuthUser(email: string, fullName: string, role: string, ten
 
   if (error) {
     // If user already exists, try to fetch them
-    if (error.message.includes("Database error creating new user") || error.status === 422) {
+    if (error.message.includes("Database error creating new user") || error.status === 422 || error.message.includes("Email address already registered")) {
        console.log(`   User ${email} might already exist or trigger failed. Fetching...`);
        const { data: { users } } = await supabase.auth.admin.listUsers();
        const existing = users.find(u => u.email === email);
        if (existing) {
+           // Reset password to ensure 'password123' works
+           await supabase.auth.admin.updateUserById(existing.id, {
+               password: 'password123',
+               user_metadata: { full_name: fullName, tenant_id: tenantId }
+           });
+           
            // Ensure public.users record exists and has correct role
            await supabase.from('users').upsert({
               id: existing.id,
