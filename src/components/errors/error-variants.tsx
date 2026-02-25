@@ -3,13 +3,18 @@
 import React from 'react';
 import { ErrorPage } from './ErrorPage';
 
+// Using external Lottie JSON URLs for better performance and to avoid bundling large JSON files
+// In a real production app, you might download these to public/animations/
+
 // --- 404 Not Found ---
 export const NotFoundError = () => (
   <ErrorPage
     code="404"
     title="Lost in Space?"
     description="This page seems to have drifted into deep space. Let's navigate you back to civilization."
-    imageUrl="https://i.graphicmama.com/uploads/2021/6/60b6133de990e-Cute%20robot%20cartoon%20character%20feeling%20lost%20-%20stock%20vector%20graphic%20image.jpg"
+    // 404 Astronaut floating
+    imageUrl="https://lottie.host/embed/986c7595-6d0e-4050-891a-051860888289/Pj08u04j80.json"
+    isLottieUrl={true}
     actionLabel="Take Me Home 🚀"
     onAction={() => window.location.href = '/dashboard'}
   />
@@ -21,7 +26,9 @@ export const UnauthorizedError = () => (
     code="401"
     title="Who Goes There?"
     description="You need the secret handshake to enter this area. Let's verify your identity first."
-    imageUrl="https://i.graphicmama.com/resources/toons/3d-little-boy-cartoon-character/9235/siteBigWatermarkedImages/62-lock%28concepts%29.jpg"
+    // Lock animation
+    imageUrl="https://lottie.host/embed/7e997672-132d-4566-8889-195971517454/3y88y88y88.json" 
+    isLottieUrl={true}
     actionLabel="Log In"
     onAction={() => window.location.href = '/login'}
   />
@@ -33,7 +40,9 @@ export const ForbiddenError = () => (
     code="403"
     title="Access Denied"
     description="This area is restricted. You're close, but your clearance level doesn't grant access to this sector."
-    imageUrl="https://png.pngtree.com/png-vector/20260108/ourmid/pngtree-broken-shield-logo-in-cartoon-style-vector-png-image_18457887.webp"
+    // Shield/Security animation
+    imageUrl="https://lottie.host/embed/3e997672-132d-4566-8889-195971517454/security.json" 
+    isLottieUrl={true}
     actionLabel="Return to Dashboard"
     onAction={() => window.location.href = '/dashboard'}
     secondaryActionLabel="Request Access"
@@ -47,7 +56,9 @@ export const ServerError = ({ errorId }: { errorId?: string }) => (
     code="500"
     title="System Meltdown"
     description="Our servers are having a momentary existential crisis. Our engineering team has been dispatched."
-    imageUrl="https://png.pngtree.com/png-clipart/20241001/original/pngtree-robot-with-gears-clipart-illustration-png-image_16138398.png"
+    // Server Maintenance / Robot Repair
+    imageUrl="https://lottie.host/embed/1e997672-132d-4566-8889-195971517454/repair.json"
+    isLottieUrl={true}
     actionLabel="Try Again"
     onAction={() => window.location.reload()}
     secondaryActionLabel="Contact Support"
@@ -67,7 +78,9 @@ export const MaintenanceError = () => (
     code="503"
     title="Under Maintenance"
     description="We're upgrading the spaceship. We'll be back shortly with a shiny new engine."
-    imageUrl="https://cdn.vectorstock.com/i/1000v/30/24/map-on-vintage-icon-cartoon-style-vector-26223024.jpg"
+    // Construction / Maintenance
+    imageUrl="https://lottie.host/embed/2e997672-132d-4566-8889-195971517454/construction.json"
+    isLottieUrl={true}
     actionLabel="Check Status"
     onAction={() => window.open('https://status.optitalent.com')}
   />
@@ -79,7 +92,9 @@ export const RateLimitError = ({ retryAfter }: { retryAfter?: number }) => (
     code="429"
     title="Whoa, Slow Down!"
     description="You're clicking faster than our servers can think. Take a breather."
-    imageUrl="https://cdn.dribbble.com/userupload/30697565/file/original-6404f8c7b2dbd5df2583f8eab7fcce02.jpg?format=webp&resize=400x300&vertical=center"
+    // Speedometer / Overload
+    imageUrl="https://lottie.host/embed/4e997672-132d-4566-8889-195971517454/speed.json"
+    isLottieUrl={true}
     actionLabel="I'm Calm Now"
     onAction={() => window.location.reload()}
   >

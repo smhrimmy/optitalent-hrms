@@ -15,13 +15,14 @@ export interface ErrorPageProps {
   title: string;
   description: string;
   animationData?: any; // JSON for Lottie
-  imageUrl?: string; // Fallback image
+  imageUrl?: string; // Fallback image or Lottie URL
+  isLottieUrl?: boolean; // New prop to indicate if imageUrl is actually a Lottie URL
   actionLabel?: string;
   onAction?: () => void;
   secondaryActionLabel?: string;
   onSecondaryAction?: () => void;
   className?: string;
-  children?: React.ReactNode; // For custom content like login forms or debug info
+  children?: React.ReactNode; 
 }
 
 export const ErrorPage: React.FC<ErrorPageProps> = ({
@@ -30,6 +31,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({
   description,
   animationData,
   imageUrl,
+  isLottieUrl,
   actionLabel = "Go Home",
   onAction,
   secondaryActionLabel,
@@ -59,6 +61,15 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({
             <div className="w-full max-w-[400px]">
               <Lottie animationData={animationData} loop={true} />
             </div>
+          ) : isLottieUrl && imageUrl ? (
+             <div className="w-full max-w-[400px]">
+                {/* Embed Lottie Player via Iframe for external URLs to avoid CORS/Fetch issues with simple player */}
+                <iframe 
+                    src={imageUrl} 
+                    className="w-full aspect-square border-0 pointer-events-none"
+                    title="Error Animation"
+                />
+             </div>
           ) : imageUrl ? (
             <div className="relative w-full max-w-[400px] aspect-square">
                 {/* Use standard img for now to avoid next/image config issues with external URLs in this generic component */}
