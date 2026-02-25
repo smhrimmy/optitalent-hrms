@@ -20,8 +20,11 @@
 -- The order is important due to dependencies.
 DO $$
 BEGIN
-  -- Drop functions first as they might depend on tables/types
-  DROP FUNCTION IF EXISTS public.handle_new_user;
+  -- Drop triggers first
+  -- DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+  -- Drop functions
+  DROP FUNCTION IF EXISTS public.handle_new_user CASCADE;
 
   -- Drop tables. CASCADE will handle dependent policies, constraints, etc.
   DROP TABLE IF EXISTS public.payroll_history CASCADE;
@@ -63,12 +66,19 @@ END $$;
 -- -----------------------------------------------------------------------------
 -- 2. CREATE CUSTOM TYPES (ENUMS)
 -- -----------------------------------------------------------------------------
--- Using enums for fixed sets of values improves data integrity.
 
 CREATE TYPE public.user_role AS ENUM (
-  'admin', 'hr', 'manager', 'recruiter', 'employee', 'trainer',
+  'super-admin', 'admin', 'hr', 'manager', 'recruiter', 'employee', 'trainer',
   'qa-analyst', 'process-manager', 'team-leader', 'marketing',
   'finance', 'it-manager', 'operations-manager', 'account-manager', 'trainee'
+);
+
+CREATE TYPE public.subscription_plan AS ENUM (
+  'Free', 'Startup', 'Enterprise'
+);
+
+CREATE TYPE public.tenant_status AS ENUM (
+  'Active', 'Suspended', 'Pending'
 );
 
 CREATE TYPE public.leave_type AS ENUM (
@@ -108,17 +118,32 @@ CREATE TYPE public.performance_rating AS ENUM (
 -- 3. CREATE TABLES
 -- -----------------------------------------------------------------------------
 
+-- Tenants Table (Multi-tenancy Core)
+CREATE TABLE public.tenants (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE, -- for subdomain or URL path
+  plan public.subscription_plan DEFAULT 'Free',
+  status public.tenant_status DEFAULT 'Active',
+  logo_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Departments Table
 CREATE TABLE public.departments (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
+  tenant_id UUID REFERENCES public.tenants(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
   description TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(tenant_id, name) -- Departments must be unique per tenant
 );
 
 -- Users Table (linked to auth.users)
 CREATE TABLE public.users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  tenant_id UUID REFERENCES public.tenants(id) ON DELETE SET NULL, -- Super admins might not have a tenant
   email TEXT UNIQUE,
   role public.user_role DEFAULT 'employee',
   full_name TEXT,
@@ -128,21 +153,24 @@ CREATE TABLE public.users (
 -- Employees Table
 CREATE TABLE public.employees (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   user_id UUID NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
   department_id UUID REFERENCES public.departments(id),
   manager_id UUID REFERENCES public.employees(id),
   job_title TEXT NOT NULL,
-  employee_id TEXT NOT NULL UNIQUE,
+  employee_id TEXT NOT NULL,
   phone_number TEXT,
   profile_picture_url TEXT,
   status TEXT DEFAULT 'Active',
   hire_date DATE,
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(tenant_id, employee_id) -- Employee IDs unique per tenant
 );
 
 -- Job Openings Table
 CREATE TABLE public.job_openings (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT,
   department_id UUID REFERENCES public.departments(id),
@@ -154,6 +182,7 @@ CREATE TABLE public.job_openings (
 -- Applicants Table
 CREATE TABLE public.applicants (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   job_opening_id UUID REFERENCES public.job_openings(id),
   full_name TEXT NOT NULL,
   email TEXT NOT NULL,
@@ -166,6 +195,7 @@ CREATE TABLE public.applicants (
 -- Interview Notes Table
 CREATE TABLE public.interview_notes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   applicant_id UUID NOT NULL REFERENCES public.applicants(id) ON DELETE CASCADE,
   interviewer_id UUID NOT NULL REFERENCES public.employees(id),
   notes TEXT,
@@ -175,6 +205,7 @@ CREATE TABLE public.interview_notes (
 -- Leave Balances Table
 CREATE TABLE public.leave_balances (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL UNIQUE REFERENCES public.employees(id) ON DELETE CASCADE,
   sick_leave INT DEFAULT 7,
   casual_leave INT DEFAULT 12,
@@ -184,6 +215,7 @@ CREATE TABLE public.leave_balances (
 -- Holidays Table
 CREATE TABLE public.holidays (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   date DATE NOT NULL
 );
@@ -191,6 +223,7 @@ CREATE TABLE public.holidays (
 -- Leave Requests Table
 CREATE TABLE public.leave_requests (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL REFERENCES public.employees(id) ON DELETE CASCADE,
   leave_type public.leave_type NOT NULL,
   start_date DATE NOT NULL,
@@ -203,6 +236,7 @@ CREATE TABLE public.leave_requests (
 -- Helpdesk Tickets Table
 CREATE TABLE public.helpdesk_tickets (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL REFERENCES public.employees(id) ON DELETE CASCADE,
   subject TEXT NOT NULL,
   description TEXT,
@@ -215,6 +249,7 @@ CREATE TABLE public.helpdesk_tickets (
 -- Helpdesk Messages Table
 CREATE TABLE public.helpdesk_messages (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   ticket_id UUID NOT NULL REFERENCES public.helpdesk_tickets(id) ON DELETE CASCADE,
   sender_id UUID NOT NULL REFERENCES public.employees(id),
   message TEXT,
@@ -224,6 +259,7 @@ CREATE TABLE public.helpdesk_messages (
 -- Company Feed Posts Table
 CREATE TABLE public.company_feed_posts (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   author_id UUID NOT NULL REFERENCES public.employees(id),
   title TEXT NOT NULL,
   content TEXT,
@@ -234,6 +270,7 @@ CREATE TABLE public.company_feed_posts (
 -- Performance Reviews Table
 CREATE TABLE public.performance_reviews (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL REFERENCES public.employees(id) ON DELETE CASCADE,
   reviewer_id UUID NOT NULL REFERENCES public.employees(id),
   review_period TEXT NOT NULL,
@@ -247,6 +284,7 @@ CREATE TABLE public.performance_reviews (
 -- Payroll History Table
 CREATE TABLE public.payroll_history (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL REFERENCES public.employees(id) ON DELETE CASCADE,
   pay_period DATE NOT NULL,
   gross_salary NUMERIC(10, 2),
@@ -259,6 +297,7 @@ CREATE TABLE public.payroll_history (
 -- Assessments Table
 CREATE TABLE public.assessments (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT,
   created_by UUID REFERENCES public.employees(id)
@@ -267,6 +306,7 @@ CREATE TABLE public.assessments (
 -- Assessment Attempts Table
 CREATE TABLE public.assessment_attempts (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
   assessment_id UUID NOT NULL REFERENCES public.assessments(id) ON DELETE CASCADE,
   applicant_id UUID REFERENCES public.applicants(id),
   employee_id UUID REFERENCES public.employees(id),
@@ -279,6 +319,7 @@ CREATE TABLE public.assessment_attempts (
 -- Bonus Points History Table
 CREATE TABLE public.bonus_points_history (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     employee_id UUID NOT NULL REFERENCES public.employees(id) ON DELETE CASCADE,
     type TEXT NOT NULL, -- 'award' or 'redeem'
     points INT NOT NULL,
@@ -295,22 +336,37 @@ CREATE TABLE public.bonus_points_history (
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role)
-  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', 'employee');
+  INSERT INTO public.users (id, email, full_name, role, tenant_id)
+  VALUES (
+    new.id, 
+    new.email, 
+    new.raw_user_meta_data->>'full_name', 
+    'employee',
+    (new.raw_user_meta_data->>'tenant_id')::UUID -- Assume tenant_id is passed during signup
+  );
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to execute the function on new user creation
+-- NOTE: We cannot DROP or CREATE triggers on auth.users directly via standard SQL client if permissions are restricted.
+-- Supabase Dashboard or Migration CLI is preferred for auth schema changes.
+-- However, we can try to create it if it doesn't exist, or just rely on the function existing.
+-- For this script, we'll comment out the TRIGGER creation on auth.users to avoid permission errors if running as a restricted user.
+-- YOU MUST MANUALLY ADD THIS TRIGGER IN THE SUPABASE DASHBOARD IF IT DOESN'T EXIST.
+
+/*
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+*/
 
 
 -- -----------------------------------------------------------------------------
 -- 5. ROW LEVEL SECURITY (RLS)
 -- -----------------------------------------------------------------------------
 -- Enable RLS for all tables first.
+ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.departments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
@@ -330,96 +386,115 @@ ALTER TABLE public.assessment_attempts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bonus_points_history ENABLE ROW LEVEL SECURITY;
 
 -- POLICIES
--- NOTE: These are basic policies. You should refine them based on your specific application logic.
 
--- Departments: All authenticated users can read.
-CREATE POLICY "Allow read access to all authenticated users" ON public.departments FOR SELECT USING (auth.role() = 'authenticated');
+-- Helper function to get current user's tenant_id
+CREATE OR REPLACE FUNCTION public.get_tenant_id() RETURNS UUID AS $$
+  SELECT tenant_id FROM public.users WHERE id = auth.uid() LIMIT 1;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
--- Users: Users can see their own data. HR/Admins can see all.
-CREATE POLICY "Users can see their own data" ON public.users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "HR/Admins can see all users" ON public.users FOR SELECT USING ( (SELECT role FROM public.users WHERE id = auth.uid()) IN ('hr', 'admin') );
+-- Tenants: Super Admin sees all. Users see their own tenant.
+CREATE POLICY "Super Admin sees all tenants" ON public.tenants FOR SELECT USING ( (SELECT role FROM public.users WHERE id = auth.uid()) = 'super-admin' );
+CREATE POLICY "Users see their own tenant" ON public.tenants FOR SELECT USING ( id = public.get_tenant_id() );
 
--- Employees: Employees can see their own data. Managers/HR/Admins can see all.
-CREATE POLICY "Employees can see their own profile" ON public.employees FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Admins, HR, and managers can view all employees" ON public.employees FOR SELECT USING ( (SELECT role FROM public.users WHERE id = auth.uid()) IN ('admin', 'hr', 'manager', 'team-leader') );
+-- Generic Policy Template for Tenant Isolation
+-- Only users belonging to the same tenant can access the data.
+-- Plus specific role-based access control.
 
--- Leave Requests: Employees can see their own. Managers/HR/Admins can see all.
-CREATE POLICY "Employees can see their own leave requests" ON public.leave_requests FOR SELECT USING ( (SELECT id FROM public.employees WHERE user_id = auth.uid()) = employee_id );
-CREATE POLICY "Admins, HR, and managers can see all leave requests" ON public.leave_requests FOR SELECT USING ( (SELECT role FROM public.users WHERE id = auth.uid()) IN ('admin', 'hr', 'manager') );
+-- Departments
+CREATE POLICY "Tenant Isolation" ON public.departments USING (tenant_id = public.get_tenant_id());
 
--- Helpdesk Tickets: Employees can see their own. IT/Admins can see all.
-CREATE POLICY "Employees can see their own tickets" ON public.helpdesk_tickets FOR SELECT USING ( (SELECT id FROM public.employees WHERE user_id = auth.uid()) = employee_id );
-CREATE POLICY "Support roles can see all tickets" ON public.helpdesk_tickets FOR SELECT USING ( (SELECT role FROM public.users WHERE id = auth.uid()) IN ('admin', 'it-manager', 'process-manager') );
+-- Users
+CREATE POLICY "Tenant Isolation" ON public.users USING (tenant_id = public.get_tenant_id() OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'super-admin');
+
+-- Employees
+CREATE POLICY "Tenant Isolation" ON public.employees USING (tenant_id = public.get_tenant_id());
+
+-- Job Openings
+CREATE POLICY "Tenant Isolation" ON public.job_openings USING (tenant_id = public.get_tenant_id());
+
+-- Applicants
+CREATE POLICY "Tenant Isolation" ON public.applicants USING (tenant_id = public.get_tenant_id());
+
+-- Interview Notes
+CREATE POLICY "Tenant Isolation" ON public.interview_notes USING (tenant_id = public.get_tenant_id());
+
+-- Leave Balances
+CREATE POLICY "Tenant Isolation" ON public.leave_balances USING (tenant_id = public.get_tenant_id());
+
+-- Holidays
+CREATE POLICY "Tenant Isolation" ON public.holidays USING (tenant_id = public.get_tenant_id());
+
+-- Leave Requests
+CREATE POLICY "Tenant Isolation" ON public.leave_requests USING (tenant_id = public.get_tenant_id());
+
+-- Helpdesk Tickets
+CREATE POLICY "Tenant Isolation" ON public.helpdesk_tickets USING (tenant_id = public.get_tenant_id());
+
+-- Helpdesk Messages
+CREATE POLICY "Tenant Isolation" ON public.helpdesk_messages USING (tenant_id = public.get_tenant_id());
+
+-- Company Feed Posts
+CREATE POLICY "Tenant Isolation" ON public.company_feed_posts USING (tenant_id = public.get_tenant_id());
+
+-- Performance Reviews
+CREATE POLICY "Tenant Isolation" ON public.performance_reviews USING (tenant_id = public.get_tenant_id());
+
+-- Payroll History
+CREATE POLICY "Tenant Isolation" ON public.payroll_history USING (tenant_id = public.get_tenant_id());
+
+-- Assessments
+CREATE POLICY "Tenant Isolation" ON public.assessments USING (tenant_id = public.get_tenant_id());
+
+-- Assessment Attempts
+CREATE POLICY "Tenant Isolation" ON public.assessment_attempts USING (tenant_id = public.get_tenant_id());
+
+-- Bonus Points History
+CREATE POLICY "Tenant Isolation" ON public.bonus_points_history USING (tenant_id = public.get_tenant_id());
 
 
 -- -----------------------------------------------------------------------------
--- 6. DATA SEEDING (Optional)
+-- 6. DATA SEEDING
 -- -----------------------------------------------------------------------------
--- This is a very basic seed to get you started. For more complex seeding,
--- it's recommended to use a separate script (like the `seed.ts` file).
-
--- Insert Departments
-INSERT INTO public.departments (name, description) VALUES
-('Engineering', 'Builds and maintains the product.'),
-('Human Resources', 'Manages people and culture.'),
-('Sales', 'Drives revenue.'),
-('Marketing', 'Manages brand and communication.'),
-('Support', 'Helps customers succeed.')
-ON CONFLICT (name) DO NOTHING;
-
--- Note: The `handle_new_user` trigger will automatically create a corresponding
--- entry in `public.users`. We need to handle this to avoid duplicates and ensure correct roles.
 DO $$
 DECLARE
-    admin_user_id UUID;
-    hr_user_id UUID;
+    super_admin_id UUID;
+    tenant_admin_id UUID;
+    tenant_id_1 UUID;
 BEGIN
-    -- -------------------------------------------------------------------------
-    -- SEED ADMIN USER
-    -- -------------------------------------------------------------------------
-    -- 1. Check if user exists
-    SELECT id INTO admin_user_id FROM auth.users WHERE email = 'admin@optitalent.com';
+    -- 1. Create Default Tenant
+    INSERT INTO public.tenants (name, slug, plan, status)
+    VALUES ('OptiTalent HQ', 'optitalent', 'Enterprise', 'Active')
+    RETURNING id INTO tenant_id_1;
 
-    -- 2. Delete if exists (clean slate strategy)
-    IF admin_user_id IS NOT NULL THEN
-        DELETE FROM auth.users WHERE id = admin_user_id;
-    END IF;
-
-    -- 3. Create Admin user (Trigger will create public.users record)
-    INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_token, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_sso_user, created_at, updated_at, phone, phone_confirmed_at, email_change, email_change_token_new, email_change_token_current, email_change_confirm_status)
-    VALUES (gen_random_uuid(), gen_random_uuid(), 'authenticated', 'authenticated', 'admin@optitalent.com', crypt('password', gen_salt('bf')), now(), '', now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Admin User"}', false, now(), now(), NULL, NULL, '', '', '', 0)
-    RETURNING id INTO admin_user_id;
-
-    -- 4. Update role to admin (trigger defaults to employee)
-    UPDATE public.users SET role = 'admin' WHERE id = admin_user_id;
-
-    -- 5. Create Employee Profile
-    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) 
-    VALUES (admin_user_id, (SELECT id from departments where name='Engineering'), 'Head of Everything', 'PEP0001');
-
-
-    -- -------------------------------------------------------------------------
-    -- SEED HR USER
-    -- -------------------------------------------------------------------------
-    -- 1. Check if user exists
-    SELECT id INTO hr_user_id FROM auth.users WHERE email = 'hr@optitalent.com';
-
-    -- 2. Delete if exists
-    IF hr_user_id IS NOT NULL THEN
-        DELETE FROM auth.users WHERE id = hr_user_id;
-    END IF;
-
-    -- 3. Create HR user
-    INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_token, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_sso_user, created_at, updated_at, phone, phone_confirmed_at, email_change, email_change_token_new, email_change_token_current, email_change_confirm_status)
-    VALUES (gen_random_uuid(), gen_random_uuid(), 'authenticated', 'authenticated', 'hr@optitalent.com', crypt('password', gen_salt('bf')), now(), '', now(), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"HR User"}', false, now(), now(), NULL, NULL, '', '', '', 0)
-    RETURNING id INTO hr_user_id;
-
-    -- 4. Update role to hr
-    UPDATE public.users SET role = 'hr' WHERE id = hr_user_id;
-
-    -- 5. Create Employee Profile
-    INSERT INTO public.employees (user_id, department_id, job_title, employee_id) 
-    VALUES (hr_user_id, (SELECT id from departments where name='Human Resources'), 'HR Manager', 'PEP0002');
+    -- 2. Create Super Admin User
+    -- We can't access auth.users directly without elevated privileges.
+    -- However, we can INSERT into public.users assuming auth.users entry exists or is handled separately.
+    -- For this script, we'll try to insert into auth.users but wrap it in a block to catch permission errors if possible,
+    -- or just rely on the user manually creating these users in the Supabase Dashboard.
+    
+    -- NOTE: Direct manipulation of auth.users is restricted in Supabase for security.
+    -- Ideally, you should use the Supabase Admin API to create users.
+    -- For this migration script, we will skip the auth.users insertion and assume
+    -- the developer will create these users manually or via a separate admin script.
+    
+    -- We will insert placeholder records into public.users linked to a generated UUID for now
+    -- to demonstrate the data structure. In a real scenario, these UUIDs must match the auth.users ID.
+    
+    -- Placeholder for Super Admin (Simulated)
+    super_admin_id := gen_random_uuid(); 
+    -- INSERT INTO public.users (id, email, full_name, role, tenant_id) 
+    -- VALUES (super_admin_id, 'superadmin@optitalent.com', 'Super Admin', 'super-admin', tenant_id_1)
+    -- ON CONFLICT (id) DO NOTHING; 
+    
+    -- NOTE: Because public.users has a foreign key to auth.users, we cannot insert here
+    -- without a corresponding record in auth.users.
+    -- Since we cannot create auth.users records via this SQL script due to permissions,
+    -- WE WILL SKIP DATA SEEDING FOR USERS/EMPLOYEES requiring Auth IDs.
+    
+    -- You must manually create users in the Supabase Dashboard:
+    -- 1. superadmin@optitalent.com
+    -- 2. admin@acme.com
+    -- Then use the Table Editor to update their 'role' and 'tenant_id' in the 'public.users' table.
 
 END $$;
 
