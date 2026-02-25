@@ -80,7 +80,29 @@ export default function Login() {
         // Reset attempts on success
         setLoginAttempts(0);
         setRetryAfter(null);
-        router.push("/dashboard");
+        
+        // --- ROLE BASED REDIRECT ---
+        // Fetch user role to determine destination
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: userData } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+            
+            const role = userData?.role || 'employee';
+            
+            if (role === 'super-admin') {
+                router.push("/super-admin");
+            } else if (role === 'admin') {
+                router.push("/dashboard"); // Or a specific /admin-dashboard if you create one
+            } else {
+                router.push("/dashboard");
+            }
+        } else {
+             router.push("/dashboard"); // Fallback
+        }
       }
     } catch (error: any) {
       console.error("Login Error Details:", error);
