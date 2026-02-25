@@ -65,6 +65,14 @@ const featureMapping: Record<string, FeatureModule> = {
 };
 
 export const navConfig: Record<string, NavItem[]> = {
+  'super-admin': [
+    { label: 'Dashboard', href: '/super-admin', icon: LayoutDashboard },
+    { label: 'Server Status', href: '/super-admin/server-health', icon: Activity },
+    { label: 'Security Center', href: '/super-admin/security', icon: ShieldCheck },
+    { label: 'Tenant Accounts', href: '/super-admin/tenants', icon: Users },
+    { label: 'Backups & DR', href: '/super-admin/backups', icon: Database },
+    { label: 'Global Settings', href: '/settings', icon: Settings },
+  ],
   admin: [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Server Status', href: '/super-admin/server-health', icon: Activity }, // New WHM
