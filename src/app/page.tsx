@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Users, BarChart3, ShieldCheck, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
