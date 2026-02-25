@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         hostname: 'logo.clearbit.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'illustrations.popsy.co',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
