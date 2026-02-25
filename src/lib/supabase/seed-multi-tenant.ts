@@ -147,6 +147,22 @@ async function seedUsersAndEmployees(tenants: any[]) {
         allEmployees.push(adminEmp);
     }
 
+    // Create HR User
+    const hrEmail = `hr@${tenant.slug}.com`;
+    const hrUser = await createAuthUser(hrEmail, 'HR Manager', 'hr', tenant.id);
+    if (hrUser) {
+        const hrEmp = await createEmployeeProfile(supabase, tenant.id, hrUser.id, tenantDepts[1].id, 'HR Manager', 'HR001');
+        allEmployees.push(hrEmp);
+    }
+
+    // Create Manager User
+    const managerEmail = `manager@${tenant.slug}.com`;
+    const managerUser = await createAuthUser(managerEmail, 'Team Lead', 'manager', tenant.id);
+    if (managerUser) {
+        const managerEmp = await createEmployeeProfile(supabase, tenant.id, managerUser.id, tenantDepts[0].id, 'Team Lead', 'MGR001');
+        allEmployees.push(managerEmp);
+    }
+
     // Create 5 Employees per Tenant
     for (let i = 1; i <= 5; i++) {
       const email = `employee${i}@${tenant.slug}.com`;
