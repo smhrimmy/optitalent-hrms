@@ -79,6 +79,7 @@ export default function EmployeesPage() {
                     phone_number,
                     profile_picture_url,
                     department_id,
+                    hire_date,
                     users!inner (
                         full_name,
                         role,
@@ -104,7 +105,8 @@ export default function EmployeesPage() {
                     email: e.users?.email,
                     profile_picture_url: e.profile_picture_url,
                     phone_number: e.phone_number,
-                    status: e.status as 'Active' | 'Inactive'
+                    status: e.status as 'Active' | 'Inactive',
+                    hire_date: e.hire_date
                 }));
                  setEmployees(mappedEmployees);
             } else {
@@ -134,11 +136,27 @@ export default function EmployeesPage() {
     setEmployees(prev => [newEmployee.profile, ...prev].sort((a,b) => a.full_name.localeCompare(b.full_name)));
   }
   
-  const handleAction = (action: string) => {
-      toast({
-          title: "Action Triggered",
-          description: `This is a mock action for "${action}".`,
-      });
+  const handleAction = async (action: string, employee: UserProfile) => {
+      if (action === 'Deactivate') {
+          if (!confirm(`Are you sure you want to deactivate ${employee.full_name}?`)) return;
+          
+          const { error } = await supabase
+              .from('employees')
+              .update({ status: 'Inactive' })
+              .eq('id', employee.id);
+          
+          if (error) {
+              toast({ title: "Error", description: error.message, variant: "destructive" });
+          } else {
+              toast({ title: "Success", description: `${employee.full_name} has been deactivated.` });
+              setEmployees(prev => prev.map(e => e.id === employee.id ? { ...e, status: 'Inactive' } : e));
+          }
+      } else {
+        toast({
+            title: "Action Triggered",
+            description: `This is a mock action for "${action}".`,
+        });
+      }
   };
 
   const isTeamView = role === 'manager' || role === 'team-leader';
@@ -219,7 +237,7 @@ export default function EmployeesPage() {
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-sm">{employee.department.name}</TableCell>
                                     <TableCell className="hidden md:table-cell text-sm">New York, USA</TableCell>
-                                    <TableCell className="hidden lg:table-cell text-sm">Jan 12, 2024</TableCell>
+                                    <TableCell className="hidden lg:table-cell text-sm">{employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : 'N/A'}</TableCell>
                                     <TableCell>
                                         <Badge variant={employee.status === 'Active' ? 'default' : 'secondary'} className={employee.status === 'Active' ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-200 shadow-none' : ''}>
                                             {employee.status}
@@ -234,8 +252,8 @@ export default function EmployeesPage() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleAction('Edit')}}>Edit Profile</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive" onClick={(e) => {e.stopPropagation(); handleAction('Deactivate')}}>Deactivate</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleAction('Edit', employee)}}>Edit Profile</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive" onClick={(e) => {e.stopPropagation(); handleAction('Deactivate', employee)}}>Deactivate</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

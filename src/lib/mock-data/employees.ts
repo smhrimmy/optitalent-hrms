@@ -11,6 +11,7 @@ export type UserProfile = {
   profile_picture_url?: string;
   phone_number?: string;
   status: 'Active' | 'Inactive';
+  hire_date?: string;
   professionalInfo?: {
     experience: { role: string; company: string; dates: string }[];
     education: { degree: string; institution: string; year: string }[];

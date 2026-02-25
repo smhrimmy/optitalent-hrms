@@ -40,6 +40,8 @@ export default function TenantDashboard() {
   });
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [companyNews, setCompanyNews] = useState<any[]>([]);
+  const [celebrations, setCelebrations] = useState<any[]>([]);
+  const [points, setPoints] = useState(0);
   const [leaveBalance, setLeaveBalance] = useState(0);
 
   useEffect(() => {
@@ -57,13 +59,15 @@ export default function TenantDashboard() {
                  setUserRole(userData.role || 'employee');
                  setUserName(userData.full_name || 'User');
                  setTenantId(userData.tenant_id);
+                 let eid = '';
                  if (userData.employees && userData.employees[0]) {
-                     setEmployeeId(userData.employees[0].id);
-                     fetchEmployeeSpecifics(userData.tenant_id, userData.employees[0].id);
+                     eid = userData.employees[0].id;
+                     setEmployeeId(eid);
+                     fetchEmployeeSpecifics(userData.tenant_id, eid);
                  }
                  
                  fetchAttendance(user.id);
-                 fetchDashboardStats(userData.tenant_id, userData.role);
+                 fetchDashboardStats(userData.tenant_id, userData.role, eid);
              }
         } else {
             router.push('/login');
@@ -72,7 +76,7 @@ export default function TenantDashboard() {
     fetchUser();
   }, [router]);
 
-  const fetchDashboardStats = async (tid: string, role: string) => {
+  const fetchDashboardStats = async (tid: string, role: string, employeeId?: string) => {
       if (!tid) return;
 
       // Parallel fetching for performance ("snap of a finger")
@@ -102,23 +106,70 @@ export default function TenantDashboard() {
             .select('id, title, content, created_at, employees(users(full_name))')
             .eq('tenant_id', tid)
             .order('created_at', { ascending: false })
-            .limit(2)
+            .limit(5)
             .then(res => ({ key: 'companyNews', val: res.data || [] }))
       );
+
+      // 4. Celebrations (Birthdays & Anniversaries)
+      const currentMonth = new Date().getMonth() + 1;
+      promises.push(
+          supabase.from('employees')
+            .select('id, hire_date, users!inner(full_name, created_at)') // assuming DOB might be in users or profile? Checking schema... employees doesn't have DOB. Using hire_date for anniversary.
+            .eq('tenant_id', tid)
+            .eq('status', 'Active')
+            .then(res => {
+                // Filter for this month's anniversaries
+                const anniversaries = (res.data || []).filter((e: any) => {
+                    if (!e.hire_date) return false;
+                    const date = new Date(e.hire_date);
+                    return date.getMonth() + 1 === currentMonth;
+                }).map((e: any) => ({
+                    id: e.id,
+                    name: e.users?.full_name,
+                    type: 'Anniversary',
+                    date: e.hire_date
+                }));
+                return { key: 'celebrations', val: anniversaries };
+            })
+      );
+
+      // 5. Food Coupons / Bonus Points
+      if (employeeId) { // Need employeeId for this
+          promises.push(
+              supabase.from('bonus_points_history')
+                .select('points')
+                .eq('employee_id', employeeId)
+                .then(res => {
+                    const total = (res.data || []).reduce((acc: number, curr: any) => acc + (curr.points || 0), 0);
+                    return { key: 'points', val: total };
+                })
+          );
+      }
 
       // Execute all
       const results = await Promise.all(promises);
       
       const newStats = { ...stats };
+      let fetchedNews: any[] = [];
+      let fetchedCelebrations: any[] = [];
+      let fetchedPoints = 0;
+
       results.forEach((res: any) => {
           if (res.key === 'companyNews') {
-              setCompanyNews(res.val);
+              fetchedNews = res.val;
+          } else if (res.key === 'celebrations') {
+              fetchedCelebrations = res.val;
+          } else if (res.key === 'points') {
+              fetchedPoints = res.val;
           } else {
               // @ts-ignore
               newStats[res.key] = res.val;
           }
       });
       setStats(newStats);
+      setCompanyNews(fetchedNews);
+      setCelebrations(fetchedCelebrations);
+      setPoints(fetchedPoints);
   };
 
   const fetchEmployeeSpecifics = async (tid: string, eid: string) => {
@@ -566,7 +617,7 @@ export default function TenantDashboard() {
                     <Briefcase className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-3xl font-bold text-slate-800">2400</div>
+                    <div className="text-3xl font-bold text-slate-800">{points}</div>
                     <p className="text-xs text-muted-foreground">Points Available</p>
                     <Button variant="link" onClick={() => toast.info("Coupon redemption coming soon!")} className="p-0 h-auto text-xs mt-2 text-blue-600">Redeem &rarr;</Button>
                 </CardContent>
@@ -582,26 +633,22 @@ export default function TenantDashboard() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-6">
-                         <div className="flex gap-4 items-start">
-                            <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center">
-                                <FileText className="h-6 w-6 text-slate-500" />
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-slate-800">Q3 All Hands Meeting</h4>
-                                <p className="text-sm text-slate-600 mt-1">Join us this Friday for the quarterly all-hands meeting. We will be discussing...</p>
-                                <p className="text-xs text-slate-400 mt-2">2 hours ago</p>
-                            </div>
-                         </div>
-                         <div className="flex gap-4 items-start">
-                            <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center">
-                                <Users className="h-6 w-6 text-slate-500" />
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-slate-800">Welcome New Joiners!</h4>
-                                <p className="text-sm text-slate-600 mt-1">Please welcome Sarah and Mike to the Engineering team. Say hi when you see them!</p>
-                                <p className="text-xs text-slate-400 mt-2">Yesterday</p>
-                            </div>
-                         </div>
+                         {companyNews.length > 0 ? (
+                             companyNews.map((post: any) => (
+                                <div key={post.id} className="flex gap-4 items-start">
+                                    <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center">
+                                        <FileText className="h-6 w-6 text-slate-500" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-slate-800">{post.title}</h4>
+                                        <p className="text-sm text-slate-600 mt-1 line-clamp-2">{post.content}</p>
+                                        <p className="text-xs text-slate-400 mt-2">{new Date(post.created_at).toLocaleDateString()} • {post.employees?.users?.full_name}</p>
+                                    </div>
+                                </div>
+                             ))
+                         ) : (
+                             <p className="text-sm text-muted-foreground">No recent announcements.</p>
+                         )}
                     </div>
                 </CardContent>
             </Card>
@@ -614,24 +661,23 @@ export default function TenantDashboard() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
-                                <span className="text-xs font-bold">JD</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">Jane Doe</p>
-                                <p className="text-xs text-muted-foreground">Birthday - Today! 🎂</p>
-                            </div>
-                         </div>
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                <span className="text-xs font-bold">MS</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">Mike Smith</p>
-                                <p className="text-xs text-muted-foreground">5 Year Anniversary - Tomorrow 🎉</p>
-                            </div>
-                         </div>
+                        {celebrations.length > 0 ? (
+                            celebrations.map((cel: any) => (
+                                <div key={cel.id} className="flex items-center gap-3">
+                                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${cel.type === 'Birthday' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-600'}`}>
+                                        <span className="text-xs font-bold">{cel.name?.charAt(0)}</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">{cel.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {cel.type === 'Birthday' ? 'Birthday 🎂' : `${new Date().getFullYear() - new Date(cel.date).getFullYear()} Year Anniversary 🎉`}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No upcoming celebrations.</p>
+                        )}
                     </div>
                 </CardContent>
             </Card>
