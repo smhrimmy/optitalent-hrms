@@ -79,16 +79,15 @@ export function ConfigureWalkInDialog() {
     const handleSave = async () => {
         setLoading(true);
         try {
+            if (!title || !date || !startTime || !endTime || !location) {
+                throw new Error("Please fill in all required fields (Title, Date, Time, Location).");
+            }
+
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
 
             const { data: userData } = await supabase.from('users').select('tenant_id').eq('id', user.id).single();
             if (!userData) throw new Error("User data not found");
-
-            // We'll just insert a new record for history tracking, or update if we wanted to be efficient.
-            // Let's insert a new one to keep it simple and safe (append-only log essentially for "latest" query)
-            // Actually, updating the existing active one or inserting if none exists is better to avoid clutter.
-            // Let's Insert always for now to simplify "latest" logic, effectively creating a new version.
             
             const { error } = await supabase.from('walkin_events').insert({
                 tenant_id: userData.tenant_id,
@@ -106,7 +105,8 @@ export function ConfigureWalkInDialog() {
             toast({ title: "Success", description: "Walk-in drive configuration updated." });
             setOpen(false);
         } catch (error: any) {
-            toast({ title: "Error", description: error.message, variant: "destructive" });
+            console.error("Save Error:", error);
+            toast({ title: "Error", description: error.message || "Failed to save configuration.", variant: "destructive" });
         } finally {
             setLoading(false);
         }
