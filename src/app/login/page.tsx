@@ -1,6 +1,14 @@
 
 'use client';
 
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Shield, Users, BarChart3, Layers } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import Image from "next/image";
+import { useAuth } from "@/hooks/use-auth";
 import { AsyncButton } from "@/components/ui/async-button";
 
 export default function Login() {
