@@ -151,53 +151,191 @@ function AttendanceDetailPanel({ date, onClose, dayData }: { date: Date, onClose
     );
 }
 
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
+
 export default function AttendancePage() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const params = useParams();
   const router = useRouter();
   const role = params.role as string;
+  const { toast } = useToast();
   
   const [attendanceLog, setAttendanceLog] = useState<Record<string, any> | null>(null);
   
   useEffect(() => {
     const now = new Date();
     setCurrentDate(now);
-    setAttendanceLog(generateAttendanceLog(now.getFullYear(), now.getMonth()));
   }, []);
 
-  const handleClockInOut = () => {
+  useEffect(() => {
+    if (!currentDate) return;
+
+    const fetchAttendance = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const start = startOfMonth(currentDate);
+        const end = endOfMonth(currentDate);
+        
+        // Fetch attendance from DB
+        const { data: attendanceData, error } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('user_id', user.id)
+            .gte('date', format(start, 'yyyy-MM-dd'))
+            .lte('date', format(end, 'yyyy-MM-dd'));
+        
+        if (error) {
+            console.error("Error fetching attendance:", error);
+            return;
+        }
+
+        // Initialize log with skeleton
+        const log: Record<string, any> = {};
+        const daysInMonth = end.getDate();
+        const today = new Date();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const dateKey = format(date, 'yyyy-MM-dd');
+            const dayOfWeek = getDay(date);
+
+            // Basic weekend rule
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                log[dateKey] = { status: 'Week Off', location: 'Home', shiftDetails: 'Weekend' };
+            } else {
+                // Default to Absent if in past and no record? Or just empty?
+                // Let's leave it undefined/empty if no record, effectively 'Absent' or 'Not Marked'
+                // If it's today or future, status is pending/empty.
+                if (date < today && !isSameDay(date, today)) {
+                     log[dateKey] = { status: 'Absent', location: 'Office' };
+                }
+            }
+        }
+
+        // Overlay DB data
+        attendanceData?.forEach((record: any) => {
+            const dateKey = record.date;
+            let totalHours = '';
+            if (record.clock_in && record.clock_out) {
+                const start = new Date(record.clock_in);
+                const end = new Date(record.clock_out);
+                const diffMs = end.getTime() - start.getTime();
+                const diffHrs = Math.floor(diffMs / 3600000);
+                const diffMins = Math.floor((diffMs % 3600000) / 60000);
+                totalHours = `${diffHrs}h ${diffMins}m`;
+            }
+
+            log[dateKey] = {
+                status: record.status || 'Present',
+                checkIn: record.clock_in ? format(new Date(record.clock_in), 'HH:mm') : undefined,
+                checkOut: record.clock_out ? format(new Date(record.clock_out), 'HH:mm') : undefined,
+                totalHours,
+                location: 'Office', // Mock location for now
+                shiftDetails: 'General Shift'
+            };
+        });
+
+        setAttendanceLog(log);
+    };
+
+    fetchAttendance();
+  }, [currentDate]);
+
+  const handleClockInOut = async () => {
     const today = new Date();
     const todayKey = format(today, 'yyyy-MM-dd');
+    const isoTime = today.toISOString();
     const currentTime = format(today, 'HH:mm');
-    
-    setAttendanceLog(prevLog => {
-        if (!prevLog) return null;
-        const newLog = { ...prevLog };
-        const todayEntry = newLog[todayKey];
 
-        if (todayEntry && todayEntry.status === 'Present') {
-            const checkInTime = todayEntry.checkIn ? new Date(`${todayKey}T${todayEntry.checkIn}`) : new Date();
-            const checkOutTime = new Date(`${todayKey}T${currentTime}`);
-            const diffMs = checkOutTime.getTime() - checkInTime.getTime();
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-            newLog[todayKey] = {
-                ...todayEntry,
-                checkOut: currentTime,
-                totalHours: `${diffHours}h ${diffMins}m`
-            };
-        } else {
-            newLog[todayKey] = {
-                status: 'Present',
-                checkIn: currentTime,
-                shiftDetails: '[TESMNG(ITESMNG)], 09:00 - 18:00',
-                location: 'Office'
-            };
+    try {
+        const { data: userData } = await supabase.from('users').select('tenant_id').eq('id', user.id).single();
+        if (!userData?.tenant_id) {
+             toast({ title: "Error", description: "Tenant ID not found.", variant: "destructive" });
+             return;
         }
-        return newLog;
-    });
+
+        // Check if we have an entry for today
+        const { data: existingRecord } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('date', todayKey)
+            .single();
+
+        if (existingRecord) {
+            // Clock Out
+            if (existingRecord.clock_out) {
+                 toast({ title: "Already clocked out", description: "You have already clocked out for today." });
+                 return;
+            }
+            
+            const { error } = await supabase
+                .from('attendance')
+                .update({ clock_out: isoTime })
+                .eq('id', existingRecord.id);
+            
+            if (error) throw error;
+            
+            toast({ title: "Success", description: "Clocked out successfully." });
+            
+            // Update local state
+            setAttendanceLog(prevLog => {
+                if (!prevLog) return null;
+                const newLog = { ...prevLog };
+                const todayEntry = newLog[todayKey];
+                
+                // Calculate hours
+                const checkInTime = new Date(existingRecord.clock_in);
+                const checkOutTime = new Date(isoTime);
+                const diffMs = checkOutTime.getTime() - checkInTime.getTime();
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                newLog[todayKey] = {
+                    ...todayEntry,
+                    checkOut: currentTime,
+                    totalHours: `${diffHours}h ${diffMins}m`
+                };
+                return newLog;
+            });
+
+        } else {
+            // Clock In
+            const { error } = await supabase.from('attendance').insert({
+                tenant_id: userData.tenant_id,
+                user_id: user.id,
+                date: todayKey,
+                clock_in: isoTime,
+                status: 'Present'
+            });
+
+            if (error) throw error;
+
+            toast({ title: "Success", description: "Clocked in successfully." });
+
+            // Update local state
+            setAttendanceLog(prevLog => {
+                if (!prevLog) return null;
+                const newLog = { ...prevLog };
+                newLog[todayKey] = {
+                    status: 'Present',
+                    checkIn: currentTime,
+                    shiftDetails: 'General Shift',
+                    location: 'Office'
+                };
+                return newLog;
+            });
+        }
+    } catch (error: any) {
+        console.error("Clock In/Out Error:", error);
+        toast({ title: "Error", description: error.message || "Operation failed.", variant: "destructive" });
+    }
   };
 
   const DayCellContent = ({ date }: { date: Date }) => {

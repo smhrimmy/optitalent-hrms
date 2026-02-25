@@ -19,6 +19,7 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { categorizeTicketAction } from '@/app/[role]/helpdesk/actions';
 import type { Ticket } from '@/app/[role]/helpdesk/page';
+import { supabase } from '@/lib/supabase';
 
 export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket) => void}) {
     const [open, setOpen] = useState(false);
@@ -46,8 +47,45 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
         try {
             const aiResult = await categorizeTicketAction({ subject, description });
 
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Not authenticated");
+
+            const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
+            if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Employee profile not found");
+
+            // 1. Create Ticket
+            const { data: ticketData, error: ticketError } = await supabase.from('helpdesk_tickets').insert({
+                tenant_id: userData.tenant_id,
+                employee_id: userData.employees[0].id,
+                subject,
+                description,
+                category: aiResult.category,
+                priority: aiResult.priority,
+                status: 'Open'
+            }).select().single();
+
+            if (ticketError) throw ticketError;
+
+            // 2. Create Initial Message (User Description)
+            const { error: msgError } = await supabase.from('helpdesk_messages').insert({
+                tenant_id: userData.tenant_id,
+                ticket_id: ticketData.id,
+                sender_id: userData.employees[0].id,
+                message: description
+            });
+
+            if (msgError) throw msgError;
+
+            // 3. Create System Message (AI Categorization)
+            // Ideally system messages shouldn't need a sender_id, or we use a system bot ID.
+            // For now, let's skip the system message in DB or use the user as sender but mark it 'system' in UI if we had a type column.
+            // Our schema requires sender_id referencing employees. 
+            // We'll skip persisting the "AI categorized" message to DB to avoid "fake" employee references, 
+            // or we could add a `is_system` boolean to messages table later.
+            // For now, just the user message is enough.
+
             const newTicket: Ticket = {
-                id: `HD-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`,
+                id: ticketData.id,
                 subject,
                 department: aiResult.category,
                 priority: aiResult.priority,
@@ -62,13 +100,14 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
             onNewTicket(newTicket);
             toast({
                 title: "Ticket Created!",
-                description: `Your ticket ${newTicket.id} has been submitted and categorized by AI.`
+                description: `Your ticket has been submitted and categorized by AI.`
             });
             setOpen(false);
-        } catch(err) {
+        } catch(err: any) {
+            console.error(err);
             toast({
-                title: "AI Categorization Failed",
-                description: "Could not categorize ticket. Please try again.",
+                title: "Submission Failed",
+                description: err.message || "Could not create ticket.",
                 variant: "destructive"
             });
         } finally {

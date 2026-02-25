@@ -1,33 +1,96 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useTeam } from '@/hooks/use-team';
-import { employeeCourseProgress, courses } from '@/lib/mock-data/learning';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '../ui/button';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+
+type Course = {
+    id: string;
+    title: string;
+};
+
+type Enrollment = {
+    employee_id: string; // UUID
+    status: string;
+    progress: number;
+    course_id: string;
+};
 
 export const TeamProgressTable = () => {
     const team = useTeam();
     const { toast } = useToast();
-    const [selectedCourseId, setSelectedCourseId] = React.useState<string>(courses[0].id);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            setLoading(true);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                const { data: userData } = await supabase.from('users').select('tenant_id').eq('id', user.id).single();
+                if (!userData?.tenant_id) return;
+
+                const { data, error } = await supabase.from('courses').select('id, title').eq('tenant_id', userData.tenant_id);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    setCourses(data);
+                    setSelectedCourseId(data[0].id);
+                }
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourses();
+    }, []);
+
+    useEffect(() => {
+        if (!selectedCourseId) return;
+
+        const fetchEnrollments = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('course_enrollments')
+                    .select('employee_id, status, progress, course_id')
+                    .eq('course_id', selectedCourseId);
+                
+                if (error) throw error;
+                if (data) {
+                    setEnrollments(data);
+                }
+            } catch (error) {
+                 console.error("Error fetching enrollments:", error);
+            }
+        }
+        fetchEnrollments();
+    }, [selectedCourseId]);
 
     const teamProgress = useMemo(() => {
         return team.map(member => {
-            const progress = employeeCourseProgress.find(p => p.employeeId === member.employee_id && p.courseId === selectedCourseId);
+            const enrollment = enrollments.find(e => e.employee_id === member.id); // member.id is UUID from useTeam
             return {
                 ...member,
-                status: progress?.status || 'Not Started',
-                progress: progress?.progress || 0,
+                status: enrollment?.status || 'Not Started',
+                progress: enrollment?.progress || 0,
             };
         });
-    }, [team, selectedCourseId]);
+    }, [team, enrollments]);
 
     const handleSendReminder = (employeeName: string) => {
         toast({
@@ -43,6 +106,10 @@ export const TeamProgressTable = () => {
             default: return <Badge variant="secondary">Not Started</Badge>;
         }
     };
+
+    if (loading && courses.length === 0) return <div className="flex justify-center p-4"><Loader2 className="animate-spin h-6 w-6" /></div>;
+    
+    if (courses.length === 0) return <div className="text-center p-4 text-muted-foreground">No courses available. Create a course to track progress.</div>;
 
     return (
         <div className="space-y-4">

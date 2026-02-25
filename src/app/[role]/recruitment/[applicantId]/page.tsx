@@ -8,40 +8,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Briefcase, FileText, Send, User, MessageSquare, Award, Calendar, Check, X } from "lucide-react";
+import { Briefcase, FileText, Send, User, MessageSquare, Award, Calendar, Check, X, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { useState, memo, useMemo } from "react";
+import { useState, memo, useMemo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StandardAssessmentsTab } from "@/components/standard-assessments-tab";
+import { supabase } from "@/lib/supabase";
 
-
-// Mock Data - In a real app, this would be fetched based on applicantId
-const MOCK_APPLICANT_BASE = {
-    id: 'app-001',
-    name: 'Aarav Sharma',
-    avatar: 'https://placehold.co/100x100.png',
-    roleApplied: 'Senior Frontend Developer',
-    applicationDate: '2023-10-25',
-    referral: 'Priya Mehta (EMP008)',
-    resumeData: {
-        skills: ['React', 'TypeScript', 'Node.js', 'Next.js', 'GraphQL', 'CI/CD'],
-        workExperience: [
-            { company: 'TechSolutions Inc.', title: 'Frontend Developer', dates: '2020-Present' },
-            { company: 'WebInnovators LLC', title: 'Junior Developer', dates: '2018-2020' },
-        ],
-        education: [
-            { institution: 'National Institute of Technology', degree: 'B.Tech in Computer Science', year: '2018' }
-        ]
-    },
-    interviewerNotes: [
-        { id: 1, interviewer: 'Isabella Nguyen', role: 'Engineering Manager', note: 'Strong technical foundation in React and TypeScript. Good communication skills. Asked thoughtful questions about our architecture. Seems like a great culture fit.', timestamp: '2 days ago' },
-        { id: 2, interviewer: 'Recruiter User', role: 'Talent Acquisition', note: 'Initial screening call went well. Candidate is enthusiastic and meets all the basic requirements. Moving to technical round.', timestamp: '5 days ago' }
-    ]
-}
-
-type Note = typeof MOCK_APPLICANT_BASE.interviewerNotes[0];
+type Note = {
+    id: string;
+    interviewer: string;
+    role: string;
+    note: string;
+    timestamp: string;
+};
 
 const NoteCard = memo(function NoteCard({ note }: { note: Note }) {
     return (
@@ -64,71 +46,192 @@ const NoteCard = memo(function NoteCard({ note }: { note: Note }) {
 export default function ApplicantProfilePage() {
     const params = useParams();
     const applicantId = params.applicantId as string;
-    const [notes, setNotes] = useState(MOCK_APPLICANT_BASE.interviewerNotes);
+    const [applicant, setApplicant] = useState<any>(null);
+    const [notes, setNotes] = useState<Note[]>([]);
     const [newNote, setNewNote] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [employeeId, setEmployeeId] = useState<string | null>(null);
+    const [tenantId, setTenantId] = useState<string | null>(null);
     const { toast } = useToast();
 
-    const handleAddNote = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Get current user and employee ID
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                     const { data: userData } = await supabase
+                        .from('users')
+                        .select('role, full_name, tenant_id, employees(id)')
+                        .eq('id', user.id)
+                        .single();
+                     
+                     if (userData) {
+                         setTenantId(userData.tenant_id);
+                         if (userData.employees && userData.employees[0]) {
+                             setEmployeeId(userData.employees[0].id);
+                         }
+                     }
+                }
+
+                // Fetch applicant
+                const { data: appData, error: appError } = await supabase
+                    .from('applicants')
+                    .select('*')
+                    .eq('id', applicantId)
+                    .single();
+                
+                if (appError) throw appError;
+                setApplicant(appData);
+
+                // Fetch notes
+                const { data: notesData, error: notesError } = await supabase
+                    .from('interview_notes')
+                    .select('id, notes, created_at, employees(user_id, job_title, users(full_name))')
+                    .eq('applicant_id', applicantId)
+                    .order('created_at', { ascending: false });
+
+                if (notesError) throw notesError;
+
+                if (notesData) {
+                    const mappedNotes: Note[] = notesData.map((n: any) => ({
+                        id: n.id,
+                        interviewer: n.employees?.users?.full_name || 'Unknown',
+                        role: n.employees?.job_title || 'Interviewer',
+                        note: n.notes,
+                        timestamp: new Date(n.created_at).toLocaleDateString() + ' ' + new Date(n.created_at).toLocaleTimeString()
+                    }));
+                    setNotes(mappedNotes);
+                }
+
+            } catch (error: any) {
+                console.error("Error fetching data:", error);
+                toast({ title: "Error", description: "Failed to load applicant data.", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [applicantId, toast]);
+
+    const handleAddNote = async (e: React.FormEvent) => {
         e.preventDefault();
         if(!newNote.trim()) return;
         
-        const noteToAdd: Note = {
-            id: Date.now(),
-            interviewer: 'Current User', // This would come from auth
-            role: 'HR Manager',
-            note: newNote,
-            timestamp: 'Just now'
+        if (!employeeId || !tenantId) {
+             toast({ title: "Error", description: "You must be an employee to add notes.", variant: "destructive" });
+             return;
         }
-        setNotes(prev => [noteToAdd, ...prev]);
-        setNewNote('');
-        toast({ title: 'Note Added', description: 'Your feedback has been saved.' });
+
+        try {
+            const { data, error } = await supabase.from('interview_notes').insert({
+                tenant_id: tenantId,
+                applicant_id: applicantId,
+                interviewer_id: employeeId,
+                notes: newNote
+            }).select('id, notes, created_at, employees(user_id, job_title, users(full_name))').single();
+
+            if (error) throw error;
+
+            // Optimistic update or refetch. 
+            // Since we select with join, we might need to rely on the return.
+            // But the return of insert with deep select might not work perfectly depending on RLS/Permissions for joins on insert return.
+            // Let's just refetch or manually construct.
+            
+            // Constructing manually for immediate feedback (simplified)
+            // Ideally we would use the returned data if the select query works.
+            
+            // Re-fetch to be safe
+             const { data: newNoteData } = await supabase
+                    .from('interview_notes')
+                    .select('id, notes, created_at, employees(user_id, job_title, users(full_name))')
+                    .eq('id', data.id)
+                    .single();
+             
+             if (newNoteData) {
+                 const mappedNote: Note = {
+                    id: newNoteData.id,
+                    interviewer: newNoteData.employees?.users?.full_name || 'Me',
+                    role: newNoteData.employees?.job_title || 'Interviewer',
+                    note: newNoteData.notes,
+                    timestamp: 'Just now'
+                };
+                setNotes(prev => [mappedNote, ...prev]);
+             }
+            
+            setNewNote('');
+            toast({ title: 'Note Added', description: 'Your feedback has been saved.' });
+        } catch (error: any) {
+             toast({ title: "Error", description: error.message, variant: "destructive" });
+        }
     }
 
     const handleAction = (action: 'schedule' | 'reject') => {
         if(action === 'schedule') {
             toast({
                 title: 'Interview Scheduled',
-                description: `An interview has been scheduled with ${MOCK_APPLICANT_BASE.name}.`,
+                description: `An interview has been scheduled with ${applicant?.full_name}.`,
             });
         } else {
             toast({
                 title: 'Application Rejected',
-                description: `An email has been sent to ${MOCK_APPLICANT_BASE.name} informing them of the decision.`,
+                description: `An email has been sent to ${applicant?.full_name} informing them of the decision.`,
                 variant: 'destructive',
             });
         }
     }
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
+    }
+
+    if (!applicant) {
+        return (
+             <div className="flex flex-col items-center justify-center h-screen space-y-4">
+                <h1 className="text-2xl font-bold">Applicant Not Found</h1>
+                <Button onClick={() => window.history.back()}>Go Back</Button>
+            </div>
+        )
+    }
+
+    // Safely access resume data
+    const resumeData = applicant.resume_data || { skills: [], workExperience: [], education: [] };
+
     return (
         <div className="space-y-6">
             <Alert variant="destructive" className="border-yellow-500/50 text-yellow-900 dark:text-yellow-200 [&>svg]:text-yellow-500">
                 <FileText className="h-4 w-4" />
-                <AlertTitle className="text-yellow-600 dark:text-yellow-300">Temporary Applicant Profile</AlertTitle>
+                <AlertTitle className="text-yellow-600 dark:text-yellow-300">Applicant Profile</AlertTitle>
                 <AlertDescription className="text-yellow-700 dark:text-yellow-400">
-                    This profile is for recruitment purposes only and will be automatically deleted 30 days after the position is closed.
+                    Viewing details for {applicant.full_name}.
                 </AlertDescription>
             </Alert>
             <Card>
                 <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row items-start gap-6">
                         <Avatar className="w-24 h-24 border-4 border-background ring-2 ring-primary">
-                            <AvatarImage src={MOCK_APPLICANT_BASE.avatar} data-ai-hint="person portrait" alt={MOCK_APPLICANT_BASE.name} />
-                            <AvatarFallback>{MOCK_APPLICANT_BASE.name.substring(0, 2)}</AvatarFallback>
+                            <AvatarImage src={resumeData.profile_picture_url || `https://ui-avatars.com/api/?name=${applicant.full_name}&background=random`} data-ai-hint="person portrait" alt={applicant.full_name} />
+                            <AvatarFallback>{applicant.full_name.substring(0, 2)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                            <h1 className="text-3xl font-bold font-headline">{MOCK_APPLICANT_BASE.name}</h1>
+                            <h1 className="text-3xl font-bold font-headline">{applicant.full_name}</h1>
                             <div className="text-muted-foreground mt-1 space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-4 w-4"/>
-                                    <span>Applied for: <strong>{MOCK_APPLICANT_BASE.roleApplied}</strong></span>
+                                    <span>Applied for: <strong>{resumeData.workExperience?.[0]?.title || 'General'}</strong></span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4"/>
-                                    <span>Applied on: {MOCK_APPLICANT_BASE.applicationDate} (ID: {applicantId})</span>
+                                    <span>Applied on: {new Date(applicant.created_at).toLocaleDateString()} (ID: {applicantId.substring(0,8)}...)</span>
                                 </div>
                                  <div className="flex items-center gap-2">
                                     <User className="h-4 w-4"/>
-                                    <span>Referred by: {MOCK_APPLICANT_BASE.referral}</span>
+                                    <span>Status: <Badge variant="outline">{applicant.status}</Badge></span>
                                 </div>
                             </div>
                         </div>
@@ -155,16 +258,16 @@ export default function ApplicantProfilePage() {
                             <div>
                                 <h4 className="font-semibold mb-2">Key Skills</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {MOCK_APPLICANT_BASE.resumeData.skills.map(skill => (
+                                    {resumeData.skills?.map((skill: string) => (
                                         <Badge key={skill} variant="secondary">{skill}</Badge>
-                                    ))}
+                                    )) || <p className="text-muted-foreground text-sm">No skills listed</p>}
                                 </div>
                             </div>
                             <Separator />
                             <div>
                                 <h4 className="font-semibold mb-2">Work Experience</h4>
                                 <ul className="space-y-3">
-                                    {MOCK_APPLICANT_BASE.resumeData.workExperience.map((exp, i) => (
+                                    {resumeData.workExperience?.map((exp: any, i: number) => (
                                         <li key={i} className="flex gap-3">
                                             <Briefcase className="h-4 w-4 mt-1 text-muted-foreground" />
                                             <div>
@@ -172,14 +275,14 @@ export default function ApplicantProfilePage() {
                                                 <p className="text-sm text-muted-foreground">{exp.company} &middot; {exp.dates}</p>
                                             </div>
                                         </li>
-                                    ))}
+                                    )) || <p className="text-muted-foreground text-sm">No experience listed</p>}
                                 </ul>
                             </div>
                             <Separator />
                             <div>
                                 <h4 className="font-semibold mb-2">Education</h4>
                                  <ul className="space-y-3">
-                                    {MOCK_APPLICANT_BASE.resumeData.education.map((edu, i) => (
+                                    {resumeData.education?.map((edu: any, i: number) => (
                                         <li key={i} className="flex gap-3">
                                             <Award className="h-4 w-4 mt-1 text-muted-foreground" />
                                             <div>
@@ -187,7 +290,7 @@ export default function ApplicantProfilePage() {
                                                 <p className="text-sm text-muted-foreground">{edu.institution} &middot; {edu.year}</p>
                                             </div>
                                         </li>
-                                    ))}
+                                    )) || <p className="text-muted-foreground text-sm">No education listed</p>}
                                 </ul>
                             </div>
                         </CardContent>
@@ -211,7 +314,7 @@ export default function ApplicantProfilePage() {
                             <Separator className="mb-6"/>
                             <ScrollArea className="h-[400px]">
                                 <div className="space-y-6 pr-4">
-                                {notes.map(note => <NoteCard key={note.id} note={note} />)}
+                                {notes.length > 0 ? notes.map(note => <NoteCard key={note.id} note={note} />) : <p className="text-center text-muted-foreground">No notes yet.</p>}
                                 </div>
                             </ScrollArea>
                         </CardContent>

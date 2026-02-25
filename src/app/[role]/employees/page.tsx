@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { mockUsers, type UserProfile, type User } from '@/lib/mock-data/employees';
 import { useAuth } from '@/hooks/use-auth';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/lib/supabase';
 
 const AddEmployeeButton = dynamic(() => import('@/components/employees/add-employee-button'), {
     loading: () => <Button disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Add Employee</Button>,
@@ -42,9 +43,82 @@ export default function EmployeesPage() {
   const role = params.role as string;
   const [employees, setEmployees] = useState<UserProfile[]>([]);
   const [view, setView] = useState<"table" | "grid">("table");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setEmployees(mockUsers.map(u => u.profile));
+    const fetchEmployees = async () => {
+        setLoading(true);
+        try {
+             const { data: { user } } = await supabase.auth.getUser();
+             if (!user) {
+                 // Fallback to mock if no auth (dev mode without supbase auth)
+                 setEmployees(mockUsers.map(u => u.profile));
+                 setLoading(false);
+                 return;
+             }
+
+             const { data: userData } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user.id)
+                .single();
+            
+             if (!userData?.tenant_id) {
+                 setEmployees(mockUsers.map(u => u.profile));
+                 setLoading(false);
+                 return;
+             }
+
+             const { data, error } = await supabase
+                .from('employees')
+                .select(`
+                    id,
+                    employee_id,
+                    job_title,
+                    status,
+                    phone_number,
+                    profile_picture_url,
+                    department_id,
+                    users!inner (
+                        full_name,
+                        role,
+                        email
+                    ),
+                    departments (
+                        name
+                    )
+                `)
+                .eq('tenant_id', userData.tenant_id);
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                const mappedEmployees: UserProfile[] = data.map((e: any) => ({
+                    id: e.id,
+                    full_name: e.users?.full_name || 'Unknown',
+                    department: { name: e.departments?.name || 'Unassigned' },
+                    department_id: e.department_id || '',
+                    job_title: e.job_title,
+                    role: e.users?.role || 'employee',
+                    employee_id: e.employee_id,
+                    email: e.users?.email,
+                    profile_picture_url: e.profile_picture_url,
+                    phone_number: e.phone_number,
+                    status: e.status as 'Active' | 'Inactive'
+                }));
+                 setEmployees(mappedEmployees);
+            } else {
+                 setEmployees([]);
+            }
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+            // Fallback to mock on error? Or just show empty/error
+            // setEmployees(mockUsers.map(u => u.profile));
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchEmployees();
   }, []);
 
   const filteredEmployees = useMemo(() => {

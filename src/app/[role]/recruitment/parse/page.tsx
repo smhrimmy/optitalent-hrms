@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 import { scoreAndParseResumeAction, suggestInterviewQuestionsAction } from './actions';
 import type { ScoreAndParseResumeOutput } from '@/ai/flows/score-and-parse-resume';
 import { Bot, Upload, Camera, Loader2, Save, Trash2, PlusCircle, FileText, Smartphone, Lightbulb } from 'lucide-react';
@@ -89,6 +90,24 @@ export default function ParseResumePage() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [resumeDataUri, setResumeDataUri] = useState<string | null>(null);
   const [editData, setEditData] = useState<ParsedData | null>(null);
+  const [tenantId, setTenantId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTenant = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+             const { data: userData } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user.id)
+                .single();
+             if (userData) {
+                 setTenantId(userData.tenant_id);
+             }
+        }
+    };
+    fetchTenant();
+  }, []);
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
@@ -235,11 +254,32 @@ export default function ParseResumePage() {
     setEditData(newData);
   };
 
-  const handleSave = () => {
-    // In a real application, you would save `editData` to your database.
-    console.log("Saving data:", editData);
-    toast({ title: "Profile Saved", description: "The candidate's profile has been saved to the console." });
-    resetAll();
+  const handleSave = async () => {
+    if (!editData) return;
+    
+    if (!tenantId) {
+        toast({ title: "Error", description: "Missing tenant ID.", variant: "destructive" });
+        return;
+    }
+
+    try {
+        const { error } = await supabase.from('applicants').insert({
+            tenant_id: tenantId,
+            full_name: editData.name || 'Unknown Candidate',
+            email: editData.email || 'unknown@example.com',
+            phone: editData.phone,
+            resume_data: editData,
+            status: 'Applied'
+        });
+
+        if (error) throw error;
+
+        toast({ title: "Profile Saved", description: "The candidate's profile has been saved to the database." });
+        resetAll();
+    } catch (error: any) {
+        console.error("Error saving candidate:", error);
+        toast({ title: "Save Failed", description: error.message || "Could not save candidate.", variant: "destructive" });
+    }
   };
   
   const resetAll = () => {

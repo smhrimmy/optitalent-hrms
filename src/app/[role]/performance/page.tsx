@@ -19,10 +19,51 @@ import type { GeneratePerformanceReviewOutput } from '@/ai/flows/generate-perfor
 import { Bot, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+import { supabase } from '@/lib/supabase';
+
 export default function PerformancePage() {
   const [result, setResult] = useState<GeneratePerformanceReviewOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const handleSaveReview = async () => {
+      if (!result) return;
+      
+      try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error("Not authenticated");
+          
+          const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
+          if (!userData?.tenant_id) throw new Error("Tenant not found");
+
+          // For demo purposes, we are saving it for the current user as the "employee" being reviewed if name matches, 
+          // or just creating a record. In a real app, we'd select the employee from a dropdown.
+          // Let's assume we are reviewing "Alex Ray" (hardcoded in form) and we need to find him or just save with a placeholder ID if not found.
+          // To make it robust, let's just save it linked to the CURRENT user as the reviewer, and NULL employee_id if we can't find them,
+          // OR better, let's just link it to the current user as the employee for "Self Review" scenario if they are an employee.
+          
+          const employeeId = userData.employees?.[0]?.id;
+          if (!employeeId) throw new Error("You must be an employee to save reviews.");
+
+          const { error } = await supabase.from('performance_reviews').insert({
+              tenant_id: userData.tenant_id,
+              employee_id: employeeId, // Self-review or just saving to own record for now
+              reviewer_id: employeeId, // Self-review
+              review_period: 'Q3 2025',
+              overall_rating: result.suggestedRating,
+              goals_summary: result.reviewSummary.substring(0, 100) + '...', // Mock extraction
+              achievements_summary: 'See full review',
+              improvement_areas: 'See full review'
+          });
+
+          if (error) throw error;
+          
+          toast({ title: "Review Saved", description: "The performance review has been saved to your profile." });
+
+      } catch (error: any) {
+          toast({ title: "Save Failed", description: error.message, variant: "destructive" });
+      }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -128,9 +169,14 @@ export default function PerformancePage() {
                     {getRatingBadge(result.suggestedRating)}
                 </div>
                 <Textarea readOnly value={result.reviewSummary} placeholder="Review Summary" className="flex-grow" rows={15} />
-                <Button variant="outline" onClick={() => navigator.clipboard.writeText(result.reviewSummary)} className="w-full">
-                  Copy Review
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => navigator.clipboard.writeText(result.reviewSummary)} className="w-full">
+                    Copy Review
+                    </Button>
+                    <Button onClick={handleSaveReview} className="w-full">
+                    Save to Profile
+                    </Button>
+                </div>
               </div>
             ) : (
               !loading && <div className="flex items-center justify-center h-full text-muted-foreground">

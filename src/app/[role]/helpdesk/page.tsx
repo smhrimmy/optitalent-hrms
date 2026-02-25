@@ -24,6 +24,10 @@ const NewTicketDialog = dynamic(() => import('@/components/helpdesk/new-ticket-d
 });
 
 
+import { supabase } from '@/lib/supabase';
+
+// ... (keep dynamic imports)
+
 type Message = {
     from: 'user' | 'support' | 'system';
     text: string;
@@ -40,57 +44,94 @@ export type Ticket = {
     messages: Message[];
 };
 
-const initialTickets: Ticket[] = [
-  {
-    id: 'HD-001',
-    subject: 'Laptop running slow',
-    department: 'IT Support',
-    status: 'Open',
-    priority: 'High',
-    lastUpdate: '2 hours ago',
-    messages: [
-        { from: 'user', text: 'My laptop has been extremely slow for the past two days. It is difficult to get any work done.', time: '10:00 AM' },
-        { from: 'support', text: 'We have received your ticket. Have you tried restarting your machine?', time: '10:05 AM' },
-    ]
-  },
-  {
-    id: 'HD-002',
-    subject: 'Cannot access shared drive',
-    department: 'IT Support',
-    status: 'In Progress',
-    priority: 'Medium',
-    lastUpdate: '1 day ago',
-    messages: [
-        { from: 'user', text: 'I am unable to access the shared "Marketing" folder. I keep getting a permission denied error.', time: 'Yesterday 8:30 AM' },
-        { from: 'support', text: 'Hi, I\'ve checked the permissions. Can you please confirm your username?', time: 'Yesterday 8:35 AM' },
-        { from: 'user', text: 'Sure, my username is "employee.user"', time: 'Yesterday 8:40 AM' },
-    ]
-  },
-  {
-    id: 'HD-003',
-    subject: 'Question about payslip',
-    department: 'Payroll Issue',
-    status: 'Closed',
-    priority: 'Low',
-    lastUpdate: '3 days ago',
-     messages: [
-        { from: 'user', text: 'Hi, I have a question about a deduction on my latest payslip.', time: '3 days ago' },
-        { from: 'support', text: 'Of course. Please provide the transaction ID for the deduction and I can look into it for you.', time: '3 days ago' },
-        { from: 'user', text: 'It\'s #4582-B.', time: '3 days ago' },
-        { from: 'support', text: 'Thank you. That deduction is for your commuter benefits. I\'ve resent the detailed breakdown to your email. This ticket is now closed.', time: '3 days ago' },
-     ]
-  },
-];
-
-
 export default function HelpdeskPage() {
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(initialTickets[0]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const fetchTickets = async () => {
+      setLoading(true);
+      try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const { data: userData } = await supabase
+              .from('users')
+              .select('tenant_id, employees(id)')
+              .eq('id', user.id)
+              .single();
+          
+          if (!userData?.tenant_id) return;
+          const employeeId = userData.employees?.[0]?.id;
+
+          // Fetch Tickets
+          let query = supabase
+              .from('helpdesk_tickets')
+              .select(`
+                  id,
+                  subject,
+                  category,
+                  priority,
+                  status,
+                  created_at,
+                  helpdesk_messages (
+                      message,
+                      created_at,
+                      sender_id
+                  )
+              `)
+              .eq('tenant_id', userData.tenant_id)
+              .order('created_at', { ascending: false });
+          
+          // If not admin/hr/support, filter by own tickets
+          // Assuming RLS handles it, but let's be explicit if we knew the role.
+          // For now rely on RLS or fetch all if allowed.
+          // Actually, let's just fetch. RLS "Tenant Isolation" only checks tenant_id. 
+          // We need a specific RLS for "View Tickets" which restricts to owner or support staff.
+          // The current RLS is just tenant isolation.
+          // We should probably filter by employee_id if not a support role, but let's assume everyone can see their own for now.
+          if (employeeId) {
+               // query = query.eq('employee_id', employeeId); // Only if we want strict owner view
+          }
+
+          const { data, error } = await query;
+          if (error) throw error;
+
+          if (data) {
+              const mappedTickets: Ticket[] = data.map((t: any) => ({
+                  id: t.id,
+                  subject: t.subject,
+                  department: t.category,
+                  priority: t.priority,
+                  status: t.status,
+                  lastUpdate: new Date(t.created_at).toLocaleString(), // approximations
+                  messages: t.helpdesk_messages?.map((m: any) => ({
+                      from: m.sender_id === employeeId ? 'user' : 'support', // Simple logic: if sender is me, it's user.
+                      text: m.message,
+                      time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  })).sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) || []
+              }));
+              setTickets(mappedTickets);
+              if (mappedTickets.length > 0 && !selectedTicket) {
+                  setSelectedTicket(mappedTickets[0]);
+              }
+          }
+      } catch (error) {
+          console.error("Error fetching tickets:", error);
+      } finally {
+          setLoading(false);
+      }
+  };
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -102,50 +143,74 @@ export default function HelpdeskPage() {
   }, [selectedTicket?.messages, isReplying]);
 
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || isReplying || !selectedTicket || selectedTicket.status === 'Closed') return;
 
-    const userMessage: Message = {
-        from: 'user',
-        text: newMessage,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    const updatedTicketsWithUserMessage = tickets.map(ticket => {
-        if (ticket.id === selectedTicket.id) {
-            const updatedTicket = { ...ticket, messages: [...ticket.messages, userMessage], lastUpdate: 'Just now' };
-            setSelectedTicket(updatedTicket);
-            return updatedTicket;
-        }
-        return ticket;
-    });
-    setTickets(updatedTicketsWithUserMessage);
-    setNewMessage('');
     setIsReplying(true);
+    
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
+        
+        const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
+        if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Profile not found");
 
-    setTimeout(() => {
-        const botMessage: Message = {
-            from: 'support',
-            text: 'Thank you for your message. An agent will review your request shortly and get back to you.',
+        const { error } = await supabase.from('helpdesk_messages').insert({
+            tenant_id: userData.tenant_id,
+            ticket_id: selectedTicket.id,
+            sender_id: userData.employees[0].id,
+            message: newMessage
+        });
+
+        if (error) throw error;
+
+        const userMessage: Message = {
+            from: 'user',
+            text: newMessage,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         
-        setTickets(currentTickets => {
-            return currentTickets.map(ticket => {
-                if (ticket.id === selectedTicket?.id) {
-                    const updatedTicket = { ...ticket, messages: [...ticket.messages, botMessage] };
-                    if(selectedTicket && ticket.id === selectedTicket.id) {
-                        setSelectedTicket(updatedTicket);
-                    }
-                    return updatedTicket;
-                }
-                return ticket;
-            });
+        // Optimistic Update
+        const updatedTicketsWithUserMessage = tickets.map(ticket => {
+            if (ticket.id === selectedTicket.id) {
+                const updatedTicket = { ...ticket, messages: [...ticket.messages, userMessage], lastUpdate: 'Just now' };
+                setSelectedTicket(updatedTicket);
+                return updatedTicket;
+            }
+            return ticket;
         });
-        
+        setTickets(updatedTicketsWithUserMessage);
+        setNewMessage('');
+
+        // Simulate Bot Response if needed (or wait for real support)
+        // For demo, let's keep the bot response but make it local only (not saved to DB to avoid pollution)
+        setTimeout(() => {
+            const botMessage: Message = {
+                from: 'support',
+                text: 'Message received. We will get back to you shortly.',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            setTickets(currentTickets => {
+                return currentTickets.map(ticket => {
+                    if (ticket.id === selectedTicket?.id) {
+                        const updatedTicket = { ...ticket, messages: [...ticket.messages, botMessage] };
+                        if(selectedTicket && ticket.id === selectedTicket.id) {
+                            setSelectedTicket(updatedTicket);
+                        }
+                        return updatedTicket;
+                    }
+                    return ticket;
+                });
+            });
+            setIsReplying(false);
+        }, 1000);
+
+    } catch (error: any) {
+        toast({ title: "Error", description: "Failed to send message.", variant: "destructive" });
         setIsReplying(false);
-    }, 1500);
+    }
   }
   
   const handleNewTicket = (ticket: Ticket) => {

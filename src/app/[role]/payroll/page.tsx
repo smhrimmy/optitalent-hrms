@@ -50,6 +50,17 @@ const trendData = [
   { month: 'Jun', amount: 4200 },
 ];
 
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/use-auth';
+
+type Payslip = {
+    id: string;
+    period: string;
+    date: string;
+    amount: string;
+    status: string;
+};
+
 export default function PayrollPage() {
   const [result, setResult] = useState<DetectPayrollErrorsOutput | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,6 +68,73 @@ export default function PayrollPage() {
   const { toast } = useToast();
   const params = useParams();
   const role = params.role as string;
+  
+  const [payslips, setPayslips] = useState<Payslip[]>([]);
+  const [summary, setSummary] = useState({ net: 0, gross: 0, deductions: 0 });
+
+  const isAdminOrFinance = role === 'admin' || role === 'finance' || role === 'super-admin';
+
+  useEffect(() => {
+    fetchPayrollData();
+  }, []);
+
+  const fetchPayrollData = async () => {
+      try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const { data: userData } = await supabase
+              .from('users')
+              .select('tenant_id, employees(id)')
+              .eq('id', user.id)
+              .single();
+          
+          if (!userData?.tenant_id) return;
+
+          let query = supabase
+              .from('payroll_history')
+              .select('*')
+              .eq('tenant_id', userData.tenant_id)
+              .order('pay_period', { ascending: false });
+
+          if (!isAdminOrFinance) {
+              if (userData.employees?.[0]?.id) {
+                  query = query.eq('employee_id', userData.employees[0].id);
+              } else {
+                  // If no employee record, they shouldn't see payroll
+                  return; 
+              }
+          }
+
+          const { data, error } = await query;
+          if (error) throw error;
+
+          if (data) {
+              const mappedPayslips = data.map((p: any) => ({
+                  id: p.id,
+                  period: new Date(p.pay_period).toLocaleString('default', { month: 'long', year: 'numeric' }),
+                  date: p.pay_period,
+                  amount: `$${p.net_salary}`,
+                  status: p.status || 'Paid'
+              }));
+              setPayslips(mappedPayslips);
+
+              // Calculate summary (most recent payslip or aggregate)
+              // For summary cards, let's show the LATEST payslip details for the employee
+              if (data.length > 0) {
+                  const latest = data[0];
+                  setSummary({
+                      net: latest.net_salary,
+                      gross: latest.gross_salary,
+                      deductions: latest.deductions
+                  });
+              }
+          }
+
+      } catch (error) {
+          console.error("Error fetching payroll:", error);
+      }
+  };
 
   const handleDetectErrors = async () => {
     setLoading(true);
@@ -98,8 +176,13 @@ export default function PayrollPage() {
         description: `Your payslip for ${period} is being downloaded.`
     })
   }
-  
-  const isAdminOrFinance = role === 'admin' || role === 'finance';
+
+  // Dynamic Summary based on latest payslip
+  const dynamicSummary = [
+      { label: "Net Pay", value: `$${summary.net}`, icon: DollarSign, color: "text-green-500" },
+      { label: "Gross Pay", value: `$${summary.gross}`, icon: TrendingUp, color: "text-blue-500" },
+      { label: "Deductions", value: `$${summary.deductions}`, icon: CreditCard, color: "text-red-500" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -114,7 +197,7 @@ export default function PayrollPage() {
       {!isAdminOrFinance && (
         <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {payrollSummary.map((item) => (
+                {dynamicSummary.map((item) => (
                     <Card key={item.label}>
                         <CardContent className="p-6 flex items-center justify-between">
                             <div>
@@ -240,8 +323,8 @@ export default function PayrollPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {payslipHistory.map(slip => (
-                            <TableRow key={slip.period}>
+                        {payslips.map(slip => (
+                            <TableRow key={slip.id}>
                                 <TableCell className="font-medium">{slip.period}</TableCell>
                                 <TableCell>{slip.date}</TableCell>
                                 <TableCell>{slip.amount}</TableCell>

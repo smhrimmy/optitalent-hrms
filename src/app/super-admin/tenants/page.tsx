@@ -1,11 +1,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Plus, Search, ShieldBan, Trash2, LogIn } from 'lucide-react';
+import { MoreHorizontal, Plus, Search, ShieldBan, Trash2, LogIn, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -19,70 +19,136 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 type Tenant = {
   id: string;
   name: string;
-  domain: string;
-  plan: 'Enterprise' | 'Business' | 'Starter';
-  users: number;
-  maxUsers: number;
-  storage: number; // in GB
-  maxStorage: number; // in GB
+  domain: string; // Mapped to 'slug' in DB
+  plan: 'Enterprise' | 'Business' | 'Starter'; // Mapped to 'plan' in DB
+  users: number; // Count from users table
+  maxUsers: number; // Hardcoded or DB
+  storage: number; // Hardcoded or DB
+  maxStorage: number; // Hardcoded or DB
   status: 'Active' | 'Suspended' | 'Pending';
-  created: string;
+  created_at: string;
 };
 
-const initialTenants: Tenant[] = [
-  { id: 't_001', name: 'Acme Corp', domain: 'acme.optitalent.com', plan: 'Enterprise', users: 1250, maxUsers: 5000, storage: 450, maxStorage: 1000, status: 'Active', created: '2025-01-10' },
-  { id: 't_002', name: 'Stark Industries', domain: 'stark.optitalent.com', plan: 'Enterprise', users: 5400, maxUsers: 10000, storage: 2100, maxStorage: 5000, status: 'Active', created: '2025-01-12' },
-  { id: 't_003', name: 'Wayne Enterprises', domain: 'wayne.optitalent.com', plan: 'Business', users: 800, maxUsers: 1000, storage: 120, maxStorage: 500, status: 'Active', created: '2025-02-05' },
-  { id: 't_004', name: 'Cyberdyne Systems', domain: 'cyberdyne.optitalent.com', plan: 'Starter', users: 45, maxUsers: 50, storage: 5, maxStorage: 20, status: 'Suspended', created: '2025-02-15' },
-];
-
 export default function TenantManagementPage() {
-  const [tenants, setTenants] = useState<Tenant[]>(initialTenants);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const router = useRouter();
 
-  const handleCreateTenant = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetchTenants();
+  }, []);
+
+  const fetchTenants = async () => {
+      // 1. Auth Check (Super Admin Only)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push('/login'); return; }
+      
+      const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single();
+      if (userData?.role !== 'super-admin') { router.push('/dashboard'); return; }
+
+      // 2. Fetch Tenants
+      const { data: tenantsData, error } = await supabase.from('tenants').select('*').order('created_at', { ascending: false });
+      
+      if (error) {
+          toast({ title: "Error fetching tenants", description: error.message, variant: "destructive" });
+          return;
+      }
+
+      // 3. Enrich with User Counts
+      const enrichedTenants = await Promise.all(tenantsData.map(async (t: any) => {
+          const { count } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('tenant_id', t.id);
+          return {
+              id: t.id,
+              name: t.name,
+              domain: t.slug, // DB column is slug
+              plan: t.plan || 'Starter',
+              users: count || 0,
+              maxUsers: t.plan === 'Enterprise' ? 1000 : t.plan === 'Business' ? 100 : 20,
+              storage: 0,
+              maxStorage: t.plan === 'Enterprise' ? 1000 : 50,
+              status: t.status || 'Active',
+              created_at: t.created_at
+          };
+      }));
+
+      setTenants(enrichedTenants);
+      setLoading(false);
+  };
+
+  const handleCreateTenant = async (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const name = (form.elements.namedItem('name') as HTMLInputElement).value;
+    const plan = (form.elements.namedItem('plan') as HTMLSelectElement).value;
+    const adminEmail = (form.elements.namedItem('adminEmail') as HTMLInputElement).value;
     
-    const newTenant: Tenant = {
-        id: `t_${Date.now()}`,
-        name,
-        domain: `${name.toLowerCase().replace(/\s/g, '')}.optitalent.com`,
-        plan: 'Starter',
-        users: 1,
-        maxUsers: 50,
-        storage: 0,
-        maxStorage: 20,
-        status: 'Active',
-        created: new Date().toISOString().split('T')[0]
-    };
-    
-    setTenants([newTenant, ...tenants]);
-    toast({ title: "Tenant Created", description: `${name} has been provisioned successfully.` });
+    setLoading(true); // Show loading state on button ideally, but global loading is okay for now or use local submitting state
+
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            toast({ title: "Error", description: "You must be logged in.", variant: "destructive" });
+            return;
+        }
+
+        const response = await fetch('/api/tenants/provision', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ name, plan, adminEmail })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to provision tenant');
+        }
+        
+        toast({ title: "Tenant Created", description: `${name} has been provisioned. Invite sent to ${adminEmail}.` });
+        fetchTenants(); 
+    } catch (error: any) {
+        toast({ title: "Creation Failed", description: error.message, variant: "destructive" });
+    } finally {
+        setLoading(false);
+    }
   };
 
-  const handleAction = (id: string, action: 'Suspend' | 'Delete') => {
-      if (action === 'Suspend') {
-          setTenants(tenants.map(t => t.id === id ? { ...t, status: t.status === 'Active' ? 'Suspended' : 'Active' } : t));
-          toast({ title: "Status Updated", description: "Tenant status has been changed." });
+  const handleAction = async (id: string, action: 'Suspend' | 'Delete' | 'Restore') => {
+      if (action === 'Suspend' || action === 'Restore') {
+          const newStatus = action === 'Suspend' ? 'Suspended' : 'Active';
+          const { error } = await supabase.from('tenants').update({ status: newStatus }).eq('id', id);
+          if (error) {
+               toast({ title: "Update Failed", description: error.message, variant: "destructive" });
+          } else {
+               toast({ title: "Status Updated", description: `Tenant ${action === 'Suspend' ? 'suspended' : 'restored'}.` });
+               fetchTenants();
+          }
       } else {
-          setTenants(tenants.filter(t => t.id !== id));
-          toast({ title: "Tenant Deleted", description: "All associated data has been purged.", variant: "destructive" });
+          if (!confirm("Are you sure? This will delete all users and data associated with this tenant.")) return;
+          
+          const { error } = await supabase.from('tenants').delete().eq('id', id);
+          if (error) {
+              toast({ title: "Delete Failed", description: error.message, variant: "destructive" });
+          } else {
+              toast({ title: "Tenant Deleted", description: "All associated data has been purged." });
+              fetchTenants();
+          }
       }
   };
 
-  const handleImpersonate = (tenant: Tenant) => {
-      toast({ title: "Impersonating Owner", description: `Logging in as Root Admin for ${tenant.name}...` });
-      // Logic to switch auth token would go here
-  };
-
   const filtered = tenants.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.domain.toLowerCase().includes(search.toLowerCase()));
+
+  if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-6 p-6">
@@ -106,8 +172,12 @@ export default function TenantManagementPage() {
                         <Input id="name" name="name" placeholder="e.g. Globex Corporation" required />
                     </div>
                     <div className="grid gap-2">
+                        <Label htmlFor="adminEmail">Admin Email</Label>
+                        <Input id="adminEmail" name="adminEmail" type="email" placeholder="admin@company.com" required />
+                    </div>
+                    <div className="grid gap-2">
                         <Label htmlFor="plan">Subscription Plan</Label>
-                        <select id="plan" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <select id="plan" name="plan" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                             <option value="Starter">Starter ($499/mo)</option>
                             <option value="Business">Business ($999/mo)</option>
                             <option value="Enterprise">Enterprise (Custom)</option>
@@ -149,7 +219,7 @@ export default function TenantManagementPage() {
                     <div className="flex flex-col gap-1">
                         <span className="text-xs">{tenant.users} / {tenant.maxUsers}</span>
                         <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
-                            <div className="h-full bg-primary" style={{ width: `${(tenant.users / tenant.maxUsers) * 100}%` }} />
+                            <div className="h-full bg-primary" style={{ width: `${Math.min((tenant.users / tenant.maxUsers) * 100, 100)}%` }} />
                         </div>
                     </div>
                 </TableCell>
@@ -157,7 +227,7 @@ export default function TenantManagementPage() {
                     <div className="flex flex-col gap-1">
                         <span className="text-xs">{tenant.storage}GB / {tenant.maxStorage}GB</span>
                          <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500" style={{ width: `${(tenant.storage / tenant.maxStorage) * 100}%` }} />
+                            <div className="h-full bg-blue-500" style={{ width: `${Math.min((tenant.storage / tenant.maxStorage) * 100, 100)}%` }} />
                         </div>
                     </div>
                 </TableCell>
@@ -175,10 +245,10 @@ export default function TenantManagementPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleImpersonate(tenant)}>
+                      <DropdownMenuItem onClick={() => toast({ title: "Coming Soon", description: "Impersonation is not yet implemented." })}>
                          <LogIn className="mr-2 h-4 w-4" /> Impersonate Owner
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleAction(tenant.id, 'Suspend')}>
+                      <DropdownMenuItem onClick={() => handleAction(tenant.id, tenant.status === 'Active' ? 'Suspend' : 'Restore')}>
                          <ShieldBan className="mr-2 h-4 w-4" /> {tenant.status === 'Active' ? 'Suspend Access' : 'Restore Access'}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive" onClick={() => handleAction(tenant.id, 'Delete')}>

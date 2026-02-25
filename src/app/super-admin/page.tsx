@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Users, 
@@ -10,11 +10,14 @@ import {
   Server, 
   ShieldCheck, 
   Database, 
-  AlertTriangle 
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 const revenueData = [
   { month: 'Jan', amount: 12000 },
@@ -35,6 +38,55 @@ const trafficData = [
 ];
 
 export default function SuperAdminDashboard() {
+  const [stats, setStats] = useState({ tenants: 0, users: 0, mrr: 0 });
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+        // 1. Auth Check
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+
+        const { data: userData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+        
+        if (userData?.role !== 'super-admin') {
+            router.push('/dashboard'); // Kick out non-super-admins
+            return;
+        }
+
+        // 2. Fetch Real Stats
+        const { count: tenantCount } = await supabase.from('tenants').select('*', { count: 'exact', head: true });
+        const { count: userCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
+        
+        // Estimate MRR based on plans (Mock logic since we don't have subscription table yet)
+        const { data: tenants } = await supabase.from('tenants').select('plan');
+        let mrr = 0;
+        tenants?.forEach(t => {
+            if (t.plan === 'Startup') mrr += 499;
+            if (t.plan === 'Enterprise') mrr += 2999;
+            if (t.plan === 'Business') mrr += 999;
+        });
+
+        setStats({
+            tenants: tenantCount || 0,
+            users: userCount || 0,
+            mrr
+        });
+        setLoading(false);
+    };
+    fetchStats();
+  }, [router]);
+
+  if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
@@ -58,8 +110,8 @@ export default function SuperAdminDashboard() {
           <CardContent className="pt-6 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Tenants</p>
-              <h3 className="text-2xl font-bold">142</h3>
-              <p className="text-xs text-green-500 font-medium">+12 this month</p>
+              <h3 className="text-2xl font-bold">{stats.tenants}</h3>
+              <p className="text-xs text-green-500 font-medium">Real-time count</p>
             </div>
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                 <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -69,12 +121,24 @@ export default function SuperAdminDashboard() {
         <Card>
           <CardContent className="pt-6 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">MRR</p>
-              <h3 className="text-2xl font-bold">$48,250</h3>
-              <p className="text-xs text-green-500 font-medium">+8.4% growth</p>
+              <p className="text-sm font-medium text-muted-foreground">MRR (Est.)</p>
+              <h3 className="text-2xl font-bold">${stats.mrr.toLocaleString()}</h3>
+              <p className="text-xs text-green-500 font-medium">Based on active plans</p>
             </div>
             <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                 <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+              <h3 className="text-2xl font-bold">{stats.users}</h3>
+              <p className="text-xs text-muted-foreground">Across all tenants</p>
+            </div>
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
           </CardContent>
         </Card>
@@ -87,18 +151,6 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
                 <Activity className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Active Sessions</p>
-              <h3 className="text-2xl font-bold">2,405</h3>
-              <p className="text-xs text-muted-foreground">Across 12 regions</p>
-            </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-                <Server className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
           </CardContent>
         </Card>

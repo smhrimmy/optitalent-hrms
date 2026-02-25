@@ -1,9 +1,9 @@
 
 "use client"
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Bot, Search, Filter, Link2 } from "lucide-react";
+import { Bot, Search, Filter, Link2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,6 +25,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/lib/supabase";
 
 type Applicant = {
   id: string;
@@ -34,15 +35,6 @@ type Applicant = {
   appliedDate: string;
   status: 'Applied' | 'Screening' | 'Interview' | 'Offer' | 'Hired';
 };
-
-const initialApplicants: Applicant[] = [
-  { id: 'app-001', name: 'Aarav Sharma', avatar: 'https://placehold.co/100x100?text=AS', role: 'Senior Frontend Developer', appliedDate: '2023-10-25', status: 'Interview' },
-  { id: 'app-002', name: 'Priya Patel', avatar: 'https://placehold.co/100x100?text=PP', role: 'Product Manager', appliedDate: '2023-10-24', status: 'Applied' },
-  { id: 'app-003', name: 'Rohan Gupta', avatar: 'https://placehold.co/100x100?text=RG', role: 'UI/UX Designer', appliedDate: '2023-10-23', status: 'Screening' },
-  { id: 'app-004', name: 'Sneha Verma', avatar: 'https://placehold.co/100x100?text=SV', role: 'Senior Frontend Developer', appliedDate: '2023-10-22', status: 'Offer' },
-  { id: 'app-005', name: 'Vikram Singh', avatar: 'https://placehold.co/100x100?text=VS', role: 'DevOps Engineer', appliedDate: '2023-10-21', status: 'Hired' },
-];
-
 
 const getStatusBadge = (status: Applicant['status']) => {
     switch (status) {
@@ -62,10 +54,62 @@ const getStatusBadge = (status: Applicant['status']) => {
 
 export default function RecruitmentPage() {
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [loading, setLoading] = useState(true);
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const role = params.role || 'admin';
+
+  useEffect(() => {
+    const fetchApplicants = async () => {
+        setLoading(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                setLoading(false);
+                return;
+            }
+
+            const { data: userData } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user.id)
+                .single();
+            
+            if (!userData?.tenant_id) {
+                setLoading(false);
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('applicants')
+                .select('id, full_name, status, created_at, resume_data')
+                .eq('tenant_id', userData.tenant_id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (data) {
+                const mappedApplicants: Applicant[] = data.map((app: any) => ({
+                    id: app.id,
+                    name: app.full_name,
+                    avatar: app.resume_data?.profile_picture_url || `https://ui-avatars.com/api/?name=${app.full_name}&background=random`,
+                    role: app.resume_data?.workExperience?.[0]?.title || 'General Application',
+                    appliedDate: new Date(app.created_at).toLocaleDateString(),
+                    status: app.status
+                }));
+                setApplicants(mappedApplicants);
+            }
+        } catch (error: any) {
+            console.error("Error fetching applicants:", error);
+            toast({ title: "Error", description: "Failed to load applicants.", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchApplicants();
+  }, [toast]);
 
   const handleCopyWalkinLink = () => {
     const walkinUrl = `${window.location.origin}/walkin-drive`;
@@ -77,11 +121,11 @@ export default function RecruitmentPage() {
   };
 
   const filteredApplicants = React.useMemo(() => {
-    return initialApplicants.filter(applicant =>
+    return applicants.filter(applicant =>
       applicant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       applicant.role.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, applicants]);
 
   return (
      <div className="space-y-6">
@@ -126,38 +170,48 @@ export default function RecruitmentPage() {
                 <div className="mt-4 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Applied For</TableHead>
-                                        <TableHead>Applied Date</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Action</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredApplicants.map((applicant) => (
-                                        <TableRow key={applicant.id} className="cursor-pointer" onClick={() => router.push(`/${role}/recruitment/${applicant.id}`)}>
-                                            <TableCell className="font-medium">
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar className="h-9 w-9">
-                                                        <AvatarImage src={applicant.avatar} alt="Avatar" data-ai-hint="person avatar" />
-                                                        <AvatarFallback>{applicant.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                                                    </Avatar>
-                                                    {applicant.name}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>{applicant.role}</TableCell>
-                                            <TableCell>{applicant.appliedDate}</TableCell>
-                                            <TableCell>{getStatusBadge(applicant.status)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="sm">View Profile</Button>
-                                            </TableCell>
+                            {loading ? (
+                                <div className="flex justify-center py-8">
+                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                                </div>
+                            ) : applicants.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    No applicants found.
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Applied For</TableHead>
+                                            <TableHead>Applied Date</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Action</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredApplicants.map((applicant) => (
+                                            <TableRow key={applicant.id} className="cursor-pointer" onClick={() => router.push(`/${role}/recruitment/${applicant.id}`)}>
+                                                <TableCell className="font-medium">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-9 w-9">
+                                                            <AvatarImage src={applicant.avatar} alt="Avatar" data-ai-hint="person avatar" />
+                                                            <AvatarFallback>{applicant.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                        </Avatar>
+                                                        {applicant.name}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{applicant.role}</TableCell>
+                                                <TableCell>{applicant.appliedDate}</TableCell>
+                                                <TableCell>{getStatusBadge(applicant.status)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="sm">View Profile</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
                         </div>
                     </div>
                 </div>

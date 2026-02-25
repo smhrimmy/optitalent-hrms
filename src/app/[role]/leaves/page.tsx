@@ -6,49 +6,149 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import ApplyLeaveDialog from '@/components/leaves/apply-leave-dialog';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { Loader2 } from 'lucide-react';
 
-// Mock data - In a real app, this would be fetched
-const initialLeaveRequests = [
-    { id: 'LR-001', type: 'Sick Leave', from: '2025-07-10', to: '2025-07-10', days: 1, status: 'Approved' },
-    { id: 'LR-002', type: 'Paid Time Off', from: '2025-08-01', to: '2025-08-05', days: 5, status: 'Pending' },
-    { id: 'LR-003', type: 'Work From Home', from: '2025-07-20', to: '2025-07-20', days: 1, status: 'Rejected' },
-];
-
-const leaveBalances = [
-    { type: 'Sick Leave', balance: 8 },
-    { type: 'Casual Leave', balance: 10 },
-    { type: 'Paid Time Off', balance: 14.5 },
-];
-
-type LeaveRequest = typeof initialLeaveRequests[0];
+type LeaveRequest = {
+    id: string;
+    type: string;
+    from: string;
+    to: string;
+    days: number;
+    status: string;
+};
 
 export default function LeavesPage() {
-    const [requests, setRequests] = useState<LeaveRequest[]>(initialLeaveRequests);
+    const [requests, setRequests] = useState<LeaveRequest[]>([]);
+    const [loading, setLoading] = useState(true);
     const { user } = useAuth();
     const { toast } = useToast();
+    
+    // Default balances if not found
+    const [balances, setBalances] = useState([
+        { type: 'Sick Leave', balance: 7, used: 0 },
+        { type: 'Casual Leave', balance: 12, used: 0 },
+        { type: 'Paid Time Off', balance: 20, used: 0 },
+    ]);
+
+    useEffect(() => {
+        fetchLeaveData();
+    }, []);
+
+    const fetchLeaveData = async () => {
+        setLoading(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // 1. Get Employee ID & Tenant ID
+            const { data: userData } = await supabase
+                .from('users')
+                .select('tenant_id, employees(id)')
+                .eq('id', user.id)
+                .single();
+            
+            if (!userData?.tenant_id) return;
+            const employeeId = userData.employees?.[0]?.id;
+
+            // 2. Fetch Requests
+            let query = supabase
+                .from('leave_requests')
+                .select('*')
+                .eq('tenant_id', userData.tenant_id)
+                .order('created_at', { ascending: false });
+
+            // If not admin/hr, filter by own requests
+            // For now, let's assume the RLS handles filtering, but we should also filter in query for performance
+            // However, the page seems to be "My Leave Requests", so we should filter by employee_id if we have it.
+            if (employeeId) {
+                query = query.eq('employee_id', employeeId);
+            }
+
+            const { data: requestsData, error: requestsError } = await query;
+            
+            if (requestsError) throw requestsError;
+
+            if (requestsData) {
+                const mappedRequests = requestsData.map((r: any) => ({
+                    id: r.id,
+                    type: r.leave_type,
+                    from: r.start_date,
+                    to: r.end_date,
+                    days: Math.ceil((new Date(r.end_date).getTime() - new Date(r.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1,
+                    status: r.status
+                }));
+                setRequests(mappedRequests);
+                
+                // 3. Calculate Used Balances from Requests (Client-side aggregation for now)
+                // In a real app, we'd query 'leave_balances' table, but let's aggregate for simplicity and "snap" feel
+                const used = {
+                    'Sick Leave': 0,
+                    'Casual Leave': 0,
+                    'Paid Time Off': 0
+                };
+                
+                mappedRequests.forEach(r => {
+                    if (r.status === 'Approved' && used[r.type as keyof typeof used] !== undefined) {
+                        used[r.type as keyof typeof used] += r.days;
+                    }
+                });
+
+                setBalances(prev => prev.map(b => ({
+                    ...b,
+                    used: used[b.type as keyof typeof used] || 0,
+                    balance: (b.type === 'Sick Leave' ? 7 : b.type === 'Casual Leave' ? 12 : 20) - (used[b.type as keyof typeof used] || 0)
+                })));
+            }
+
+        } catch (error: any) {
+            console.error("Error fetching leaves:", error);
+            toast({ title: "Error", description: "Failed to load leave data.", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleApplyLeave = async (formData: FormData): Promise<{success: boolean, message?: string}> => {
-        const fromDate = new Date(formData.get('from-date') as string);
-        const toDate = new Date(formData.get('to-date') as string);
-        const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-        const newRequest: LeaveRequest = {
-            id: `LR-${String(requests.length + 1).padStart(3, '0')}`,
-            type: formData.get('leave-type') as LeaveRequest['type'],
-            from: formData.get('from-date') as string,
-            to: formData.get('to-date') as string,
-            days: diffDays,
-            status: 'Pending',
-        };
-
-        await new Promise(res => setTimeout(res, 500)); // Simulate network delay
+        const fromDate = formData.get('from-date') as string;
+        const toDate = formData.get('to-date') as string;
+        const type = formData.get('leave-type') as string;
+        const reason = formData.get('reason') as string || ''; // Assuming dialog has reason field or we add it
         
-        setRequests(prev => [newRequest, ...prev]);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Not authenticated");
 
-        return { success: true };
+             const { data: userData } = await supabase
+                .from('users')
+                .select('tenant_id, employees(id)')
+                .eq('id', user.id)
+                .single();
+            
+            if (!userData?.tenant_id || !userData.employees?.[0]?.id) {
+                throw new Error("Employee record not found.");
+            }
+
+            const { error } = await supabase.from('leave_requests').insert({
+                tenant_id: userData.tenant_id,
+                employee_id: userData.employees[0].id,
+                leave_type: type,
+                start_date: fromDate,
+                end_date: toDate,
+                reason: reason,
+                status: 'Pending'
+            });
+
+            if (error) throw error;
+
+            toast({ title: "Request Submitted", description: "Your leave request has been sent for approval." });
+            fetchLeaveData(); // Refresh list
+            return { success: true };
+
+        } catch (error: any) {
+             toast({ title: "Submission Failed", description: error.message, variant: "destructive" });
+             return { success: false, message: error.message };
+        }
     };
     
     const getStatusBadge = (status: string) => {
@@ -77,7 +177,7 @@ export default function LeavesPage() {
                     <CardDescription>Your remaining leave balance for the year.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-3">
-                    {leaveBalances.map(balance => (
+                    {balances.map(balance => (
                         <div key={balance.type} className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
                             <div className="flex justify-between mb-2">
                                 <span className="text-sm font-medium">{balance.type}</span>
@@ -89,10 +189,10 @@ export default function LeavesPage() {
                             <div className="h-2 bg-muted rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-primary"
-                                    style={{ width: `${(balance.balance / 20) * 100}%` }} 
+                                    style={{ width: `${(balance.balance / (balance.balance + balance.used)) * 100}%` }} 
                                 />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-2">{20 - balance.balance} days used</p>
+                            <p className="text-xs text-muted-foreground mt-2">{balance.used} days used</p>
                         </div>
                     ))}
                 </CardContent>
