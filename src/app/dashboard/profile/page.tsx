@@ -80,8 +80,9 @@ export default function ProfilePage() {
       </Card>
 
       {/* Navigation Tabs */}
-      <Tabs defaultValue="professional" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start h-auto p-0 bg-transparent border-b border-slate-200 rounded-none gap-6">
+      <Tabs defaultValue="about" className="w-full" onValueChange={setActiveTab}>
+        <div className="relative">
+          <TabsList className="w-full justify-start h-auto p-0 bg-transparent border-b border-slate-200 rounded-none gap-6 relative z-0">
           <TabsTrigger 
             value="about" 
             className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none px-2 py-3 gap-2 text-slate-500"
@@ -111,9 +112,10 @@ export default function ProfilePage() {
             Documents
           </TabsTrigger>
         </TabsList>
+        </div>
 
         {/* Tab Content Areas */}
-        <div className="mt-6">
+        <div className="mt-6 relative z-10">
           <TabsContent value="professional" className="space-y-6">
             
             {/* Work Experience Section */}
@@ -161,10 +163,47 @@ export default function ProfilePage() {
 
           </TabsContent>
           
-          <TabsContent value="about">
-             <Card className="p-10 text-center text-muted-foreground bg-white">
-                About Content Placeholder
-             </Card>
+          <TabsContent value="about" className="space-y-6">
+             <Card className="border border-slate-200 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between py-4 border-b border-slate-100 bg-white">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-50 rounded-lg">
+                    <User className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-slate-800">Basic Information</CardTitle>
+                </div>
+                <Button size="sm" variant="ghost" className="gap-1 text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200">
+                  <Edit className="h-3 w-3" />
+                  Edit
+                </Button>
+              </CardHeader>
+              <CardContent className="p-6 bg-white grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Name</p>
+                    <p className="text-sm font-medium text-slate-700">{user.name}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Email Address</p>
+                    <p className="text-sm font-medium text-slate-700">{user.email}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Phone Number</p>
+                    <p className="text-sm font-medium text-slate-700">{user.phone}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Location</p>
+                    <p className="text-sm font-medium text-slate-700">{user.location}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Role</p>
+                    <p className="text-sm font-medium text-slate-700">{user.role}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Employee ID</p>
+                    <p className="text-sm font-medium text-slate-700">EMP-001</p>
+                 </div>
+              </CardContent>
+            </Card>
           </TabsContent>
            <TabsContent value="family">
              <Card className="p-10 text-center text-muted-foreground bg-white">
