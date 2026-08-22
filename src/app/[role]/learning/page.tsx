@@ -8,7 +8,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Bell, BookOpen, Check, Clock, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/lib/supabase';
-import { Loader2 } from 'lucide-react';
+import { BrandLoader } from '@/components/brand-loader';
 import { CourseCard } from '@/components/learning/course-card';
 import { TeamProgressTable } from '@/components/learning/team-progress-table';
 
@@ -113,7 +113,7 @@ const EmployeeView = () => {
     }, [courses, progressMap]);
     
     if (loading) {
-        return <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+        return <BrandLoader label="Loading learning" />;
     }
 
     if (courses.length === 0) {

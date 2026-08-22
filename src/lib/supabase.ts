@@ -1,18 +1,37 @@
-
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
+import { readPublicSupabaseConfig, type PublicSupabaseConfig } from './supabase-public';
 
-// SECURITY NOTE:
-// We use environment variables to store sensitive keys.
-// This prevents them from being exposed in the source code repository (like GitHub).
-// The 'NEXT_PUBLIC_' prefix makes them available to the browser.
-// The Anon Key is safe to expose in the browser because it is restricted by Row Level Security (RLS) policies on the server.
-const databaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-project.supabase.co';
-const databaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
-
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  console.warn('Supabase URL or Anon Key is missing. Using placeholder values to prevent build crashes.');
+declare global {
+  interface Window {
+    __OT_SUPABASE__?: PublicSupabaseConfig;
+  }
 }
 
-// Create a single supabase client for interacting with your database
-export const supabase = createClient<Database>(databaseUrl, databaseAnonKey);
+function resolveConfig(): PublicSupabaseConfig {
+  if (typeof window !== 'undefined') {
+    const injected = window.__OT_SUPABASE__;
+    if (injected?.url && !injected.url.includes('placeholder') && injected.anon) {
+      return injected;
+    }
+  }
+  return readPublicSupabaseConfig();
+}
+
+const cfg = resolveConfig();
+
+export function isSupabaseConfigured(): boolean {
+  return Boolean(cfg.url) && !cfg.url.includes('placeholder');
+}
+
+export function getSupabase(): SupabaseClient<Database> {
+  return supabase;
+}
+
+export const supabase = createClient<Database>(cfg.url, cfg.anon, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+});

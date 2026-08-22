@@ -19,10 +19,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['var(--font-space-grotesk)', 'sans-serif'],
-        code: ['monospace'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['var(--font-source-sans)', 'sans-serif'],
+        headline: ['var(--font-fraunces)', 'serif'],
+        code: ['var(--font-ibm-plex-mono)', 'ui-monospace', 'monospace'],
+        sans: ['var(--font-source-sans)', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

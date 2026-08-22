@@ -59,7 +59,7 @@ export default function ChatbotPage() {
     <div className="flex flex-col h-[calc(100vh-10rem)] max-w-3xl mx-auto">
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold font-headline">AI HR Assistant</h1>
-        <p className="text-muted-foreground">Ask me anything about company policies, leave, or benefits.</p>
+        <p className="text-muted-foreground">Answers use your signed-in role. The bot cannot raise your permissions or run payroll.</p>
       </div>
       <Card className="flex-1 flex flex-col">
         <CardContent className="flex-1 p-0">

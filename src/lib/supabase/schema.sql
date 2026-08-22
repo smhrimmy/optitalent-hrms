@@ -1,9 +1,7 @@
 
--- -----------------------------------------------------------------------------
--- -----------------------------------------------------------------------------
--- This script is designed to be idempotent. It will completely tear down and
--- rebuild the database schema, including all tables, types, functions, and
--- row-level security policies. It's safe to run multiple times.
+-- Canonical bootstrap for a NEW project is:
+--   supabase/bootstrap_new_project.sql
+-- This file is the older destructive rebuild. Prefer the bootstrap script.
 --
 -- To run this script:
 -- 1. Go to your Supabase project dashboard.

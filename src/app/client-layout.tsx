@@ -3,7 +3,7 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { usePathname, useRouter } from 'next/navigation';
-import { LoadingLogo } from '@/components/loading-logo';
+import { BrandLoader } from '@/components/brand-loader';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +15,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescri
 import { Separator } from '@/components/ui/separator';
 import { useAuth, AuthProvider } from '@/hooks/use-auth';
 import { FeaturesProvider } from '@/hooks/use-features';
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import { CookieBanner } from '@/components/cookie-banner';
+import { RouteProgress } from '@/components/feedback/route-progress';
+import { OfflineBanner } from '@/components/offline-banner';
+import { SessionWatch } from '@/components/session-watch';
 
 const AppSidebar = dynamic(() => import('@/components/app-sidebar'), {
   loading: () => <Skeleton className="hidden md:flex h-screen w-[3.75rem]" />,
@@ -131,14 +137,32 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     pathname === '/signup' ||
     pathname === '/login' ||
     pathname.startsWith('/walkin-drive') ||
-    pathname.startsWith('/applicant');
+    pathname.startsWith('/applicant') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/cookies') ||
+    pathname.startsWith('/help') ||
+    pathname.startsWith('/contact') ||
+    pathname.startsWith('/accessibility') ||
+    pathname.startsWith('/mfa') ||
+    pathname.startsWith('/suspended') ||
+    pathname.startsWith('/offline') ||
+    pathname.startsWith('/session-expired') ||
+    pathname.startsWith('/payment-failed') ||
+    pathname.startsWith('/suspended') ||
+    pathname.startsWith('/coming-soon') ||
+    pathname.startsWith('/unsupported') ||
+    pathname.startsWith('/empty-search') ||
+    pathname.startsWith('/demo/');
 
-    const isDashboard = user && pathname === `/${user.role}/dashboard`;
+    const isDashboard =
+      Boolean(user) &&
+      (pathname === `/${user.role}/dashboard` || pathname === '/dashboard');
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <LoadingLogo />
+      <div className="relative min-h-screen w-full bg-background">
+        <BrandLoader label="Loading OptiTalent" />
       </div>
     );
   }
@@ -182,9 +206,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <RouteProgress />
+                    <OfflineBanner />
+                    <SessionWatch />
                     <AppLayout>
                         {children}
                     </AppLayout>
+                    <Toaster />
+                    <SonnerToaster position="top-center" richColors closeButton />
+                    <CookieBanner />
                 </ThemeProvider>
             </FeaturesProvider>
         </AuthProvider>
