@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockUsers, type User, type UserProfile } from '@/lib/mock-data/employees';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -120,15 +120,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  const signUp = async (data: any) => {
+  const signUp = async (data: { email: string; password: string; firstName?: string; lastName?: string }) => {
     setLoading(true);
-    await new Promise(res => setTimeout(res, 500)); // Simulate network delay
     const { email, password, firstName, lastName } = data;
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
-    // Check if user already exists in our mock data
-    if (mockUsers.some(u => u.email === email)) {
-        setLoading(false);
-        return { error: { message: "An account with this email already exists." } };
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName || email.split('@')[0] },
+          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        },
+      });
+      setLoading(false);
+      if (error) return { error: { message: error.message } };
+      return { error: null };
+    }
+
+    await new Promise((res) => setTimeout(res, 400));
+    if (mockUsers.some((u) => u.email === email)) {
+      setLoading(false);
+      return { error: { message: 'An account with this email already exists.' } };
     }
     
     const newProfile: UserProfile = {

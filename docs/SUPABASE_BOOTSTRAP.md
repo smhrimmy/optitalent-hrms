@@ -35,10 +35,12 @@ WHERE email = 'you@example.com';
 
 Set at least:
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL` (or `SUPABASE_URL`)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `SUPABASE_ANON_KEY`)
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `CRON_SECRET` or `KEEPALIVE_API_KEY` (same long random string is fine)
+
+Apply them to **Production and Preview**, then redeploy. Auth in the browser uses a runtime bootstrap script so it never calls `placeholder-project.supabase.co`.
 
 See `.env.example`. Do not commit real keys.
 

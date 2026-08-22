@@ -15,6 +15,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescri
 import { Separator } from '@/components/ui/separator';
 import { useAuth, AuthProvider } from '@/hooks/use-auth';
 import { FeaturesProvider } from '@/hooks/use-features';
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import { RouteProgress } from '@/components/feedback/route-progress';
 
 const AppSidebar = dynamic(() => import('@/components/app-sidebar'), {
   loading: () => <Skeleton className="hidden md:flex h-screen w-[3.75rem]" />,
@@ -182,9 +185,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <RouteProgress />
                     <AppLayout>
                         {children}
                     </AppLayout>
+                    <Toaster />
+                    <SonnerToaster position="top-center" richColors closeButton />
                 </ThemeProvider>
             </FeaturesProvider>
         </AuthProvider>

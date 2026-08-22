@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from "next/link"
-import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,13 +14,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/hooks/use-auth';
+import { PendingOverlay } from '@/components/feedback/pending-overlay';
 
 export default function SignupPage() {
     const { toast } = useToast();
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
@@ -72,9 +71,9 @@ export default function SignupPage() {
         } else {
              toast({
                 title: "Account Created!",
-                description: "Welcome to OptiTalent! Redirecting you to the dashboard...",
+                description: "Check your email to confirm, then sign in.",
             });
-             // No need to setLoading(false) as we are navigating away
+            setLoading(false);
         }
     };
     
@@ -87,7 +86,8 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="mx-auto max-w-sm">
+        <PendingOverlay show={loading} label="Creating your account…" />
+        <Card className="mx-auto max-w-sm ot-pending-card">
         <CardHeader className="text-center">
             <Logo className="justify-center mb-4" showText={true} />
             <CardTitle className="text-2xl font-headline">Create your account</CardTitle>
@@ -130,11 +130,10 @@ export default function SignupPage() {
               <CriteriaItem met={passwordCriteria.specialChar} text="One special character" />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" loading={loading}>
                 Create an account
             </Button>
-            <Button variant="outline" className="w-full" type="button" disabled={loading}>
+            <Button variant="outline" className="w-full" type="button" disabled={loading} loading={false}>
                 Sign up with Google
             </Button>
             </form>

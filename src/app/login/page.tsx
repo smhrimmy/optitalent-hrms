@@ -5,11 +5,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield, Users, BarChart3, Layers } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { AsyncButton } from "@/components/ui/async-button";
+import { PendingOverlay } from "@/components/feedback/pending-overlay";
+import { Loader2 } from "lucide-react";
 
 export default function Login() {
   // State variables for form inputs
@@ -36,6 +38,12 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      if (!isSupabaseConfigured() && isSignUp) {
+        throw new Error(
+          "Supabase is not configured on this deployment. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel (Preview + Production) and redeploy."
+        );
+      }
+
       if (isSignUp) {
         // 1. SIGN UP FLOW
         const { error } = await supabase.auth.signUp({
@@ -117,8 +125,8 @@ export default function Login() {
           errorMessage = `Too many attempts. Please wait ${retryHeader} seconds.`;
       } else if (error?.message) {
         // Handle common network/DNS errors
-        if (error.message.includes("Failed to fetch") || error.message.includes("Network request failed")) {
-             errorMessage = "Connection failed. Please check your internet connection or DNS settings.";
+        if (error.message.includes("Failed to fetch") || error.message.includes("Network request failed") || error.message.includes("placeholder-project")) {
+             errorMessage = "Cannot reach Supabase. This build was using a placeholder URL. Set NEXT_PUBLIC_SUPABASE_URL on Vercel and redeploy.";
         } else if (error.message.includes("ERR_NAME_NOT_RESOLVED")) {
              errorMessage = "Server unreachable (DNS Error). Please check if the Supabase project URL is correct.";
         } else if (error.message.includes("Invalid login credentials")) {
@@ -143,6 +151,10 @@ export default function Login() {
 
   // Handle Google OAuth Login
   const handleGoogleLogin = async () => {
+    if (!isSupabaseConfigured()) {
+      toast.error("Google sign-in needs Supabase env vars on this deployment.");
+      return;
+    }
     setIsGoogleLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -159,6 +171,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
+      <PendingOverlay
+        show={isLoading || isGoogleLoading}
+        label={isGoogleLoading ? "Redirecting to Google…" : isSignUp ? "Creating your account…" : "Signing you in…"}
+      />
       {/* LEFT PANEL: Branding & Marketing */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
         <div className="absolute inset-0">
@@ -237,6 +253,11 @@ export default function Login() {
             <p className="text-muted-foreground mt-1">
               {isSignUp ? "Create your account to get started" : "Sign in to continue"}
             </p>
+            {!isSupabaseConfigured() && (
+              <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                This preview has no live Supabase URL. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel, then redeploy. Demo emails @optitalent.com still work.
+              </p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -327,14 +348,18 @@ export default function Login() {
             type="button"
             disabled={isGoogleLoading}
             onClick={handleGoogleLogin}
-            className="mt-4 w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm font-medium disabled:opacity-50"
+            className="mt-4 w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm font-medium disabled:opacity-50 ot-press"
           >
+            {isGoogleLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
+            )}
             {isGoogleLoading ? "Redirecting..." : "Login with Google"}
           </button>
 

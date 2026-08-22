@@ -131,3 +131,74 @@
 .dark .detailed-calendar .rdp-cell {
     background-color: hsl(var(--card));
 }
+
+.ot-press {
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+.ot-press:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.ot-press:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.ot-route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  height: 3px;
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ot-route-progress span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: hsl(var(--primary));
+  animation: ot-route-slide 0.7s ease-out;
+}
+@keyframes ot-route-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+.ot-pending-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(var(--background) / 0.72);
+  backdrop-filter: blur(8px);
+  animation: ot-fade-in 180ms ease;
+}
+.ot-pending-card {
+  padding: 1.75rem 2rem;
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 16px 40px rgb(15 23 42 / 0.12);
+  animation: ot-pop 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes ot-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ot-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ot-press,
+  .ot-pending-overlay,
+  .ot-pending-card,
+  .ot-route-progress span {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

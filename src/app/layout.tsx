@@ -1,7 +1,7 @@
 import './globals.css'
-import { Toaster } from "@/components/ui/toaster"
 import { poppins, spaceGrotesk } from "@/lib/fonts"
 import ClientLayout from './client-layout'
+import { SupabaseBootstrap } from '@/components/supabase-bootstrap'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -21,10 +21,10 @@ export default function RootLayout({
         className={`${poppins.variable} ${spaceGrotesk.variable} font-body antialiased overflow-x-hidden`}
         suppressHydrationWarning
       >
+        <SupabaseBootstrap />
         <ClientLayout>
           {children}
         </ClientLayout>
-        <Toaster />
       </body>
     </html>
   );
