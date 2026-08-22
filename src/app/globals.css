@@ -121,13 +121,14 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+  @media (prefers-reduced-motion: no-preference) {
+    .ot-enter {
+      animation: ot-enter 180ms ease-out;
     }
+  }
+  @keyframes ot-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
   }
 }
 

@@ -47,6 +47,9 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { AnimatedBot } from '@/components/ui/animated-bot';
 import { useFeatures, type FeatureModule } from './use-features';
+import { useDataQuery } from './use-dataquery';
+import { toDNA } from '@/engines/dna';
+import { navSpecs } from '@/engines/navigation';
 
 export type NavItem = {
   label: string;
@@ -359,16 +362,64 @@ export const navConfig: Record<string, NavItem[]> = {
 
 export const useNav = (role: string): NavItem[] => {
   const { isEnabled } = useFeatures();
+  const db = useDataQuery();
 
   return useMemo(() => {
+    if (['admin', 'hr', 'manager', 'employee'].includes(role)) {
+      const persona = role === 'admin' ? 'hr' : role;
+      const specs = navSpecs(persona, toDNA(db.company));
+      const iconByHref: Record<string, LucideIcon> = {
+        '/dashboard': LayoutDashboard,
+        '/command-center': Sparkles,
+        '/employees': Users,
+        '/profile': Users,
+        '/recruitment': Briefcase,
+        '/onboarding': UserPlus,
+        '/attendance': Calendar,
+        '/leaves': CalendarOff,
+        '/payroll': DollarSign,
+        '/performance': Award,
+        '/learning': GraduationCap,
+        '/compensation': DollarSign,
+        '/digital-twin': Radar,
+        '/why': HelpCircle,
+        '/simulator': FlaskConical,
+        '/workflows': Puzzle,
+        '/ai-tools/chatbot': Sparkles,
+        '/company-setup': Sliders,
+        '/feature-matrix': Puzzle,
+        '/role-builder': ShieldCheck,
+        '/policy-engine': FileText,
+        '/effective-policy': FileText,
+        '/audit': ShieldCheck,
+        '/settings': Settings,
+        '/plants': Factory,
+        '/stores': Building,
+        '/credentials': Award,
+        '/fleet': Truck,
+        '/sites': Factory,
+        '/inbox': Inbox,
+        '/goals': Target,
+        '/manager-copilot': Users,
+        '/reports': FileText,
+        '/career': Handshake,
+        '/work-health': Heart,
+        '/lifecycle': Puzzle,
+        '/helpdesk': HelpCircle,
+        '/expenses': Wallet,
+        '/shifts': Clock,
+      };
+      return specs.map((s) => ({
+        label: s.label,
+        href: s.href,
+        icon: iconByHref[s.href] || LayoutDashboard,
+      }));
+    }
+
     const mainNav = navConfig[role] || [];
-    
-    // Filter by feature flags
-    return mainNav.filter(item => {
-        if (item.featureId) {
-            return isEnabled(item.featureId);
-        }
-        return true;
+    return mainNav.filter((item) => {
+      if (item.featureId) return isEnabled(item.featureId);
+      return true;
     });
-  }, [role, isEnabled]);
+  }, [role, isEnabled, db.company]);
 };

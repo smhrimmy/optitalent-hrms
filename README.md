@@ -9,7 +9,7 @@ Open **People OS** after login (`/{role}/command-center`).
 ## Documentation
 
 * [Company Type Engine](./docs/COMPANY_TYPE_ENGINE.md) — industry blueprints, roles, policies
-* [System Architecture](./docs/ARCHITECTURE_SPEC.md)
+* [Architecture](./docs/ARCHITECTURE_SPEC.md) — DNA, engines, repository, audit
 * [Design system](./docs/DESIGN_SYSTEM.md)
 * [Launch checklist](./docs/PROJECT_CHECKLIST.md)
 

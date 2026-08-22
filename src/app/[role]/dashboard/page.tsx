@@ -10,6 +10,9 @@ import {
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/hooks/use-auth";
 import { dataQuery } from "@/lib/dataquery";
+import { useDataQuery } from "@/hooks/use-dataquery";
+import { dashboardWidgets } from "@/engines/dashboard";
+import { toDNA } from "@/engines/dna";
 import { CalendarOff, Briefcase as BriefcaseIcon, HelpCircle, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -88,16 +91,16 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const db = useDataQuery();
   const displayName = user?.profile?.full_name?.split(" ")[0] || "there";
-  const stats = dataQuery.dashboardStats();
-  const liveKpis = [
-    { label: "Headcount", value: String(stats.headcount), change: "Active staff", trend: "up", icon: Users },
-    { label: "Pending Leaves", value: String(stats.pendingLeaves), change: "Need approval", trend: "up", icon: CalendarOff },
-    { label: "Open Jobs", value: String(stats.openJobs), change: "Hiring pipeline", trend: "up", icon: BriefcaseIcon },
-    { label: "Open Tickets", value: String(stats.openTickets), change: "Helpdesk", trend: "down", icon: HelpCircle },
-    { label: "Expense Claims", value: String(stats.pendingExpenses), change: "Awaiting review", trend: "up", icon: Wallet },
-    { label: "Applicants", value: String(stats.applicants), change: "ATS", trend: "up", icon: UserPlus },
-  ];
+  const widgets = dashboardWidgets(toDNA(db.company));
+  const liveKpis = widgets.map((w) => ({
+    label: w.label,
+    value: w.value,
+    change: w.hint,
+    trend: "up" as const,
+    href: w.whyHref,
+  }));
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 p-4 md:p-6 pb-20 md:pb-6">
@@ -113,19 +116,17 @@ export default function DashboardPage() {
 
       {/* KPIs */}
       <motion.div variants={item}>
-        <h2 className="text-sm font-semibold mb-3">Key Performance Indicators</h2>
+        <h2 className="text-sm font-semibold mb-3">From this company’s DNA — click Why on a number</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {liveKpis.map((k) => (
-            <div key={k.label} className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
+            <Link key={k.label} href={`/${user?.role || 'hr'}${k.href || '/why'}`} className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm ot-enter block">
               <div className="flex items-center justify-between mb-2">
                  <p className="text-xs text-muted-foreground">{k.label}</p>
-                 <k.icon className="h-4 w-4 text-muted-foreground" />
+                 <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Why?</span>
               </div>
               <p className="text-2xl font-bold mt-1">{k.value}</p>
-              <span className={`text-xs font-medium ${k.trend === "up" ? "text-green-500" : "text-red-500"}`}>
-                {k.change}
-              </span>
-            </div>
+              <span className="text-xs font-medium text-muted-foreground">{k.change}</span>
+            </Link>
           ))}
         </div>
       </motion.div>

@@ -154,6 +154,9 @@ function AttendanceDetailPanel({ date, onClose, dayData }: { date: Date, onClose
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { dataQuery } from '@/lib/dataquery';
+import { enqueueClock } from '@/engines/sync-queue';
+import { recordAudit } from '@/engines/audit';
+import { TENANT_ID } from '@/engines/dna';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function AttendancePage() {
@@ -259,6 +262,17 @@ export default function AttendancePage() {
 
     if (user) {
         const rec = dataQuery.clock(user.profile.id);
+        enqueueClock(user.profile.id);
+        recordAudit({
+          user: user.profile.full_name,
+          role: user.role,
+          entity: 'attendance',
+          record: user.profile.employee_id,
+          action: rec.clock_out ? 'clock_out' : 'clock_in',
+          source: typeof navigator !== 'undefined' && !navigator.onLine ? 'ui' : 'ui',
+          tenantId: TENANT_ID,
+          reason: typeof navigator !== 'undefined' && !navigator.onLine ? 'queued offline' : 'live',
+        });
         toast({ title: "Success", description: rec.clock_out ? "Clocked out successfully." : "Clocked in successfully." });
         setAttendanceLog(prevLog => {
             const newLog = { ...(prevLog || {}) };

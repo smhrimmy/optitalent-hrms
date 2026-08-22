@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-22 — Configuration-driven OS
+- Company DNA + engines (permission, policy, dashboard, navigation, workflow, audit, sync queue)
+- AI tools go through the permission engine (salary lookups denied for employees)
+- Dynamic dashboard widgets and sidebar from industry pack
+- Effective policy viewer, visual role ACL matrix, lifecycle recipes
+- Design tokens JSON, OpenAPI stub, Dependabot, engine tests in CI
+- Checklist PDF mapped to evidence in `docs/PROJECT_CHECKLIST.md` (scale/ops not fake-checked)
+
 ## 2026-08-22 — Company Type Engine
 - Industry + size + workforce + geography generate modules, org model, roles, and policies
 - Wizard at `/setup` with manufacturing/retail/healthcare/IT presets

@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, Send } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useDataQuery } from '@/hooks/use-dataquery';
-import { runWorkforceAgent } from '@/lib/workforce-os';
+import { runPermissionedAgent } from '@/ai/tools';
 import { cn } from '@/lib/utils';
 import { OsHeader } from '@/components/workforce/os-header';
 
@@ -21,7 +21,7 @@ const STARTERS = [
   'What happens if we hire 20 developers?',
   'Why is attrition up?',
   'Can I claim internet reimbursement?',
-  'Weekly people brief',
+  'Show me salary for Anika Sharma',
 ];
 
 export default function ChatbotPage() {
@@ -47,13 +47,13 @@ export default function ChatbotPage() {
     if (!text.trim() || !user) return;
     setMessages((prev) => [...prev, { role: 'user', content: text }]);
     setInput('');
-    const result = runWorkforceAgent(text, {
+    const result = runPermissionedAgent(text, {
       name: user.profile.full_name,
       role: user.role,
       profileId: user.profile.id,
       employeeId: user.profile.employee_id,
     });
-    setMessages((prev) => [...prev, { role: 'model', content: result.reply }]);
+    setMessages((prev) => [...prev, { role: 'model', content: result.text }]);
   };
 
   return (

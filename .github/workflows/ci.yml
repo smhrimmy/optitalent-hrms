@@ -13,5 +13,6 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run test:engines
       - run: npx tsc --noEmit --pretty false || true
       - run: npm run build

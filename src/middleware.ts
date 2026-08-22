@@ -56,6 +56,11 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   // Controls how much referrer information is sent to other sites
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https:;"
+  );
+  response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(self)');
   
   // 4. MULTI-TENANCY (Enterprise Feature)
   // We check the subdomain to know which company is accessing the app.

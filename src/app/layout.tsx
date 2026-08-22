@@ -36,6 +36,19 @@ export default function RootLayout({
         className={`${sourceSans.variable} ${fraunces.variable} font-body antialiased overflow-x-hidden`}
         suppressHydrationWarning
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'OptiTalent',
+              applicationCategory: 'BusinessApplication',
+              description:
+                'Adaptive workforce intelligence OS. Company DNA generates the HRMS; intelligence explains why and agents execute with audit.',
+            }),
+          }}
+        />
         <ClientLayout>
           {children}
         </ClientLayout>

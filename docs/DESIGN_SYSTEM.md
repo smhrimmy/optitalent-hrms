@@ -8,7 +8,11 @@
 
 **Never:** purple SaaS gradients, “supercharge your workforce,” nested glass cards.
 
-**Signature moment:** the OT stamp drawing on first load (splash), then ⌘K to jump to a person.
+**Signature moment:** the OT stamp on first load, then a dashboard whose widgets came from Company DNA — manufacturing HR does not see “bench.”
+
+**Motion system:** startup splash; `.ot-enter` for dashboard widgets (180ms ease-out); approval/status changes; `prefers-reduced-motion` kills loops.
+
+**Nielsen baseline:** status (splash/skeletons/audit), real-world HR language, back/skip, consistent labels, confirmations, visible nav from DNA, ⌘K accelerator, no extra chrome, recoverable errors, `/setup` as the help for configuration.
 
 **Tokens:** CSS variables in `src/app/globals.css`. Spacing 4px baseline. Radius 6px. Primary forest ink. Accent oak. Type: Fraunces (display) + Source Sans 3 (UI).
 

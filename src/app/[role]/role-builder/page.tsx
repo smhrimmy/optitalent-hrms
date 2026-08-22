@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 
 export default function RoleBuilderPage() {
   const db = useDataQuery();
@@ -77,12 +76,41 @@ export default function RoleBuilderPage() {
               </div>
             </div>
             <p className="font-medium pt-2">Module actions</p>
-            <div className="flex flex-wrap gap-1">
-              {Object.entries(current.modules).map(([mod, acts]) => (
-                <Badge key={mod} variant="secondary">
-                  {mod}: {acts.join(', ')}
-                </Badge>
-              ))}
+            <div className="overflow-x-auto border rounded-md">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-muted/50 text-left">
+                    <th className="p-2">Module</th>
+                    {['view', 'create', 'edit', 'delete', 'approve', 'export'].map((a) => (
+                      <th key={a} className="p-2 capitalize">{a}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {['core_hr', 'payroll', 'performance', 'leave', 'recruitment', 'attendance'].map((mod) => (
+                    <tr key={mod} className="border-t">
+                      <td className="p-2 font-medium">{mod}</td>
+                      {['view', 'create', 'edit', 'delete', 'approve', 'export'].map((act) => {
+                        const on = (current.modules[mod] || current.modules['*'] || []).some((x) => x === act || x === 'manage' || x === '*');
+                        return (
+                          <td key={act} className="p-2">
+                            <input
+                              type="checkbox"
+                              checked={on}
+                              onChange={(e) => {
+                                const cur = new Set(current.modules[mod] || []);
+                                if (e.target.checked) cur.add(act);
+                                else cur.delete(act);
+                                setDraft({ ...current, modules: { ...current.modules, [mod]: [...cur] } });
+                              }}
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <Button
               onClick={() => {
