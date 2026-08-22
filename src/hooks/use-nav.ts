@@ -15,6 +15,7 @@ import {
   DollarSign,
   ClipboardCheck,
   Award,
+  Target,
   Activity,
   ShieldCheck,
   Database,
