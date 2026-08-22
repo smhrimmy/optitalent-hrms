@@ -83,11 +83,17 @@ Visit `http://localhost:3000` to access the application.
 
 ## 🔐 Default Credentials
 
-**Super Admin**:
-*   Email: `superadmin@optitalent.com`
+**Super Admin / Admin**:
+*   Email: `admin@optitalent.com`
 *   Password: `password123`
 
-**Tenant Admin (Acme Corp)**:
-*   Email: `admin@acme.com`
+**HR**:
+*   Email: `hr@optitalent.com`
 *   Password: `password123`
+
+**Employee**:
+*   Email: `employee@optitalent.com`
+*   Password: `password123`
+
+Any seeded `@optitalent.com` account uses the same password. The `src/lib/dataquery.ts` layer keeps HR modules working locally when Supabase is not configured.
 

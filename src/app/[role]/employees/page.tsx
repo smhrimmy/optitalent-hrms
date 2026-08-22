@@ -29,6 +29,7 @@ import { mockUsers, type UserProfile, type User } from '@/lib/mock-data/employee
 import { useAuth } from '@/hooks/use-auth';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
+import { dataQuery } from '@/lib/dataquery';
 
 const AddEmployeeButton = dynamic(() => import('@/components/employees/add-employee-button'), {
     loading: () => <Button disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Add Employee</Button>,
@@ -51,8 +52,7 @@ export default function EmployeesPage() {
         try {
              const { data: { user } } = await supabase.auth.getUser();
              if (!user) {
-                 // Fallback to mock if no auth (dev mode without supbase auth)
-                 setEmployees(mockUsers.map(u => u.profile));
+                 setEmployees(dataQuery.listEmployees());
                  setLoading(false);
                  return;
              }
@@ -64,7 +64,7 @@ export default function EmployeesPage() {
                 .single();
             
              if (!userData?.tenant_id) {
-                 setEmployees(mockUsers.map(u => u.profile));
+                 setEmployees(dataQuery.listEmployees());
                  setLoading(false);
                  return;
              }
@@ -110,12 +110,11 @@ export default function EmployeesPage() {
                 }));
                  setEmployees(mappedEmployees);
             } else {
-                 setEmployees([]);
+                 setEmployees(dataQuery.listEmployees());
             }
         } catch (error) {
             console.error("Error fetching employees:", error);
-            // Fallback to mock on error? Or just show empty/error
-            // setEmployees(mockUsers.map(u => u.profile));
+            setEmployees(dataQuery.listEmployees());
         } finally {
             setLoading(false);
         }
@@ -145,7 +144,8 @@ export default function EmployeesPage() {
               .update({ status: 'Inactive' })
               .eq('id', employee.id);
           
-          if (error) {
+          dataQuery.setEmployeeStatus(employee.id, 'Inactive');
+          if (error && dataQuery.isSupabaseConfigured()) {
               toast({ title: "Error", description: error.message, variant: "destructive" });
           } else {
               toast({ title: "Success", description: `${employee.full_name} has been deactivated.` });

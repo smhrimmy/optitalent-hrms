@@ -25,6 +25,8 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { dataQuery } from '@/lib/dataquery';
+import { useAuth } from '@/hooks/use-auth';
 import { supabase } from "@/lib/supabase";
 import { ConfigureWalkInDialog } from "@/components/recruitment/configure-walkin-dialog";
 
@@ -60,14 +62,23 @@ export default function RecruitmentPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
   const role = params.role || 'admin';
 
   useEffect(() => {
     const fetchApplicants = async () => {
         setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
+            const { data: { user: remote } } = await supabase.auth.getUser();
+            if (!remote) {
+                setApplicants(dataQuery.listApplicants().map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    avatar: a.avatar,
+                    role: a.role,
+                    appliedDate: a.appliedDate,
+                    status: a.status as Applicant['status'],
+                })));
                 setLoading(false);
                 return;
             }
@@ -75,10 +86,13 @@ export default function RecruitmentPage() {
             const { data: userData } = await supabase
                 .from('users')
                 .select('tenant_id')
-                .eq('id', user.id)
+                .eq('id', remote.id)
                 .single();
             
             if (!userData?.tenant_id) {
+                setApplicants(dataQuery.listApplicants().map(a => ({
+                    id: a.id, name: a.name, avatar: a.avatar, role: a.role, appliedDate: a.appliedDate, status: a.status as Applicant['status'],
+                })));
                 setLoading(false);
                 return;
             }
@@ -104,7 +118,9 @@ export default function RecruitmentPage() {
             }
         } catch (error: any) {
             console.error("Error fetching applicants:", error);
-            toast({ title: "Error", description: "Failed to load applicants.", variant: "destructive" });
+            setApplicants(dataQuery.listApplicants().map(a => ({
+                id: a.id, name: a.name, avatar: a.avatar, role: a.role, appliedDate: a.appliedDate, status: a.status as Applicant['status'],
+            })));
         } finally {
             setLoading(false);
         }

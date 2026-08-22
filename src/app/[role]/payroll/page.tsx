@@ -52,6 +52,7 @@ const trendData = [
 
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/use-auth';
+import { dataQuery } from '@/lib/dataquery';
 
 type Payslip = {
     id: string;
@@ -68,6 +69,7 @@ export default function PayrollPage() {
   const { toast } = useToast();
   const params = useParams();
   const role = params.role as string;
+  const { user } = useAuth();
   
   const [payslips, setPayslips] = useState<Payslip[]>([]);
   const [summary, setSummary] = useState({ net: 0, gross: 0, deductions: 0 });
@@ -80,13 +82,24 @@ export default function PayrollPage() {
 
   const fetchPayrollData = async () => {
       try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) return;
+          const { data: { user: remote } } = await supabase.auth.getUser();
+          if (!remote) {
+              const rows = isAdminOrFinance ? dataQuery.listPayroll() : dataQuery.listPayroll(user?.profile.id);
+              setPayslips(rows.map((p) => ({
+                  id: p.id,
+                  period: new Date(p.pay_period).toLocaleString('default', { month: 'long', year: 'numeric' }),
+                  date: p.pay_period,
+                  amount: `$${p.net_salary}`,
+                  status: p.status
+              })));
+              if (rows[0]) setSummary({ net: rows[0].net_salary, gross: rows[0].gross, deductions: rows[0].deductions });
+              return;
+          }
 
           const { data: userData } = await supabase
               .from('users')
               .select('tenant_id, employees(id)')
-              .eq('id', user.id)
+              .eq('id', remote.id)
               .single();
           
           if (!userData?.tenant_id) return;
@@ -133,6 +146,15 @@ export default function PayrollPage() {
 
       } catch (error) {
           console.error("Error fetching payroll:", error);
+          const rows = isAdminOrFinance ? dataQuery.listPayroll() : dataQuery.listPayroll(user?.profile.id);
+          setPayslips(rows.map((p) => ({
+              id: p.id,
+              period: new Date(p.pay_period).toLocaleString('default', { month: 'long', year: 'numeric' }),
+              date: p.pay_period,
+              amount: `$${p.net_salary}`,
+              status: p.status
+          })));
+          if (rows[0]) setSummary({ net: rows[0].net_salary, gross: rows[0].gross, deductions: rows[0].deductions });
       }
   };
 

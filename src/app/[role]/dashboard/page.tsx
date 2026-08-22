@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/hooks/use-auth";
+import { dataQuery } from "@/lib/dataquery";
+import { CalendarOff, Briefcase as BriefcaseIcon, HelpCircle, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -87,6 +89,15 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 export default function DashboardPage() {
   const { user } = useAuth();
   const displayName = user?.profile?.full_name?.split(" ")[0] || "there";
+  const stats = dataQuery.dashboardStats();
+  const liveKpis = [
+    { label: "Headcount", value: String(stats.headcount), change: "Active staff", trend: "up", icon: Users },
+    { label: "Pending Leaves", value: String(stats.pendingLeaves), change: "Need approval", trend: "up", icon: CalendarOff },
+    { label: "Open Jobs", value: String(stats.openJobs), change: "Hiring pipeline", trend: "up", icon: BriefcaseIcon },
+    { label: "Open Tickets", value: String(stats.openTickets), change: "Helpdesk", trend: "down", icon: HelpCircle },
+    { label: "Expense Claims", value: String(stats.pendingExpenses), change: "Awaiting review", trend: "up", icon: Wallet },
+    { label: "Applicants", value: String(stats.applicants), change: "ATS", trend: "up", icon: UserPlus },
+  ];
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 p-4 md:p-6 pb-20 md:pb-6">
@@ -101,7 +112,7 @@ export default function DashboardPage() {
       <motion.div variants={item}>
         <h2 className="text-sm font-semibold mb-3">Key Performance Indicators</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {kpis.map((k) => (
+          {liveKpis.map((k) => (
             <div key={k.label} className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
               <div className="flex items-center justify-between mb-2">
                  <p className="text-xs text-muted-foreground">{k.label}</p>

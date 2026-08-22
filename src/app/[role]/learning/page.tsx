@@ -9,6 +9,7 @@ import { Bell, BookOpen, Check, Clock, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
+import { dataQuery } from '@/lib/dataquery';
 import { CourseCard } from '@/components/learning/course-card';
 import { TeamProgressTable } from '@/components/learning/team-progress-table';
 
@@ -41,7 +42,17 @@ const EmployeeView = () => {
             setLoading(true);
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser();
-                if (!authUser) return;
+                if (!authUser) {
+                    const courses = dataQuery.listCourses();
+                    setCourses(courses);
+                    const enrolls = dataQuery.listEnrollments(user?.profile.id);
+                    const mapped: Record<string, EmployeeProgress> = {};
+                    enrolls.forEach(e => {
+                        mapped[e.courseId] = { courseId: e.courseId, employeeId: e.employeeId, status: e.status, progress: e.progress };
+                    });
+                    setProgressMap(mapped);
+                    return;
+                }
 
                 const { data: userData } = await supabase
                     .from('users')
@@ -94,6 +105,8 @@ const EmployeeView = () => {
                 }
             } catch (error) {
                 console.error("Error fetching learning data:", error);
+                const courses = dataQuery.listCourses();
+                setCourses(courses);
             } finally {
                 setLoading(false);
             }

@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Bot, Loader2, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addEmployeeAction, suggestRoleAction } from '@/app/[role]/employees/actions';
-import { mockUsers, type User, type UserProfile } from '@/lib/mock-data/employees';
+import { dataQuery } from '@/lib/dataquery';
+import type { User, UserProfile } from '@/lib/mock-data/employees';
 
 
 export default function AddEmployeeDialog({ onEmployeeAdded }: { onEmployeeAdded: (employee: User) => void }) {
@@ -54,27 +55,14 @@ export default function AddEmployeeDialog({ onEmployeeAdded }: { onEmployeeAdded
     const result = await addEmployeeAction(formData);
     
     if(result.success) {
-      const newProfile: UserProfile = {
-        id: `profile-${Date.now()}`,
-        full_name: name,
-        department: { name: formData.get('department') as string },
-        department_id: `d-${Date.now()}`,
-        job_title: formData.get('jobTitle') as string,
-        role: formData.get('role') as UserProfile['role'],
-        employee_id: `PEP${String(mockUsers.length + 1).padStart(4,'0')}`,
-        profile_picture_url: `https://ui-avatars.com/api/?name=${name.replace(' ','+')}&background=random`,
-        phone_number: '123-456-7890',
-        status: 'Active',
-      };
-      
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        email: email,
-        role: newProfile.role,
-        profile: newProfile
-      }
-      mockUsers.push(newUser);
-      onEmployeeAdded(newUser);
+    const created = dataQuery.addEmployee({
+      name,
+      email,
+      department: formData.get('department') as string,
+      jobTitle: formData.get('jobTitle') as string,
+      role: formData.get('role') as UserProfile['role'],
+    });
+    onEmployeeAdded(created);
       
       toast({ title: "Employee Added", description: `The new employee has been added successfully.` });
       setIsOpen(false);

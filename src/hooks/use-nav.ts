@@ -33,7 +33,11 @@ import {
   Heart,
   BrainCircuit,
   Sliders,
-  Code
+  Code,
+  Wallet,
+  Package,
+  Network,
+  UserMinus
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { AnimatedBot } from '@/components/ui/animated-bot';
@@ -62,6 +66,11 @@ const featureMapping: Record<string, FeatureModule> = {
   '/ai-tools/career-predictor': 'ai_tools',
   '/admin-config': 'developer_tools', // Or just available for admin
   '/developer-panel': 'developer_tools',
+  '/expenses': 'expenses',
+  '/assets': 'assets',
+  '/org-chart': 'org_chart',
+  '/timesheets': 'timesheets',
+  '/offboarding': 'offboarding',
 };
 
 export const navConfig: Record<string, NavItem[]> = {
@@ -91,6 +100,11 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Leaves', href: '/leaves', icon: CalendarOff, featureId: 'leave' },
     { label: 'Shifts', href: '/shifts', icon: Clock, featureId: 'attendance' },
     { label: 'Payroll', href: '/payroll', icon: DollarSign, featureId: 'payroll' },
+    { label: 'Expenses', href: '/expenses', icon: Wallet, featureId: 'expenses' },
+    { label: 'Assets', href: '/assets', icon: Package, featureId: 'assets' },
+    { label: 'Timesheets', href: '/timesheets', icon: FileText, featureId: 'timesheets' },
+    { label: 'Org Chart', href: '/org-chart', icon: Network, featureId: 'org_chart' },
+    { label: 'Offboarding', href: '/offboarding', icon: UserMinus, featureId: 'offboarding' },
     { label: 'Attendance', href: '/attendance', icon: Calendar, featureId: 'attendance' },
     { label: 'Helpdesk', href: '/helpdesk', icon: HelpCircle },
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
@@ -109,6 +123,11 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Leaves', href: '/leaves', icon: CalendarOff, featureId: 'leave' },
     { label: 'Shifts', href: '/shifts', icon: Clock, featureId: 'attendance' },
     { label: 'Payroll', href: '/payroll', icon: DollarSign, featureId: 'payroll' },
+    { label: 'Expenses', href: '/expenses', icon: Wallet, featureId: 'expenses' },
+    { label: 'Assets', href: '/assets', icon: Package, featureId: 'assets' },
+    { label: 'Timesheets', href: '/timesheets', icon: FileText, featureId: 'timesheets' },
+    { label: 'Org Chart', href: '/org-chart', icon: Network, featureId: 'org_chart' },
+    { label: 'Offboarding', href: '/offboarding', icon: UserMinus, featureId: 'offboarding' },
     { label: 'Attendance', href: '/attendance', icon: Calendar, featureId: 'attendance' },
     { label: 'Helpdesk', href: '/helpdesk', icon: HelpCircle },
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
@@ -125,6 +144,9 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Recognition', href: '/recognition', icon: Heart },
     { label: 'Leaves', href: '/leaves', icon: CalendarOff, featureId: 'leave' },
     { label: 'Shifts', href: '/shifts', icon: Clock, featureId: 'attendance' },
+    { label: 'Expenses', href: '/expenses', icon: Wallet, featureId: 'expenses' },
+    { label: 'Timesheets', href: '/timesheets', icon: FileText, featureId: 'timesheets' },
+    { label: 'Org Chart', href: '/org-chart', icon: Network, featureId: 'org_chart' },
     { label: 'Reports', href: '/reports', icon: FileText },
     { label: 'Attendance', href: '/attendance', icon: Calendar, featureId: 'attendance' },
     { label: 'Helpdesk', href: '/helpdesk', icon: HelpCircle },
@@ -140,6 +162,9 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Learning', href: '/learning', icon: GraduationCap, featureId: 'training' },
     { label: 'Recognition', href: '/recognition', icon: Heart },
     { label: 'Payroll', href: '/payroll', icon: DollarSign, featureId: 'payroll' },
+    { label: 'Expenses', href: '/expenses', icon: Wallet, featureId: 'expenses' },
+    { label: 'Assets', href: '/assets', icon: Package, featureId: 'assets' },
+    { label: 'Timesheets', href: '/timesheets', icon: FileText, featureId: 'timesheets' },
     { label: 'Helpdesk', href: '/helpdesk', icon: HelpCircle },
     { label: 'Assessments', href: '/assessments', icon: ClipboardCheck },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
@@ -206,6 +231,7 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Analytics', href: '/analytics', icon: BarChart2 },
     { label: 'Payroll', href: '/payroll', icon: DollarSign, featureId: 'payroll' },
+    { label: 'Expenses', href: '/expenses', icon: Wallet, featureId: 'expenses' },
     { label: 'Recognition', href: '/recognition', icon: Heart },
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },

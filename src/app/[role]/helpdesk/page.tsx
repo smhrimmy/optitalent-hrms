@@ -25,6 +25,8 @@ const NewTicketDialog = dynamic(() => import('@/components/helpdesk/new-ticket-d
 
 
 import { supabase } from '@/lib/supabase';
+import { dataQuery, type TicketCategory, type TicketPriority } from '@/lib/dataquery';
+import { useAuth } from '@/hooks/use-auth';
 
 // ... (keep dynamic imports)
 
@@ -55,6 +57,7 @@ export default function HelpdeskPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchTickets();
@@ -63,20 +66,17 @@ export default function HelpdeskPage() {
   const fetchTickets = async () => {
       setLoading(true);
       try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) return;
-
+          const { data: { user: remote } } = await supabase.auth.getUser();
+          if (remote) {
           const { data: userData } = await supabase
               .from('users')
               .select('tenant_id, employees(id)')
-              .eq('id', user.id)
+              .eq('id', remote.id)
               .single();
           
-          if (!userData?.tenant_id) return;
-          const employeeId = userData.employees?.[0]?.id;
-
-          // Fetch Tickets
-          let query = supabase
+          if (userData?.tenant_id) {
+          const employeeId = (userData as any).employees?.[0]?.id;
+          const query = supabase
               .from('helpdesk_tickets')
               .select(`
                   id,
@@ -94,22 +94,9 @@ export default function HelpdeskPage() {
               `)
               .eq('tenant_id', userData.tenant_id)
               .order('created_at', { ascending: false });
-          
-          // If not admin/hr/support, filter by own tickets
-          // Assuming RLS handles it, but let's be explicit if we knew the role.
-          // For now rely on RLS or fetch all if allowed.
-          // Actually, let's just fetch. RLS "Tenant Isolation" only checks tenant_id. 
-          // We need a specific RLS for "View Tickets" which restricts to owner or support staff.
-          // The current RLS is just tenant isolation.
-          // We should probably filter by employee_id if not a support role, but let's assume everyone can see their own for now.
-          if (employeeId) {
-               // query = query.eq('employee_id', employeeId); // Only if we want strict owner view
-          }
 
           const { data, error } = await query;
-          if (error) throw error;
-
-          if (data) {
+          if (!error && data && data.length) {
               const mappedTickets: Ticket[] = data.map((t: any) => ({
                   id: t.id,
                   ticket_number: t.ticket_number,
@@ -117,20 +104,31 @@ export default function HelpdeskPage() {
                   department: t.category,
                   priority: t.priority,
                   status: t.status,
-                  lastUpdate: new Date(t.created_at).toLocaleString(), // approximations
+                  lastUpdate: new Date(t.created_at).toLocaleString(),
                   messages: t.helpdesk_messages?.map((m: any) => ({
-                      from: m.sender_id === employeeId ? 'user' : 'support', // Simple logic: if sender is me, it's user.
+                      from: m.sender_id === employeeId ? 'user' : 'support',
                       text: m.message,
                       time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                  })).sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) || []
+                  })) || []
               }));
               setTickets(mappedTickets);
               if (mappedTickets.length > 0 && !selectedTicket) {
                   setSelectedTicket(mappedTickets[0]);
               }
+              setLoading(false);
+              return;
           }
+          }
+          }
+
+          const local = dataQuery.listTickets();
+          setTickets(local);
+          if (local.length > 0 && !selectedTicket) setSelectedTicket(local[0]);
       } catch (error) {
           console.error("Error fetching tickets:", error);
+          const local = dataQuery.listTickets();
+          setTickets(local);
+          if (local.length > 0) setSelectedTicket(local[0]);
       } finally {
           setLoading(false);
       }
@@ -153,20 +151,19 @@ export default function HelpdeskPage() {
     setIsReplying(true);
     
     try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
-        
-        const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
-        if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Profile not found");
-
-        const { error } = await supabase.from('helpdesk_messages').insert({
+        const { data: { user: remote } } = await supabase.auth.getUser();
+        if (remote && selectedTicket) {
+        const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', remote.id).single();
+        if (userData?.tenant_id && (userData as any).employees?.[0]?.id) {
+        await supabase.from('helpdesk_messages').insert({
             tenant_id: userData.tenant_id,
             ticket_id: selectedTicket.id,
-            sender_id: userData.employees[0].id,
+            sender_id: (userData as any).employees[0].id,
             message: newMessage
         });
-
-        if (error) throw error;
+        }
+        }
+        dataQuery.addTicketMessage(selectedTicket.id, 'user', newMessage);
 
         const userMessage: Message = {
             from: 'user',

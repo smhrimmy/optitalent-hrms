@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -17,22 +17,31 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Shield, User, Monitor, Smartphone } from "lucide-react";
-import { mockEmployees } from "@/lib/mock-data/employees";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const params = useParams();
   const role = params.role as string;
+  const { user } = useAuth();
 
-  const mockUser = mockEmployees.find(e => e.role === role) || mockEmployees[0];
-  
   const [profile, setProfile] = useState({
-    name: mockUser.full_name || "Admin User",
-    email: mockUser.email || "admin@optitalent.com",
-    jobTitle: mockUser.job_title || "Administrator",
+    name: "Admin User",
+    email: "admin@optitalent.com",
+    jobTitle: "Administrator",
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.profile.full_name,
+        email: user.email,
+        jobTitle: user.profile.job_title,
+      });
+    }
+  }, [user]);
 
   const [password, setPassword] = useState({
     current: "",

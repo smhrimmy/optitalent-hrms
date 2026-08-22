@@ -20,12 +20,15 @@ import { useToast } from '@/hooks/use-toast';
 import { categorizeTicketAction } from '@/app/[role]/helpdesk/actions';
 import type { Ticket } from '@/app/[role]/helpdesk/page';
 import { supabase } from '@/lib/supabase';
+import { dataQuery, type TicketCategory, type TicketPriority } from '@/lib/dataquery';
+import { useAuth } from '@/hooks/use-auth';
 
 export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket) => void}) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const { toast } = useToast();
+    const { user } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -56,16 +59,29 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
             }
 
             let userResult = await supabase.auth.getUser();
-            let user = userResult.data.user;
-            
-            if (!user) {
-                const sessionResult = await supabase.auth.getSession();
-                user = sessionResult.data.session?.user || null;
+            let remote = userResult.data.user;
+            let createdLocal = false;
+
+            if (!remote && user) {
+                const rec = dataQuery.createTicket({
+                    employee_id: user.profile.id,
+                    employee_name: user.profile.full_name,
+                    subject,
+                    description,
+                    department: aiResult.category as TicketCategory,
+                    priority: aiResult.priority as TicketPriority,
+                });
+                onNewTicket(rec as Ticket);
+                toast({ title: "Ticket Created!", description: `Ticket #${rec.ticket_number} submitted successfully.` });
+                setOpen(false);
+                setFile(null);
+                setLoading(false);
+                return;
             }
 
-            if (!user) throw new Error("Not authenticated");
+            if (!remote) throw new Error("Not authenticated");
 
-            const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
+            const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', remote.id).single();
             if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Employee profile not found");
 
             // Upload file if exists
@@ -136,12 +152,27 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
             setOpen(false);
             setFile(null);
         } catch(err: any) {
+            if (user) {
+                const rec = dataQuery.createTicket({
+                    employee_id: user.profile.id,
+                    employee_name: user.profile.full_name,
+                    subject: (document.getElementById('subject') as HTMLInputElement)?.value || 'Support request',
+                    description: (document.getElementById('description') as HTMLTextAreaElement)?.value || '',
+                    department: 'General Inquiry',
+                    priority: 'Medium',
+                });
+                onNewTicket(rec as Ticket);
+                toast({ title: "Ticket Created!", description: `Ticket #${rec.ticket_number} saved locally.` });
+                setOpen(false);
+                setFile(null);
+            } else {
             console.error(err);
             toast({
                 title: "Submission Failed",
                 description: err.message || "Could not create ticket.",
                 variant: "destructive"
             });
+            }
         } finally {
             setLoading(false);
         }
