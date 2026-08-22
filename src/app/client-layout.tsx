@@ -19,6 +19,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 import { CookieBanner } from '@/components/cookie-banner';
 import { RouteProgress } from '@/components/feedback/route-progress';
+import { OfflineBanner } from '@/components/offline-banner';
+import { SessionWatch } from '@/components/session-watch';
 
 const AppSidebar = dynamic(() => import('@/components/app-sidebar'), {
   loading: () => <Skeleton className="hidden md:flex h-screen w-[3.75rem]" />,
@@ -142,7 +144,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/help') ||
     pathname.startsWith('/contact') ||
     pathname.startsWith('/accessibility') ||
-    pathname.startsWith('/errors') ||
+    pathname.startsWith('/mfa') ||
+    pathname.startsWith('/suspended') ||
     pathname.startsWith('/offline') ||
     pathname.startsWith('/session-expired') ||
     pathname.startsWith('/payment-failed') ||
@@ -204,6 +207,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     disableTransitionOnChange
                 >
                     <RouteProgress />
+                    <OfflineBanner />
+                    <SessionWatch />
                     <AppLayout>
                         {children}
                     </AppLayout>

@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useRouter } from 'next/navigation';
 import { mockUsers, type User, type UserProfile } from '@/lib/mock-data/employees';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { postLoginPath } from '@/lib/after-login';
 
 interface AuthContextType {
   user: User | null;
@@ -108,6 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Check if mock user is still there (e.g. strict logout from Supabase clears everything)
              const storedUser = sessionStorage.getItem('authUser');
              if (!storedUser) {
+                 if (_event === 'SIGNED_OUT') {
+                     window.dispatchEvent(new Event('ot-session-expired'));
+                 }
                  setUser(null);
              }
         }
@@ -126,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (userToLogin) {
       setUser(userToLogin);
       sessionStorage.setItem('authUser', JSON.stringify(userToLogin));
-      router.push(`/${userToLogin.role}/dashboard`);
+      router.push(postLoginPath(`/${userToLogin.role}/dashboard`));
       setLoading(false);
       return { error: null };
     } else {
@@ -197,7 +201,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSearchTerm('');
     sessionStorage.removeItem('authUser');
-    router.push('/'); // Or /login
+    sessionStorage.removeItem('ot_mfa_ok');
+    router.push('/');
     setLoading(false);
   };
 

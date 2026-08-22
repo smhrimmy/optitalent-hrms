@@ -9,6 +9,8 @@ Product: a personnel file, not a purple SaaS marketing site.
 - Radius: 6px. No glassmorphism, no Inter+violet defaults.
 - Motion: press on buttons (`.ot-press`), route bar, logo loader. Respects `prefers-reduced-motion`.
 - Empty: `src/components/empty-state.tsx`
+- Records (demo persist): `src/components/records-board.tsx`
+- Org money: `src/lib/org-config.ts` (`formatMoney`)
 - Errors: `src/components/errors/` and `/errors/{code}`, `/offline`, `/session-expired`, etc.
 
 Self-critique: the memorable element is the file-folder metaphor (Fraunces + forest stamp), not a gradient hero.

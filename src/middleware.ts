@@ -41,6 +41,20 @@ export function middleware(request: NextRequest) {
      return NextResponse.redirect(new URL('/maintenance', request.url));
   }
 
+  const lockdown = request.cookies.get('ot_lockdown')?.value === '1';
+  const path = request.nextUrl.pathname;
+  const lockdownAllowed =
+    path.startsWith('/login') ||
+    path.startsWith('/mfa') ||
+    path.startsWith('/suspended') ||
+    path.includes('/super-admin/security') ||
+    path === '/' ||
+    path.startsWith('/privacy') ||
+    path.startsWith('/help');
+  if (lockdown && !lockdownAllowed) {
+    return NextResponse.redirect(new URL('/suspended', request.url));
+  }
+
   // 3. SECURITY HEADERS (Hacker Proofing)
   const response = NextResponse.next();
   

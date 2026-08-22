@@ -55,11 +55,10 @@ export default function SettingsPage() {
   ]
 
   const handleSaveChanges = (type: 'Profile' | 'Notifications' | 'Password') => {
-    // In a real app, you'd send this data to your API
-    console.log(`Saving ${type} changes...`);
+    localStorage.setItem('ot_account_settings', JSON.stringify({ profile, notifications }));
     toast({
-      title: `${type} Settings Saved`,
-      description: `Your ${type.toLowerCase()} changes have been saved successfully.`,
+      title: `${type} saved on this device`,
+      description: type === 'Password' ? 'Demo accounts do not change the shared password.' : `Your ${type.toLowerCase()} preferences are in local storage.`,
     });
   };
 

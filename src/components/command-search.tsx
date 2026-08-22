@@ -113,9 +113,21 @@ export function CommandSearch({
             <Clock className="mr-2 h-4 w-4" />
             Clock In / Out
           </CommandItem>
-          <CommandItem value="button post feed" onSelect={() => go(`/${role}/company-feed`)}>
+          <CommandItem value="action create job recruitment" onSelect={() => go(`/${role}/recruitment`)}>
             <Plus className="mr-2 h-4 w-4" />
-            New Feed Post
+            Create job
+          </CommandItem>
+          <CommandItem value="action run payroll" onSelect={() => go(`/${role}/payroll`)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Run payroll
+          </CommandItem>
+          <CommandItem value="action security settings" onSelect={() => go(`/${role}/super-admin/security`)}>
+            <Settings className="mr-2 h-4 w-4" />
+            Open security settings
+          </CommandItem>
+          <CommandItem value="action expenses claim" onSelect={() => go(`/${role}/expenses`)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add expense
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />

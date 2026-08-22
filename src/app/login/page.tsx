@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { AsyncButton } from "@/components/ui/async-button";
 import { PendingOverlay } from "@/components/feedback/pending-overlay";
 import { Loader2 } from "lucide-react";
+import { postLoginPath } from "@/lib/after-login";
 
 export default function Login() {
   // State variables for form inputs
@@ -94,9 +95,9 @@ export default function Login() {
                 .maybeSingle();
             
             const role = userData?.role || user.user_metadata?.role || 'employee';
-            router.push(`/${role}/dashboard`);
+            router.push(postLoginPath(`/${role}/dashboard`));
         } else {
-            router.push('/dashboard');
+            router.push(postLoginPath('/dashboard'));
         }
       }
     } catch (error: any) {

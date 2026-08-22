@@ -42,7 +42,7 @@ export default function AppSidebar() {
               <SidebarMenuItem key={item.href}>
                 <Link href={`/${role}${item.href}`}>
                   <SidebarMenuButton
-                    isActive={pathname === `/${role}${item.href}`}
+                    isActive={pathname === `/${role}${item.href}` || pathname.startsWith(`/${role}${item.href}/`)}
                     icon={item.icon}
                     tooltip={item.label}
                   >
