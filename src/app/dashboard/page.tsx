@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { BrandLoader } from '@/components/brand-loader';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function TenantDashboard() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function TenantDashboard() {
   const [userId, setUserId] = useState<string>('');
   const [tenantId, setTenantId] = useState<string>('');
   const [employeeId, setEmployeeId] = useState<string>(''); // public.employees ID
+  const { user: authUser, loading: authLoading } = useAuth();
   const router = useRouter();
 
   // Attendance State
@@ -46,6 +48,8 @@ export default function TenantDashboard() {
   const [leaveBalance, setLeaveBalance] = useState(0);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const fetchUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -54,11 +58,11 @@ export default function TenantDashboard() {
                 .from('users')
                 .select('role, full_name, tenant_id, employees(id)')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
              
              if (userData) {
-                 setUserRole(userData.role || 'employee');
-                 setUserName(userData.full_name || 'User');
+                 setUserRole(userData.role || authUser?.role || 'employee');
+                 setUserName(userData.full_name || authUser?.profile?.full_name || 'User');
                  setTenantId(userData.tenant_id);
                  let eid = '';
                  if (userData.employees && userData.employees[0]) {
@@ -69,13 +73,22 @@ export default function TenantDashboard() {
                  
                  fetchAttendance(user.id);
                  fetchDashboardStats(userData.tenant_id, userData.role, eid);
+             } else if (!authUser) {
+                 setUserRole((user.user_metadata?.role as string) || 'employee');
+                 setUserName((user.user_metadata?.full_name as string) || user.email?.split('@')[0] || 'User');
              }
-        } else {
-            router.push('/login');
+             return;
         }
+
+        if (authUser) {
+            router.replace(`/${authUser.role}/dashboard`);
+            return;
+        }
+
+        router.replace('/login');
     };
-    fetchUser();
-  }, [router]);
+    void fetchUser();
+  }, [router, authLoading, authUser]);
 
   const fetchDashboardStats = async (tid: string, role: string, employeeId?: string) => {
       if (!tid) return;

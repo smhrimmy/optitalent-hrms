@@ -60,8 +60,8 @@ export default function LandingPage() {
                   Start Free Trial <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
-                View Demo
+              <Button size="lg" variant="outline" className="h-12 px-8 text-lg" asChild>
+                <Link href="/login">View Demo</Link>
               </Button>
             </div>
           </motion.div>

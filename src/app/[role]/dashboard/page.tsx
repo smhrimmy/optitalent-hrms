@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/hooks/use-auth";
+import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,9 +49,9 @@ const recentEvents = [
 ];
 
 const quickActions = [
-  { label: "Create Role", gradient: "bg-gradient-to-r from-blue-500 to-cyan-500" },
-  { label: "Create Job", gradient: "bg-gradient-to-r from-purple-500 to-pink-500" },
-  { label: "Create Course", gradient: "bg-gradient-to-r from-green-500 to-emerald-500" },
+  { label: "Create Role", gradient: "bg-gradient-to-r from-blue-500 to-cyan-500", href: "/settings" },
+  { label: "Create Job", gradient: "bg-gradient-to-r from-purple-500 to-pink-500", href: "/recruitment" },
+  { label: "Create Course", gradient: "bg-gradient-to-r from-green-500 to-emerald-500", href: "/learning" },
 ];
 
 // Data from HRMS-master
@@ -86,6 +87,8 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const params = useParams();
+  const role = (params.role as string) || user?.role || 'employee';
   const displayName = user?.profile?.full_name?.split(" ")[0] || "there";
 
   return (
@@ -207,9 +210,11 @@ export default function DashboardPage() {
                 <h3 className="text-sm font-semibold mb-3">Quick Actions</h3>
                 <div className="space-y-2">
                 {quickActions.map((a) => (
-                    <button key={a.label} className={`w-full py-2.5 rounded-lg ${a.gradient} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-sm`}>
+                    <Link key={a.label} href={`/${role}${a.href}`}>
+                    <button className={`w-full py-2.5 rounded-lg ${a.gradient} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-sm`}>
                     {a.label}
                     </button>
+                    </Link>
                 ))}
                 </div>
             </motion.div>
@@ -218,7 +223,7 @@ export default function DashboardPage() {
              <motion.div variants={item} className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-sm font-semibold">Wall of Fame</h3>
-                    <Link href="#" className="text-xs text-primary hover:underline">View All</Link>
+                    <Link href={`/${role}/recognition`} className="text-xs text-primary hover:underline">View All</Link>
                 </div>
                 <div className="flex justify-around items-center text-center">
                     {wallOfFame.map((person, index) => (

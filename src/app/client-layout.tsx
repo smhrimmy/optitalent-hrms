@@ -136,7 +136,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/walkin-drive') ||
     pathname.startsWith('/applicant');
 
-    const isDashboard = user && pathname === `/${user.role}/dashboard`;
+    const isDashboard =
+      Boolean(user) &&
+      (pathname === `/${user.role}/dashboard` || pathname === '/dashboard');
 
   if (loading) {
     return (

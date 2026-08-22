@@ -91,19 +91,12 @@ export default function Login() {
                 .from('users')
                 .select('role')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
             
-            const role = userData?.role || 'employee';
-            
-            if (role === 'super-admin') {
-                router.push("/super-admin");
-            } else if (role === 'admin') {
-                router.push("/dashboard"); // Or a specific /admin-dashboard if you create one
-            } else {
-                router.push("/dashboard");
-            }
+            const role = userData?.role || user.user_metadata?.role || 'employee';
+            router.push(`/${role}/dashboard`);
         } else {
-             router.push("/dashboard"); // Fallback
+            router.push('/dashboard');
         }
       }
     } catch (error: any) {
