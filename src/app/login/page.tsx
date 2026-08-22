@@ -5,7 +5,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Shield, Users, BarChart3, Layers } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,12 +38,6 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      if (!isSupabaseConfigured() && isSignUp) {
-        throw new Error(
-          "Supabase is not configured on this deployment. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel (Preview + Production) and redeploy."
-        );
-      }
-
       if (isSignUp) {
         // 1. SIGN UP FLOW
         const { error } = await supabase.auth.signUp({
@@ -151,10 +145,6 @@ export default function Login() {
 
   // Handle Google OAuth Login
   const handleGoogleLogin = async () => {
-    if (!isSupabaseConfigured()) {
-      toast.error("Google sign-in needs Supabase env vars on this deployment.");
-      return;
-    }
     setIsGoogleLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -253,11 +243,6 @@ export default function Login() {
             <p className="text-muted-foreground mt-1">
               {isSignUp ? "Create your account to get started" : "Sign in to continue"}
             </p>
-            {!isSupabaseConfigured() && (
-              <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                This preview has no live Supabase URL. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel, then redeploy. Demo emails @optitalent.com still work.
-              </p>
-            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
