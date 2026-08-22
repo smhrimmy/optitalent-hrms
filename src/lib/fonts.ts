@@ -1,14 +1,20 @@
-import { Poppins, Space_Grotesk } from 'next/font/google';
+import { Fraunces, Source_Sans_3, IBM_Plex_Mono } from 'next/font/google';
 
-export const poppins = Poppins({
+export const sourceSans = Source_Sans_3({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+  variable: '--font-source-sans',
 });
 
-export const spaceGrotesk = Space_Grotesk({
+export const fraunces = Fraunces({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-fraunces',
+});
+
+export const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-ibm-plex-mono',
+  weight: ['400', '500'],
 });

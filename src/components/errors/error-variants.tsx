@@ -3,105 +3,172 @@
 import React from 'react';
 import { ErrorPage } from './ErrorPage';
 
-// Using external Lottie JSON URLs for better performance and to avoid bundling large JSON files
-// In a real production app, you might download these to public/animations/
-
-// --- 404 Not Found ---
 export const NotFoundError = () => (
   <ErrorPage
     code="404"
-    title="Lost in Space?"
-    description="This page seems to have drifted into deep space. Let's navigate you back to civilization."
-    // 404 Astronaut floating
-    imageUrl="https://illustrations.popsy.co/amber/surr-404.svg"
-    isLottieUrl={false}
-    actionLabel="Take Me Home 🚀"
-    onAction={() => window.location.href = '/dashboard'}
+    title="That page is not in the file"
+    description="The URL does not match a screen in OptiTalent. Check the link, or open the home page."
+    actionLabel="Home"
+    actionHref="/"
+    secondaryActionLabel="Help"
+    secondaryHref="/help"
   />
 );
 
-// --- 401 Unauthorized ---
 export const UnauthorizedError = () => (
   <ErrorPage
     code="401"
-    title="Who Goes There?"
-    description="You need the secret handshake to enter this area. Let's verify your identity first."
-    // Lock animation
-    imageUrl="https://illustrations.popsy.co/amber/surr-access-denied.svg" 
-    isLottieUrl={false}
-    actionLabel="Log In"
-    onAction={() => window.location.href = '/login'}
+    title="Sign in required"
+    description="This screen is for signed-in staff. Use a work email or a demo account."
+    actionLabel="Sign in"
+    actionHref="/login"
   />
 );
 
-// --- 403 Forbidden ---
 export const ForbiddenError = () => (
   <ErrorPage
     code="403"
-    title="Access Denied"
-    description="This area is restricted. You're close, but your clearance level doesn't grant access to this sector."
-    // Shield/Security animation
-    imageUrl="https://illustrations.popsy.co/amber/surr-fatal-error.svg" 
-    isLottieUrl={false}
-    actionLabel="Return to Dashboard"
-    onAction={() => window.location.href = '/dashboard'}
-    secondaryActionLabel="Request Access"
-    onSecondaryAction={() => alert('Access request sent to admin!')}
+    title="Your role cannot open this"
+    description="The record exists, but this account is not allowed to see it. Ask HR to change the role if you need it."
+    actionLabel="Dashboard"
+    actionHref="/dashboard"
+    secondaryActionLabel="Contact"
+    secondaryHref="/contact"
   />
 );
 
-// --- 500 Server Error ---
+export const BadRequestError = () => (
+  <ErrorPage
+    code="400"
+    title="The request was incomplete"
+    description="A required field or ID was missing. Go back and try the action again."
+    actionLabel="Home"
+    actionHref="/"
+  />
+);
+
 export const ServerError = ({ errorId }: { errorId?: string }) => (
   <ErrorPage
     code="500"
-    title="System Meltdown"
-    description="Our servers are having a momentary existential crisis. Our engineering team has been dispatched."
-    // Server Maintenance / Robot Repair
-    imageUrl="https://illustrations.popsy.co/amber/surr-server-down.svg"
-    isLottieUrl={false}
-    actionLabel="Try Again"
+    title="The server failed this request"
+    description="OptiTalent could not finish the action. Retry once. If it fails again, send support the trace id."
+    actionLabel="Retry"
     onAction={() => window.location.reload()}
-    secondaryActionLabel="Contact Support"
-    onSecondaryAction={() => window.open('mailto:support@optitalent.com')}
+    secondaryActionLabel="Contact support"
+    secondaryHref="/contact"
   >
-    {errorId && (
-        <div className="mt-4 p-2 bg-muted rounded text-xs font-mono text-muted-foreground">
-            Error ID: {errorId}
-        </div>
-    )}
+    {errorId ? <p className="font-code text-xs text-muted-foreground">Trace: {errorId}</p> : null}
   </ErrorPage>
 );
 
-// --- 503 Service Unavailable ---
-export const MaintenanceError = () => (
+export const BadGatewayError = () => (
   <ErrorPage
-    code="503"
-    title="Under Maintenance"
-    description="We're upgrading the spaceship. We'll be back shortly with a shiny new engine."
-    // Construction / Maintenance
-    imageUrl="https://illustrations.popsy.co/amber/surr-page-under-construction.svg"
-    isLottieUrl={false}
-    actionLabel="Check Status"
-    onAction={() => window.open('https://status.optitalent.com')}
+    code="502"
+    title="Upstream service failed"
+    description="A connected service (auth or database) returned an invalid response. Wait a minute and retry."
+    actionLabel="Retry"
+    onAction={() => window.location.reload()}
   />
 );
 
-// --- 429 Too Many Requests ---
+export const MaintenanceError = () => (
+  <ErrorPage
+    code="503"
+    title="OptiTalent is offline for maintenance"
+    description="Schema or app updates are in progress. Attendance and leave are paused until this page clears."
+    actionLabel="Home"
+    actionHref="/"
+  />
+);
+
+export const GatewayTimeoutError = () => (
+  <ErrorPage
+    code="504"
+    title="The request timed out"
+    description="The server did not answer in time. Retry. Avoid submitting payroll twice until you see a confirmation."
+    actionLabel="Retry"
+    onAction={() => window.location.reload()}
+  />
+);
+
 export const RateLimitError = ({ retryAfter }: { retryAfter?: number }) => (
   <ErrorPage
     code="429"
-    title="Whoa, Slow Down!"
-    description="You're clicking faster than our servers can think. Take a breather."
-    // Speedometer / Hourglass
-    imageUrl="https://illustrations.popsy.co/amber/surr-loading.svg"
-    isLottieUrl={false}
-    actionLabel="Slow Down"
+    title="Too many requests"
+    description="This IP hit the per-minute cap. Wait, then continue. Do not hammer sign-in."
+    actionLabel="Retry"
     onAction={() => window.location.reload()}
   >
-      {retryAfter && (
-          <div className="text-center font-bold text-primary animate-pulse">
-              Retry available in {retryAfter} seconds
-          </div>
-      )}
+    {retryAfter ? <p className="text-sm">Wait about {retryAfter} seconds.</p> : null}
   </ErrorPage>
+);
+
+export const OfflineError = () => (
+  <ErrorPage
+    code="offline"
+    title="This device is offline"
+    description="Clock-in and live lists need a network. Reconnect, then reload."
+    actionLabel="Retry"
+    onAction={() => window.location.reload()}
+  />
+);
+
+export const SessionExpiredError = () => (
+  <ErrorPage
+    code="session"
+    title="Your session ended"
+    description="Sign in again to keep working. Unsaved form fields on this tab were not stored."
+    actionLabel="Sign in"
+    actionHref="/login"
+  />
+);
+
+export const PaymentFailedError = () => (
+  <ErrorPage
+    code="payment"
+    title="The payment did not go through"
+    description="The card or bank declined this charge. No seat was added. Try another method or ask finance."
+    actionLabel="Back to billing"
+    actionHref="/contact"
+  />
+);
+
+export const SuspendedError = () => (
+  <ErrorPage
+    code="suspended"
+    title="This account is suspended"
+    description="HR or a super-admin locked the tenant or user. Mail support@optitalent.com from the company domain."
+    actionLabel="Contact"
+    actionHref="/contact"
+  />
+);
+
+export const ComingSoonError = () => (
+  <ErrorPage
+    code="soon"
+    title="This module is not shipped yet"
+    description="The button is real; the workflow is not. Use the modules in the sidebar that already run."
+    actionLabel="Dashboard"
+    actionHref="/dashboard"
+  />
+);
+
+export const UnsupportedBrowserError = () => (
+  <ErrorPage
+    code="browser"
+    title="This browser is too old"
+    description="Use a current Chrome, Firefox, Safari, or Edge. Internet Explorer is not supported."
+    actionLabel="Home"
+    actionHref="/"
+  />
+);
+
+export const EmptySearchError = () => (
+  <ErrorPage
+    code="search"
+    title="No matching records"
+    description="Nothing in this tenant matches that search. Clear the box or try a name, email, or employee id."
+    actionLabel="Home"
+    actionHref="/"
+  />
 );

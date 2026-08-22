@@ -18,6 +18,7 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/hooks/use-auth';
 import { PendingOverlay } from '@/components/feedback/pending-overlay';
+import { supabase } from '@/lib/supabase';
 
 export default function SignupPage() {
     const { toast } = useToast();
@@ -133,13 +134,27 @@ export default function SignupPage() {
             <Button type="submit" className="w-full" loading={loading}>
                 Create an account
             </Button>
-            <Button variant="outline" className="w-full" type="button" disabled={loading} loading={false}>
+            <Button
+                variant="outline"
+                className="w-full"
+                type="button"
+                disabled={loading}
+                onClick={async () => {
+                    const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.origin },
+                    });
+                    if (error) {
+                        toast({ title: 'Google sign-in failed', description: error.message, variant: 'destructive' });
+                    }
+                }}
+            >
                 Sign up with Google
             </Button>
             </form>
             <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/" className="underline">
+            <Link href="/login" className="underline">
                 Sign in
             </Link>
             </div>

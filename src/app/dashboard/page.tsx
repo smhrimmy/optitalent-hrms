@@ -364,7 +364,7 @@ export default function TenantDashboard() {
                                   <p className="text-sm font-medium leading-none">Review Performance Review for Jane Smith</p>
                                   <p className="text-xs text-muted-foreground">Due Tomorrow</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="ml-auto">View</Button>
+                              <Button variant="ghost" size="sm" className="ml-auto" onClick={() => router.push(`/${userRole}/performance`)}>View</Button>
                           </div>
                       ))}
                   </div>
@@ -384,7 +384,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Recruitment Dashboard</h1>
               <p className="text-muted-foreground">Welcome back, {userName}. Track your candidates here.</p>
             </div>
-            <Button onClick={() => toast.info("Job Posting feature coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/recruitment`)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Post Job
             </Button>
@@ -435,7 +435,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Finance Dashboard</h1>
               <p className="text-muted-foreground">Payroll and Expense Overview.</p>
             </div>
-            <Button onClick={() => toast.info("Payroll processing coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/payroll`)}>
                 <FileText className="mr-2 h-4 w-4" />
                 Process Payroll
             </Button>
@@ -476,7 +476,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Marketing Dashboard</h1>
               <p className="text-muted-foreground">Campaigns and Company Feed.</p>
             </div>
-            <Button onClick={() => toast.info("New Post creation coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/company-feed`)}>
                 <FileText className="mr-2 h-4 w-4" />
                 New Post
             </Button>
@@ -519,7 +519,7 @@ export default function TenantDashboard() {
               <p className="text-muted-foreground">Welcome back, {userName}.</p>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={() => router.push('/dashboard/profile')}>
+                <Button variant="outline" onClick={() => router.push(`/${userRole}/profile`)}>
                     <Users className="mr-2 h-4 w-4" />
                     My Profile
                 </Button>
@@ -633,7 +633,7 @@ export default function TenantDashboard() {
                 <CardContent>
                     <div className="text-3xl font-bold text-slate-800">{points}</div>
                     <p className="text-xs text-muted-foreground">Points Available</p>
-                    <Button variant="link" onClick={() => toast.info("Coupon redemption coming soon!")} className="p-0 h-auto text-xs mt-2 text-blue-600">Redeem &rarr;</Button>
+                    <Button variant="link" onClick={() => router.push(`/${userRole}/recognition`)} className="p-0 h-auto text-xs mt-2 text-primary">Redeem &rarr;</Button>
                 </CardContent>
             </Card>
         </div>

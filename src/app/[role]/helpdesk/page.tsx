@@ -62,9 +62,35 @@ export default function HelpdeskPage() {
 
   const fetchTickets = async () => {
       setLoading(true);
+      const demoTickets: Ticket[] = [
+          {
+              id: 'demo-t1',
+              ticket_number: 1042,
+              subject: 'Laptop not connecting to office Wi-Fi',
+              department: 'IT Support',
+              status: 'Open',
+              priority: 'High',
+              lastUpdate: 'Today',
+              messages: [{ from: 'user', text: 'Cannot join the 5 GHz network after the OS update.', time: '09:12' }],
+          },
+          {
+              id: 'demo-t2',
+              ticket_number: 1041,
+              subject: 'Leave balance looks short',
+              department: 'HR Query',
+              status: 'In Progress',
+              priority: 'Medium',
+              lastUpdate: 'Yesterday',
+              messages: [{ from: 'support', text: 'We are checking the accrual for March.', time: '16:40' }],
+          },
+      ];
       try {
           const { data: { user } } = await supabase.auth.getUser();
-          if (!user) return;
+          if (!user) {
+              setTickets(demoTickets);
+              setSelectedTicket(demoTickets[0]);
+              return;
+          }
 
           const { data: userData } = await supabase
               .from('users')
@@ -72,7 +98,11 @@ export default function HelpdeskPage() {
               .eq('id', user.id)
               .single();
           
-          if (!userData?.tenant_id) return;
+          if (!userData?.tenant_id) {
+              setTickets(demoTickets);
+              setSelectedTicket(demoTickets[0]);
+              return;
+          }
           const employeeId = userData.employees?.[0]?.id;
 
           // Fetch Tickets
@@ -131,6 +161,8 @@ export default function HelpdeskPage() {
           }
       } catch (error) {
           console.error("Error fetching tickets:", error);
+          setTickets(demoTickets);
+          setSelectedTicket(demoTickets[0]);
       } finally {
           setLoading(false);
       }
@@ -154,7 +186,11 @@ export default function HelpdeskPage() {
     
     try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
+        if (!user) {
+            toast({ title: 'Demo mode', description: 'Sign in with a live tenant to post a real reply.' });
+            setIsReplying(false);
+            return;
+        }
         
         const { data: userData } = await supabase.from('users').select('tenant_id, employees(id)').eq('id', user.id).single();
         if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Profile not found");

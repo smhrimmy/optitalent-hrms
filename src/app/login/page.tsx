@@ -159,7 +159,7 @@ export default function Login() {
         label={isGoogleLoading ? "Redirecting to Google…" : isSignUp ? "Creating your account…" : "Signing you in…"}
       />
       {/* LEFT PANEL: Branding & Marketing */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary">
         <div className="absolute inset-0">
           <Image
             src="/login-illustration.jpg"
@@ -275,7 +275,21 @@ export default function Login() {
                   Password
                 </label>
                 {!isSignUp && (
-                  <button type="button" className="text-xs text-primary hover:underline font-medium">
+                  <button
+                    type="button"
+                    className="text-xs text-primary hover:underline font-medium"
+                    onClick={async () => {
+                      if (!email) {
+                        toast.error("Enter your email first.");
+                        return;
+                      }
+                      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: `${window.location.origin}/login`,
+                      });
+                      if (error) toast.error(error.message);
+                      else toast.success("If that inbox exists, a reset mail is on the way.");
+                    }}
+                  >
                     Forgot Password?
                   </button>
                 )}

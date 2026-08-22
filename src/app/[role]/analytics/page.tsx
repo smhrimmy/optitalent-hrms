@@ -75,6 +75,10 @@ const AnalyticsSidebar = ({ activeView, setActiveView }: { activeView: Analytics
 const BenchmarkingView = () => {
     const [chartData, setChartData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [department, setDepartment] = useState('all');
+    const [manager, setManager] = useState('all');
+    const [period, setPeriod] = useState('last-quarter');
+    const { toast } = useToast();
 
     useEffect(() => {
         setTimeout(() => {
@@ -291,7 +295,7 @@ const PerformanceMetricsView = () => {
                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <label className="text-sm font-medium text-muted-foreground" htmlFor="department">Department</label>
-                        <Select defaultValue="all">
+                        <Select value={department} onValueChange={setDepartment}>
                             <SelectTrigger id="department" className="mt-1">
                                 <SelectValue placeholder="Select Department" />
                             </SelectTrigger>
@@ -306,7 +310,7 @@ const PerformanceMetricsView = () => {
                     </div>
                     <div>
                         <label className="text-sm font-medium text-muted-foreground" htmlFor="manager">Manager</label>
-                        <Select defaultValue="all">
+                        <Select value={manager} onValueChange={setManager}>
                             <SelectTrigger id="manager" className="mt-1">
                                 <SelectValue placeholder="Select Manager" />
                             </SelectTrigger>
@@ -319,7 +323,7 @@ const PerformanceMetricsView = () => {
                     </div>
                      <div>
                         <label className="text-sm font-medium text-muted-foreground" htmlFor="time-period">Time Period</label>
-                        <Select defaultValue="last-quarter">
+                        <Select value={period} onValueChange={setPeriod}>
                             <SelectTrigger id="time-period" className="mt-1">
                                 <SelectValue placeholder="Select Period" />
                             </SelectTrigger>
@@ -331,7 +335,7 @@ const PerformanceMetricsView = () => {
                         </Select>
                     </div>
                     <div className="flex items-end">
-                        <Button className="w-full">Apply Filters</Button>
+                        <Button className="w-full" onClick={() => toast({ title: 'Filters applied', description: `${department} · ${manager} · ${period}` })}>Apply Filters</Button>
                     </div>
                 </div>
             </CardContent>

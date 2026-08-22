@@ -17,6 +17,7 @@ import { useAuth, AuthProvider } from '@/hooks/use-auth';
 import { FeaturesProvider } from '@/hooks/use-features';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import { CookieBanner } from '@/components/cookie-banner';
 import { RouteProgress } from '@/components/feedback/route-progress';
 
 const AppSidebar = dynamic(() => import('@/components/app-sidebar'), {
@@ -134,7 +135,22 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     pathname === '/signup' ||
     pathname === '/login' ||
     pathname.startsWith('/walkin-drive') ||
-    pathname.startsWith('/applicant');
+    pathname.startsWith('/applicant') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/cookies') ||
+    pathname.startsWith('/help') ||
+    pathname.startsWith('/contact') ||
+    pathname.startsWith('/accessibility') ||
+    pathname.startsWith('/errors') ||
+    pathname.startsWith('/offline') ||
+    pathname.startsWith('/session-expired') ||
+    pathname.startsWith('/payment-failed') ||
+    pathname.startsWith('/suspended') ||
+    pathname.startsWith('/coming-soon') ||
+    pathname.startsWith('/unsupported') ||
+    pathname.startsWith('/empty-search') ||
+    pathname.startsWith('/demo/');
 
     const isDashboard =
       Boolean(user) &&
@@ -142,7 +158,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="relative min-h-screen w-full bg-gradient-to-br from-violet-100 via-background to-slate-100 dark:from-violet-950/50 dark:via-background dark:to-slate-950">
+      <div className="relative min-h-screen w-full bg-background">
         <BrandLoader label="Loading OptiTalent" />
       </div>
     );
@@ -193,6 +209,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     </AppLayout>
                     <Toaster />
                     <SonnerToaster position="top-center" richColors closeButton />
+                    <CookieBanner />
                 </ThemeProvider>
             </FeaturesProvider>
         </AuthProvider>
