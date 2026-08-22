@@ -1,0 +1,29 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format.schema.json",
+  "color": {
+    "ink": { "$value": "#1a2e29" },
+    "paper": { "$value": "#f7f4ee" },
+    "stamp": { "$value": "#2f6f62" },
+    "oak": { "$value": "#b06a3a" },
+    "danger": { "$value": "#b42318" }
+  },
+  "spacing": {
+    "1": { "$value": "4px" },
+    "2": { "$value": "8px" },
+    "3": { "$value": "12px" },
+    "4": { "$value": "16px" },
+    "6": { "$value": "24px" },
+    "8": { "$value": "32px" }
+  },
+  "radius": {
+    "sm": { "$value": "6px" }
+  },
+  "font": {
+    "display": { "$value": "Fraunces" },
+    "body": { "$value": "Source Sans 3" }
+  },
+  "motion": {
+    "enter": { "$value": "180ms" },
+    "ui": { "$value": "200ms" }
+  }
+}

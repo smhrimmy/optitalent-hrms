@@ -1,5 +1,44 @@
 
-# System Architecture Specification: OptiTalent HRMS v2.0
+# System Architecture Specification: OptiTalent Workforce Intelligence OS
+
+## 0. Configuration-driven product
+
+Nothing important is hardcoded to one company.
+
+```
+OPTITALENT WORKFORCE INTELLIGENCE OS
+        │
+ CONFIGURATION          HR PLATFORM         INTELLIGENCE
+ Company DNA            Core HR             Twin / Why / Risk
+ Industry packs         ATS…Payroll         Simulation / Skills
+ Module registry
+ Role + permission + policy + workflow engines
+        │
+ AGENTIC AI (tools must pass permission engine)
+        │
+ AUDIT + DATA (repository: local | supabase | future API)
+```
+
+Code map:
+
+| Concern | Path |
+| --- | --- |
+| DNA | `src/engines/dna.ts` |
+| Permissions | `src/engines/permission.ts` |
+| Policy | `src/engines/policy.ts` |
+| Navigation | `src/engines/navigation.ts` |
+| Dashboard widgets | `src/engines/dashboard.ts` |
+| Workflows | `src/engines/workflow.ts` |
+| Audit | `src/engines/audit.ts` |
+| Offline queue | `src/engines/sync-queue.ts` |
+| AI tools | `src/ai/tools.ts` |
+| Data provider | `src/data/repository.ts` |
+| Demo store | `src/lib/dataquery.ts` |
+
+Effective access: Role → Permissions → Scope → Policy → Workflow.
+
+---
+
 
 ## 1. Executive Summary
 OptiTalent HRMS v2.0 is a cloud-native, multi-tenant Software-as-a-Service (SaaS) platform designed for enterprise-grade Human Resource Management. This document outlines the architectural blueprint, technology stack, and security measures for the system.

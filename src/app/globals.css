@@ -2,83 +2,103 @@
 @tailwind base;
 @tailwind utilities;
 
+/* OptiTalent tokens — paper desk + forest stamp, not purple SaaS */
 @layer base {
   :root {
-    --background: 240 5% 96%; /* Very light gray - F5F5F5 */
-    --foreground: 222.2 84% 4.9%;
+    --background: 40 28% 97%;
+    --foreground: 160 18% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 40 40% 99%;
+    --card-foreground: 160 18% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 40 40% 99%;
+    --popover-foreground: 160 18% 12%;
 
-    --primary: 262.1 83.3% 57.8%; /* A richer purple */
-    --primary-foreground: 210 40% 98%;
+    --primary: 162 42% 26%;
+    --primary-foreground: 40 33% 97%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 38 22% 92%;
+    --secondary-foreground: 160 18% 16%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    
-    --accent: 210 40% 96.1%; /* More subtle accent */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 40 16% 93%;
+    --muted-foreground: 160 8% 38%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --accent: 28 48% 46%;
+    --accent-foreground: 40 33% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262.1 83.3% 57.8%;
+    --destructive: 4 72% 42%;
+    --destructive-foreground: 40 33% 98%;
 
-    --radius: 0.5rem; /* Standardized radius */
+    --success: 152 45% 32%;
+    --success-foreground: 40 33% 98%;
+    --warning: 38 86% 44%;
+    --warning-foreground: 160 18% 12%;
+    --info: 198 52% 36%;
+    --info-foreground: 40 33% 98%;
 
-    --chart-1: 262 80% 56%;
-    --chart-2: 190 84% 66%;
-    --chart-3: 340 84% 66%;
-    --chart-4: 20 84% 66%;
-    --chart-5: 220 84% 66%;
+    --border: 40 14% 86%;
+    --input: 40 14% 86%;
+    --ring: 162 42% 26%;
 
-    --brand-blue: #3b82f6;
+    --radius: 0.375rem;
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+
+    --chart-1: 162 42% 26%;
+    --chart-2: 28 48% 46%;
+    --chart-3: 198 52% 36%;
+    --chart-4: 38 86% 44%;
+    --chart-5: 160 8% 38%;
+
+    --brand-blue: #2f6f62;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 160 14% 8%;
+    --foreground: 40 20% 94%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 160 12% 11%;
+    --card-foreground: 40 20% 94%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 160 12% 11%;
+    --popover-foreground: 40 20% 94%;
 
-    --primary: 263.4 95.2% 66.3%; /* Brighter purple for dark mode */
-    --primary-foreground: 210 40% 98%;
+    --primary: 158 38% 58%;
+    --primary-foreground: 160 18% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 160 10% 16%;
+    --secondary-foreground: 40 20% 94%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 160 10% 16%;
+    --muted-foreground: 40 10% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 28 42% 56%;
+    --accent-foreground: 160 18% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 62% 48%;
+    --destructive-foreground: 40 20% 96%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 263.4 95.2% 66.3%;
-    
-    --chart-1: 263.4 95.2% 66.3%;
-    --chart-2: 190 84% 76%;
-    --chart-3: 340 84% 76%;
-    --chart-4: 20 84% 76%;
-    --chart-5: 220 84% 76%;
+    --success: 152 40% 48%;
+    --success-foreground: 160 18% 8%;
+    --warning: 38 80% 52%;
+    --warning-foreground: 160 18% 8%;
+    --info: 198 48% 52%;
+    --info-foreground: 160 18% 8%;
 
-    --brand-blue: #3b82f6;
+    --border: 160 10% 20%;
+    --input: 160 10% 20%;
+    --ring: 158 38% 58%;
+
+    --chart-1: 158 38% 58%;
+    --chart-2: 28 42% 56%;
+    --chart-3: 198 48% 52%;
+    --chart-4: 38 80% 52%;
+    --chart-5: 40 10% 70%;
   }
 }
 
@@ -87,19 +107,34 @@
     @apply border-border;
   }
   body {
-    @apply bg-gray-50 dark:bg-background text-foreground;
-    font-family: 'Poppins', sans-serif;
+    @apply bg-background text-foreground;
+    font-family: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ot-enter {
+      animation: ot-enter 180ms ease-out;
+    }
+  }
+  @keyframes ot-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
   }
 }
 
 .detailed-calendar .rdp-table {
-    background-color: #f7fafc; /* gray-100 */
-    border-radius: 0.5rem;
+    background-color: hsl(var(--muted));
+    border-radius: 0.375rem;
     overflow: hidden;
     gap: 1px;
     display: grid;
@@ -107,17 +142,17 @@
 }
 
 .dark .detailed-calendar .rdp-table {
-    background-color: #374151; /* gray-700 */
+    background-color: hsl(var(--muted));
 }
 
 .detailed-calendar .rdp-head_cell {
     text-align: center;
-    padding: 0.75rem 0; /* py-3 */
-    background-color: #ffffff; /* white */
-    font-weight: 600; /* semibold */
-    color: #4b5563; /* gray-600 */
-    font-size: 0.875rem; /* text-sm */
-    border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+    padding: 0.75rem 0;
+    background-color: hsl(var(--card));
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.875rem;
+    border-bottom: 1px solid hsl(var(--border));
 }
 .dark .detailed-calendar .rdp-head_cell {
     background-color: hsl(var(--card));
@@ -126,7 +161,7 @@
 }
 
 .detailed-calendar .rdp-cell {
-    background-color: #ffffff; /* white */
+    background-color: hsl(var(--card));
 }
 .dark .detailed-calendar .rdp-cell {
     background-color: hsl(var(--card));

@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { mockUsers } from '@/lib/mock-data/employees';
+import { dataQuery } from '@/lib/dataquery';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus, Edit, Mail, Phone, Building, Briefcase, User, Heart, MessageSquare, Trash2, ChevronRight, MoreHorizontal, ChevronLeft, Download, Save, X, CalendarDays, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useEffect, useState, useMemo } from 'react';
@@ -34,12 +34,11 @@ export default function EmployeeDetailPage() {
     const employeeId = params.employeeId as string;
 
     useEffect(() => {
-        const foundUser = mockUsers.find(e => e.profile.employee_id === employeeId);
-        if (foundUser) {
-            // Deep copy to prevent mutation of the mock "database"
-            const employeeProfile = JSON.parse(JSON.stringify(foundUser.profile));
+        const found = dataQuery.getEmployeeById(employeeId);
+        if (found) {
+            const employeeProfile = JSON.parse(JSON.stringify(found));
             setEmployee(employeeProfile);
-            setOriginalEmployee(JSON.parse(JSON.stringify(foundUser.profile)));
+            setOriginalEmployee(JSON.parse(JSON.stringify(found)));
         }
         setLoading(false);
     }, [employeeId]);
@@ -66,13 +65,6 @@ export default function EmployeeDetailPage() {
         setOriginalEmployee(employee); // Persist changes to the "original" state for this session
         setIsEditing(false);
         
-        // In a real app, this would be an API call to update the database
-        const index = mockUsers.findIndex(u => u.profile.employee_id === employeeId);
-        if (index > -1 && employee) {
-            mockUsers[index].profile = employee;
-        }
-        
-        console.log("Saving employee data:", employee);
         toast({
             title: "Changes Saved",
             description: "Employee data has been updated.",

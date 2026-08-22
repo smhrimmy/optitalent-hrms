@@ -153,6 +153,11 @@ function AttendanceDetailPanel({ date, onClose, dayData }: { date: Date, onClose
 
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { dataQuery } from '@/lib/dataquery';
+import { enqueueClock } from '@/engines/sync-queue';
+import { recordAudit } from '@/engines/audit';
+import { TENANT_ID } from '@/engines/dna';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function AttendancePage() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
@@ -161,6 +166,7 @@ export default function AttendancePage() {
   const router = useRouter();
   const role = params.role as string;
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const [attendanceLog, setAttendanceLog] = useState<Record<string, any> | null>(null);
   
@@ -173,23 +179,27 @@ export default function AttendancePage() {
     if (!currentDate) return;
 
     const fetchAttendance = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
+        const { data: { user: remote } } = await supabase.auth.getUser();
         const start = startOfMonth(currentDate);
         const end = endOfMonth(currentDate);
-        
-        // Fetch attendance from DB
-        const { data: attendanceData, error } = await supabase
+
+        let attendanceData: any[] | null = null;
+        if (remote) {
+        const { data, error } = await supabase
             .from('attendance')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', remote.id)
             .gte('date', format(start, 'yyyy-MM-dd'))
             .lte('date', format(end, 'yyyy-MM-dd'));
-        
-        if (error) {
-            console.error("Error fetching attendance:", error);
-            return;
+        if (!error) attendanceData = data;
+        }
+        if (!attendanceData && user) {
+            attendanceData = dataQuery.listAttendance(user.profile.id, format(start, 'yyyy-MM-dd'), format(end, 'yyyy-MM-dd')).map(r => ({
+                date: r.date,
+                status: r.status,
+                clock_in: r.clock_in,
+                clock_out: r.clock_out,
+            }));
         }
 
         // Initialize log with skeleton
@@ -250,11 +260,38 @@ export default function AttendancePage() {
     const isoTime = today.toISOString();
     const currentTime = format(today, 'HH:mm');
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (user) {
+        const rec = dataQuery.clock(user.profile.id);
+        enqueueClock(user.profile.id);
+        recordAudit({
+          user: user.profile.full_name,
+          role: user.role,
+          entity: 'attendance',
+          record: user.profile.employee_id,
+          action: rec.clock_out ? 'clock_out' : 'clock_in',
+          source: typeof navigator !== 'undefined' && !navigator.onLine ? 'ui' : 'ui',
+          tenantId: TENANT_ID,
+          reason: typeof navigator !== 'undefined' && !navigator.onLine ? 'queued offline' : 'live',
+        });
+        toast({ title: "Success", description: rec.clock_out ? "Clocked out successfully." : "Clocked in successfully." });
+        setAttendanceLog(prevLog => {
+            const newLog = { ...(prevLog || {}) };
+            newLog[todayKey] = {
+                status: 'Present',
+                checkIn: rec.clock_in ? format(new Date(rec.clock_in), 'HH:mm') : currentTime,
+                checkOut: rec.clock_out ? format(new Date(rec.clock_out), 'HH:mm') : undefined,
+                shiftDetails: 'General Shift',
+                location: 'Office'
+            };
+            return newLog;
+        });
+    }
+
+    const { data: { user: remote } } = await supabase.auth.getUser();
+    if (!remote) return;
 
     try {
-        const { data: userData } = await supabase.from('users').select('tenant_id').eq('id', user.id).single();
+        const { data: userData } = await supabase.from('users').select('tenant_id').eq('id', remote.id).single();
         if (!userData?.tenant_id) {
              toast({ title: "Error", description: "Tenant ID not found.", variant: "destructive" });
              return;
@@ -264,7 +301,7 @@ export default function AttendancePage() {
         const { data: existingRecord } = await supabase
             .from('attendance')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', remote.id)
             .eq('date', todayKey)
             .single();
 
@@ -309,7 +346,7 @@ export default function AttendancePage() {
             // Clock In
             const { error } = await supabase.from('attendance').insert({
                 tenant_id: userData.tenant_id,
-                user_id: user.id,
+                user_id: remote.id,
                 date: todayKey,
                 clock_in: isoTime,
                 status: 'Present'

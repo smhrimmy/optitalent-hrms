@@ -4,6 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Loader2, PlusCircle } from 'lucide-react';
+import { dataQuery } from '@/lib/dataquery';
+import { useAuth } from '@/hooks/use-auth';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -47,8 +49,23 @@ function NewPostDialog({ onAddPost }: { onAddPost: (post: Post) => void }) {
         setLoading(true);
 
         try {
+            const rec = dataQuery.addFeedPost({
+                author: 'Me',
+                authorRole: 'Team',
+                authorId: 'me',
+                avatar: 'https://ui-avatars.com/api/?name=Me&background=random',
+                title,
+                content,
+            });
+            onAddPost(rec);
+            toast({ title: "Post created!", description: "Your new post has been added to the company feed." });
+            setIsOpen(false);
+            setTitle('');
+            setContent('');
+
+            try {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Not authenticated");
+            if (!user) return;
 
             const { data: userData } = await supabase
                 .from('users')
@@ -56,37 +73,17 @@ function NewPostDialog({ onAddPost }: { onAddPost: (post: Post) => void }) {
                 .eq('id', user.id)
                 .single();
             
-            if (!userData?.tenant_id || !userData.employees?.[0]?.id) throw new Error("Employee record not found");
+            if (!userData?.tenant_id || !(userData as any).employees?.[0]?.id) return;
 
-            const { data, error } = await supabase.from('company_feed_posts').insert({
+            await supabase.from('company_feed_posts').insert({
                 tenant_id: userData.tenant_id,
-                author_id: userData.employees[0].id,
+                author_id: (userData as any).employees[0].id,
                 title,
                 content
-            }).select().single();
-
-            if (error) throw error;
-
-            const newPost: Post = {
-                id: data.id,
-                author: 'Me', // We could fetch name, but 'Me' is fine for immediate feedback
-                authorRole: userData.employees[0].job_title,
-                avatar: `https://ui-avatars.com/api/?name=Me&background=random`,
-                title: data.title,
-                content: data.content,
-                timestamp: 'Just now',
-                likes: 0,
-                comments: 0
-            };
-
-            onAddPost(newPost);
-            toast({
-                title: "Post created!",
-                description: "Your new post has been added to the company feed."
             });
-            setIsOpen(false);
-            setTitle('');
-            setContent('');
+            } catch {
+              // local post already saved
+            }
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -149,7 +146,10 @@ export default function CompanyFeedPage() {
         setLoading(true);
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user) {
+                setPosts(dataQuery.listFeed());
+                return;
+            }
 
             const { data: userData } = await supabase
                 .from('users')
@@ -192,6 +192,7 @@ export default function CompanyFeedPage() {
             }
         } catch (error) {
             console.error("Error fetching posts:", error);
+            setPosts(dataQuery.listFeed());
         } finally {
             setLoading(false);
         }
@@ -204,6 +205,7 @@ export default function CompanyFeedPage() {
     };
     
     const handleLike = (postId: string) => {
+        dataQuery.likeFeedPost(postId);
         setPosts(posts.map(p => p.id === postId ? { ...p, likes: p.likes + 1 } : p));
     };
 

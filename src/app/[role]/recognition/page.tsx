@@ -7,6 +7,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Award, ThumbsUp, Gift, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { dataQuery } from "@/lib/dataquery";
+import { useDataQuery } from "@/hooks/use-dataquery";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 const wallOfFame = [
     { name: 'Rajesh T.', empId: 'EMP009', badges: 12, avatar: 'https://ui-avatars.com/api/?name=Rajesh+T&background=random', crown: 'gold' },
@@ -29,6 +36,9 @@ const rewards = [
 
 export default function RecognitionPage() {
     const { toast } = useToast();
+    const db = useDataQuery();
+    const [open, setOpen] = useState(false);
+    const [kudos, setKudos] = useState({ to: '', message: '' });
 
     const handleRedeem = (rewardName: string, points: number) => {
         toast({
@@ -38,10 +48,11 @@ export default function RecognitionPage() {
     };
     
      const handleSendKudos = () => {
-        toast({
-            title: "Kudos Sent!",
-            description: `This would open a dialog to send recognition to a colleague.`,
-        });
+        if (!kudos.to || !kudos.message) return;
+        dataQuery.addKudos({ from: 'You', to: kudos.to, message: kudos.message });
+        toast({ title: "Kudos Sent!", description: `Recognition sent to ${kudos.to}.` });
+        setOpen(false);
+        setKudos({ to: '', message: '' });
     };
 
     return (
@@ -51,7 +62,19 @@ export default function RecognitionPage() {
                     <h1 className="text-3xl font-bold font-headline">Recognition & Rewards</h1>
                     <p className="text-muted-foreground">Celebrate achievements and redeem your points.</p>
                 </div>
-                <Button onClick={handleSendKudos}><Send className="mr-2 h-4 w-4"/> Send Kudos</Button>
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                        <Button><Send className="mr-2 h-4 w-4"/> Send Kudos</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader><DialogTitle>Send kudos</DialogTitle></DialogHeader>
+                        <div className="space-y-3">
+                            <div className="space-y-1"><Label>To</Label><Input value={kudos.to} onChange={e => setKudos({ ...kudos, to: e.target.value })} placeholder="Colleague name" /></div>
+                            <div className="space-y-1"><Label>Message</Label><Textarea value={kudos.message} onChange={e => setKudos({ ...kudos, message: e.target.value })} /></div>
+                        </div>
+                        <DialogFooter><Button onClick={handleSendKudos}>Send</Button></DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -63,8 +86,8 @@ export default function RecognitionPage() {
                             <CardDescription>See the latest recognitions across the company.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {kudosFeed.map((kudo, index) => (
-                                <div key={index} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                            {db.kudos.map((kudo) => (
+                                <div key={kudo.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                                     <Award className="h-5 w-5 text-primary mt-1" />
                                     <div>
                                         <p className="text-sm">

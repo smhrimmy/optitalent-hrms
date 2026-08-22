@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { dataQuery, type LeaveType } from '@/lib/dataquery';
+import { Button } from '@/components/ui/button';
 
 type LeaveRequest = {
     id: string;
@@ -18,6 +20,7 @@ type LeaveRequest = {
     to: string;
     days: number;
     status: string;
+    employee_name?: string;
 };
 
 export default function LeavesPage() {
@@ -35,74 +38,71 @@ export default function LeavesPage() {
 
     useEffect(() => {
         fetchLeaveData();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.profile.id]);
 
     const fetchLeaveData = async () => {
         setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const employeeId = user?.profile.id;
+            const remoteUser = (await supabase.auth.getUser()).data.user;
 
-            // 1. Get Employee ID & Tenant ID
-            const { data: userData } = await supabase
-                .from('users')
-                .select('tenant_id, employees(id)')
-                .eq('id', user.id)
-                .single();
-            
-            if (!userData?.tenant_id) return;
-            const employeeId = userData.employees?.[0]?.id;
+            if (remoteUser) {
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('tenant_id, employees(id)')
+                    .eq('id', remoteUser.id)
+                    .single();
 
-            // 2. Fetch Requests
-            let query = supabase
-                .from('leave_requests')
-                .select('*')
-                .eq('tenant_id', userData.tenant_id)
-                .order('created_at', { ascending: false });
-
-            // If not admin/hr, filter by own requests
-            // For now, let's assume the RLS handles filtering, but we should also filter in query for performance
-            // However, the page seems to be "My Leave Requests", so we should filter by employee_id if we have it.
-            if (employeeId) {
-                query = query.eq('employee_id', employeeId);
-            }
-
-            const { data: requestsData, error: requestsError } = await query;
-            
-            if (requestsError) throw requestsError;
-
-            if (requestsData) {
-                const mappedRequests = requestsData.map((r: any) => ({
-                    id: r.id,
-                    type: r.leave_type,
-                    from: r.start_date,
-                    to: r.end_date,
-                    days: Math.ceil((new Date(r.end_date).getTime() - new Date(r.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1,
-                    status: r.status
-                }));
-                setRequests(mappedRequests);
-                
-                // 3. Calculate Used Balances from Requests (Client-side aggregation for now)
-                // In a real app, we'd query 'leave_balances' table, but let's aggregate for simplicity and "snap" feel
-                const used = {
-                    'Sick Leave': 0,
-                    'Casual Leave': 0,
-                    'Paid Time Off': 0
-                };
-                
-                mappedRequests.forEach(r => {
-                    if (r.status === 'Approved' && used[r.type as keyof typeof used] !== undefined) {
-                        used[r.type as keyof typeof used] += r.days;
+                if (userData?.tenant_id) {
+                    const empId = (userData as any).employees?.[0]?.id;
+                    let query = supabase
+                        .from('leave_requests')
+                        .select('*')
+                        .eq('tenant_id', userData.tenant_id)
+                        .order('created_at', { ascending: false });
+                    if (empId && !['admin', 'hr', 'manager'].includes(user?.role || '')) {
+                        query = query.eq('employee_id', empId);
                     }
-                });
-
-                setBalances(prev => prev.map(b => ({
-                    ...b,
-                    used: used[b.type as keyof typeof used] || 0,
-                    balance: (b.type === 'Sick Leave' ? 7 : b.type === 'Casual Leave' ? 12 : 20) - (used[b.type as keyof typeof used] || 0)
-                })));
+                    const { data: requestsData, error: requestsError } = await query;
+                    if (!requestsError && requestsData) {
+                        const mappedRequests = requestsData.map((r: any) => ({
+                            id: r.id,
+                            type: r.leave_type,
+                            from: r.start_date,
+                            to: r.end_date,
+                            days: Math.ceil((new Date(r.end_date).getTime() - new Date(r.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1,
+                            status: r.status,
+                            employee_name: r.employee_name,
+                        }));
+                        setRequests(mappedRequests);
+                        if (employeeId) {
+                            const bals = dataQuery.leaveBalances(employeeId);
+                            setBalances(bals.map(b => ({ type: b.type, balance: b.balance, used: b.used })));
+                        }
+                        setLoading(false);
+                        return;
+                    }
+                }
             }
 
+            const isApprover = ['admin', 'hr', 'manager', 'team-leader'].includes(user?.role || '');
+            const rows = isApprover
+                ? dataQuery.listLeaveRequests()
+                : dataQuery.listLeaveRequests(employeeId);
+            setRequests(rows.map(r => ({
+                id: r.id,
+                type: r.leave_type,
+                from: r.start_date,
+                to: r.end_date,
+                days: r.days,
+                status: r.status,
+                employee_name: r.employee_name,
+            })));
+            if (employeeId) {
+                const bals = dataQuery.leaveBalances(employeeId);
+                setBalances(bals.map(b => ({ type: b.type, balance: b.balance, used: b.used })));
+            }
         } catch (error: any) {
             console.error("Error fetching leaves:", error);
             toast({ title: "Error", description: "Failed to load leave data.", variant: "destructive" });
@@ -115,42 +115,55 @@ export default function LeavesPage() {
         const fromDate = formData.get('from-date') as string;
         const toDate = formData.get('to-date') as string;
         const type = formData.get('leave-type') as string;
-        const reason = formData.get('reason') as string || ''; // Assuming dialog has reason field or we add it
+        const reason = formData.get('reason') as string || '';
         
         try {
-            const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
+            dataQuery.applyLeave({
+                employee_id: user.profile.id,
+                employee_name: user.profile.full_name,
+                leave_type: type as LeaveType,
+                start_date: fromDate,
+                end_date: toDate,
+                reason,
+            });
 
+            const { data: { user: remote } } = await supabase.auth.getUser();
+            if (remote) {
              const { data: userData } = await supabase
                 .from('users')
                 .select('tenant_id, employees(id)')
-                .eq('id', user.id)
+                .eq('id', remote.id)
                 .single();
             
-            if (!userData?.tenant_id || !userData.employees?.[0]?.id) {
-                throw new Error("Employee record not found.");
-            }
-
-            const { error } = await supabase.from('leave_requests').insert({
+            if (userData?.tenant_id && (userData as any).employees?.[0]?.id) {
+            await supabase.from('leave_requests').insert({
                 tenant_id: userData.tenant_id,
-                employee_id: userData.employees[0].id,
+                employee_id: (userData as any).employees[0].id,
                 leave_type: type,
                 start_date: fromDate,
                 end_date: toDate,
                 reason: reason,
                 status: 'Pending'
             });
+            }
+            }
 
-            if (error) throw error;
-
-            toast({ title: "Request Submitted", description: "Your leave request has been sent for approval." });
-            fetchLeaveData(); // Refresh list
+            fetchLeaveData();
             return { success: true };
 
         } catch (error: any) {
              toast({ title: "Submission Failed", description: error.message, variant: "destructive" });
              return { success: false, message: error.message };
         }
+    };
+
+    const isApprover = ['admin', 'hr', 'manager', 'team-leader'].includes(user?.role || '');
+
+    const handleDecision = (id: string, status: 'Approved' | 'Rejected') => {
+        dataQuery.updateLeaveStatus(id, status);
+        fetchLeaveData();
+        toast({ title: `Request ${status}`, description: `Leave request has been ${status.toLowerCase()}.` });
     };
     
     const getStatusBadge = (status: string) => {
@@ -209,21 +222,34 @@ export default function LeavesPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                {isApprover && <TableHead>Employee</TableHead>}
                                 <TableHead>Type</TableHead>
                                 <TableHead>From</TableHead>
                                 <TableHead>To</TableHead>
                                 <TableHead>Days</TableHead>
                                 <TableHead>Status</TableHead>
+                                {isApprover && <TableHead className="text-right">Actions</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {requests.map(request => (
                                 <TableRow key={request.id}>
+                                    {isApprover && <TableCell>{request.employee_name}</TableCell>}
                                     <TableCell className="font-medium">{request.type}</TableCell>
                                     <TableCell>{request.from}</TableCell>
                                     <TableCell>{request.to}</TableCell>
                                     <TableCell>{request.days}</TableCell>
                                     <TableCell>{getStatusBadge(request.status)}</TableCell>
+                                    {isApprover && (
+                                        <TableCell className="text-right space-x-2">
+                                            {request.status === 'Pending' && (
+                                                <>
+                                                    <Button size="sm" variant="outline" onClick={() => handleDecision(request.id, 'Approved')}>Approve</Button>
+                                                    <Button size="sm" variant="destructive" onClick={() => handleDecision(request.id, 'Rejected')}>Reject</Button>
+                                                </>
+                                            )}
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>

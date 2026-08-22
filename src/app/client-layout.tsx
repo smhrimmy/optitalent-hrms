@@ -15,6 +15,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescri
 import { Separator } from '@/components/ui/separator';
 import { useAuth, AuthProvider } from '@/hooks/use-auth';
 import { FeaturesProvider } from '@/hooks/use-features';
+import { SplashScreen } from '@/components/splash-screen';
+import { CommandPalette } from '@/components/command-palette';
+import { CookieConsent } from '@/components/cookie-consent';
+import { OnboardingTour } from '@/components/onboarding-tour';
 
 const AppSidebar = dynamic(() => import('@/components/app-sidebar'), {
   loading: () => <Skeleton className="hidden md:flex h-screen w-[3.75rem]" />,
@@ -127,11 +131,23 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const isPublicPage =
+    pathname === '/setup' ||
     pathname === '/' ||
     pathname === '/signup' ||
     pathname === '/login' ||
     pathname.startsWith('/walkin-drive') ||
-    pathname.startsWith('/applicant');
+    pathname.startsWith('/applicant') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/cookies') ||
+    pathname.startsWith('/demo') ||
+    pathname.startsWith('/unauthorized') ||
+    pathname.startsWith('/forbidden') ||
+    pathname.startsWith('/offline') ||
+    pathname.startsWith('/session-expired') ||
+    pathname.startsWith('/coming-soon') ||
+    pathname.startsWith('/unsupported') ||
+    pathname.startsWith('/maintenance');
 
     const isDashboard = user && pathname === `/${user.role}/dashboard`;
 
@@ -185,6 +201,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     <AppLayout>
                         {children}
                     </AppLayout>
+                    <SplashScreen />
+                    <CommandPalette />
+                    <CookieConsent />
+                    <OnboardingTour />
                 </ThemeProvider>
             </FeaturesProvider>
         </AuthProvider>

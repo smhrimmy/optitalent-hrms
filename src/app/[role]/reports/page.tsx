@@ -11,6 +11,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { useToast } from '@/hooks/use-toast';
 import { useTeam } from '@/hooks/use-team';
 import { DashboardCard } from '@/components/ui/dashboard-card';
+import { dataQuery } from '@/lib/dataquery';
 
 export default function ManagerReportsPage() {
     const { toast } = useToast();
@@ -54,7 +55,7 @@ export default function ManagerReportsPage() {
         setReportData(null);
         // Simulate API call to fetch report data
         setTimeout(() => {
-            const generatedData = teamForReport.map(member => ({
+            const generatedData = (teamForReport.length ? teamForReport : dataQuery.listEmployees().slice(0, 6).map(e => ({ id: e.id, name: e.full_name }))).map(member => ({
                 id: member.id,
                 name: member.name,
                 attendance: Math.floor(Math.random() * 11) + 90, // 90-100%
@@ -69,6 +70,17 @@ export default function ManagerReportsPage() {
     };
     
     const handleDownload = (format: 'PDF' | 'CSV') => {
+        if (format === 'CSV' && reportData) {
+            const header = 'Name,Attendance,Task Completion,Assessment,Leave\n';
+            const body = reportData.map((r: any) => `${r.name},${r.attendance},${r.taskCompletion},${r.assessmentScore},${r.leaveStatus}`).join('\n');
+            const blob = new Blob([header + body], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hrms-report-${reportParams.period}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
         toast({
             title: "Download Started",
             description: `Your ${reportParams.period} report for ${reportParams.target} in ${format} format is downloading.`

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { AsyncButton } from "@/components/ui/async-button";
+import { DEMO_PASSWORD } from "@/lib/dataquery";
 
 export default function Login() {
   // State variables for form inputs
@@ -26,7 +27,7 @@ export default function Login() {
   const [retryAfter, setRetryAfter] = useState<number | null>(null);
   
   const router = useRouter();
-  const { login: demoLogin } = useAuth(); // Helper for demo accounts
+  const { loginWithCredentials, signUp: demoSignUp } = useAuth();
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +38,18 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        // 1. SIGN UP FLOW
+        const names = fullName.trim().split(/\s+/);
+        const localSignUp = await demoSignUp({
+          email,
+          password,
+          firstName: names[0] || 'New',
+          lastName: names.slice(1).join(' ') || 'User',
+        });
+        if (!localSignUp.error) {
+          toast.success("Account created. Welcome to OptiTalent.");
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -56,21 +68,12 @@ export default function Login() {
         // Check for Demo Accounts (For testing purposes only)
         // In a real app, you would remove this block.
         if (email.endsWith('@optitalent.com')) {
-           // Extract role from email (e.g. 'admin' from 'admin@optitalent.com')
-           const role = email.split('@')[0];
-           const demoIds: Record<string, string> = {
-               'admin': 'PEP0001',
-               'hr': 'PEP0002',
-               'manager': 'PEP0003',
-               'employee': 'PEP0012'
-           };
-           
-           if (demoIds[role]) {
-               await demoLogin(demoIds[role]);
-               // The hook handles the redirect
-               return; 
-           }
+           const localResult = await loginWithCredentials(email, password || DEMO_PASSWORD);
+           if (!localResult.error) return;
         }
+
+        const demoResult = await loginWithCredentials(email, password);
+        if (!demoResult.error) return;
 
         // Standard Supabase Login
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -92,14 +95,7 @@ export default function Login() {
                 .single();
             
             const role = userData?.role || 'employee';
-            
-            if (role === 'super-admin') {
-                router.push("/super-admin");
-            } else if (role === 'admin') {
-                router.push("/dashboard"); // Or a specific /admin-dashboard if you create one
-            } else {
-                router.push("/dashboard");
-            }
+            router.push(`/${role}/dashboard`);
         } else {
              router.push("/dashboard"); // Fallback
         }
@@ -237,6 +233,11 @@ export default function Login() {
             <p className="text-muted-foreground mt-1">
               {isSignUp ? "Create your account to get started" : "Sign in to continue"}
             </p>
+            {!isSignUp && (
+              <p className="text-xs text-muted-foreground mt-3 rounded-md border bg-muted/50 p-3">
+                Demo: <span className="font-medium">admin@optitalent.com</span>, <span className="font-medium">hr@optitalent.com</span>, <span className="font-medium">employee@optitalent.com</span> · password <span className="font-medium">{DEMO_PASSWORD}</span>
+              </p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
