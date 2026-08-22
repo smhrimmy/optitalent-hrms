@@ -65,13 +65,6 @@ export default function EmployeeDetailPage() {
         setOriginalEmployee(employee); // Persist changes to the "original" state for this session
         setIsEditing(false);
         
-        // In a real app, this would be an API call to update the database
-        const index = mockUsers.findIndex(u => u.profile.employee_id === employeeId);
-        if (index > -1 && employee) {
-            mockUsers[index].profile = employee;
-        }
-        
-        console.log("Saving employee data:", employee);
         toast({
             title: "Changes Saved",
             description: "Employee data has been updated.",

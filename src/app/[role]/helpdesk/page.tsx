@@ -25,7 +25,7 @@ const NewTicketDialog = dynamic(() => import('@/components/helpdesk/new-ticket-d
 
 
 import { supabase } from '@/lib/supabase';
-import { dataQuery, type TicketCategory, type TicketPriority } from '@/lib/dataquery';
+import { dataQuery } from '@/lib/dataquery';
 import { useAuth } from '@/hooks/use-auth';
 
 // ... (keep dynamic imports)
