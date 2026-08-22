@@ -79,7 +79,15 @@ npx tsx src/lib/supabase/seed-multi-tenant.ts
 npm run dev
 ```
 
-Visit `http://localhost:3000` to access the application.
+Visit `http://localhost:9002` (`npm run dev`).
+
+Docs: [checklist](./docs/PROJECT_CHECKLIST.md), [design](./docs/DESIGN_SYSTEM.md), [deploy](./docs/DEPLOYMENT.md), [changelog](./docs/CHANGELOG.md).
+
+## Demo logins
+
+`admin@optitalent.com`, `hr@optitalent.com`, `manager@optitalent.com`, `employee@optitalent.com` — password `password123`.
+
+Health: `/api/health`. API sketch: `/api/openapi`.
 
 ## 🔐 Default Credentials
 

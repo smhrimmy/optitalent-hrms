@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
+import { BrandLoader } from '@/components/brand-loader';
 import { AboutTab } from '@/components/employee-profile/about-tab';
 import { ProfessionalTab } from '@/components/employee-profile/professional-tab';
 import { FamilyHealthTab } from '@/components/employee-profile/family-health-tab';
@@ -85,7 +86,7 @@ export default function EmployeeDetailPage() {
     }
     
     if (loading) {
-        return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+        return <BrandLoader label="Loading employee" />;
     }
 
     if (!employee) {

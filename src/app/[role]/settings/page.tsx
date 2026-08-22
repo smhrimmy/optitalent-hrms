@@ -204,14 +204,14 @@ export default function SettingsPage() {
                             <span>New Applicant Alerts</span>
                              <span className="font-normal text-muted-foreground text-xs">Real-time alerts on your mobile device.</span>
                         </Label>
-                        <Switch id="pushNewApplicants" checked={notifications.pushNewApplicants} onCheckedChange={(checked) => setNotifications({...notifications, pushNewApplicants: checked})} disabled/>
+                        <Switch id="pushNewApplicants" checked={notifications.pushNewApplicants} onCheckedChange={(checked) => setNotifications({...notifications, pushNewApplicants: checked})}/>
                     </div>
                     <div className="flex items-center justify-between rounded-lg border p-4">
                         <Label htmlFor="pushPayrollUpdates" className="flex flex-col gap-1">
                             <span>Payroll Updates</span>
                              <span className="font-normal text-muted-foreground text-xs">Instant updates on payroll status.</span>
                         </Label>
-                        <Switch id="pushPayrollUpdates" checked={notifications.pushPayrollUpdates} onCheckedChange={(checked) => setNotifications({...notifications, pushPayrollUpdates: checked})} disabled/>
+                        <Switch id="pushPayrollUpdates" checked={notifications.pushPayrollUpdates} onCheckedChange={(checked) => setNotifications({...notifications, pushPayrollUpdates: checked})}/>
                     </div>
                 </div>
             </CardContent>

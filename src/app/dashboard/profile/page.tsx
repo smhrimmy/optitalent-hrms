@@ -9,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { 
   User, Briefcase, Heart, FileText, Mail, Phone, 
-  MapPin, Calendar, Clock, Edit, Plus, ArrowLeft, Loader2
+  MapPin, Calendar, Clock, Edit, Plus, ArrowLeft
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { toast } from "sonner";
+import { BrandLoader } from '@/components/brand-loader';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -144,7 +145,7 @@ export default function ProfilePage() {
       }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen"><Loader2 className="h-8 w-8 animate-spin text-blue-600" /></div>;
+  if (loading) return <BrandLoader label="Loading profile" />;
   if (!user) return <div className="p-6">User not found</div>;
 
   return (

@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockUsers, type User, type UserProfile } from '@/lib/mock-data/employees';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -17,6 +17,39 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+function userFromSession(sessionUser: {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, unknown>;
+}, roleOverride?: string): User {
+  const role = (roleOverride ||
+    (sessionUser.user_metadata?.role as string) ||
+    'employee') as UserProfile['role'];
+  const fullName =
+    (sessionUser.user_metadata?.full_name as string) ||
+    sessionUser.email?.split('@')[0] ||
+    'User';
+  return {
+    id: sessionUser.id,
+    email: sessionUser.email || '',
+    role,
+    profile: {
+      id: `profile-${sessionUser.id}`,
+      full_name: fullName,
+      department: { name: 'General' },
+      department_id: 'd-000',
+      job_title: 'Employee',
+      role,
+      employee_id: `SUPA-${sessionUser.id.substring(0, 6)}`,
+      profile_picture_url:
+        (sessionUser.user_metadata?.avatar_url as string) ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random`,
+      phone_number: '',
+      status: 'Active',
+    },
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -33,24 +66,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { data: { session } } = await supabase.auth.getSession();
             
             if (session?.user && mounted) {
-                const appUser: User = {
-                    id: session.user.id,
-                    email: session.user.email || '',
-                    role: (session.user.user_metadata?.role as UserProfile['role']) || 'employee',
-                    profile: {
-                        id: `profile-${session.user.id}`,
-                        full_name: session.user.user_metadata?.full_name || 'User',
-                        department: { name: "General" },
-                        department_id: "d-000",
-                        job_title: 'Employee',
-                        role: (session.user.user_metadata?.role as UserProfile['role']) || 'employee',
-                        employee_id: `SUPA-${session.user.id.substring(0, 6)}`,
-                        profile_picture_url: session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${session.user.user_metadata?.full_name || 'User'}&background=random`,
-                        phone_number: '',
-                        status: 'Active',
+                let role = (session.user.user_metadata?.role as string) || undefined;
+                try {
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('role, full_name')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
+                    if (userData?.role) role = userData.role;
+                    if (userData?.full_name) {
+                        session.user.user_metadata = {
+                            ...session.user.user_metadata,
+                            full_name: userData.full_name,
+                            role,
+                        };
                     }
-                };
-                setUser(appUser);
+                } catch {
+                    /* public.users may be empty on a new project */
+                }
+                setUser(userFromSession(session.user, role));
             } else {
                 // Fallback to mock session storage
                 const storedUser = sessionStorage.getItem('authUser');
@@ -69,26 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user && mounted) {
-             const appUser: User = {
-                id: session.user.id,
-                email: session.user.email || '',
-                role: (session.user.user_metadata?.role as UserProfile['role']) || 'employee',
-                profile: {
-                    id: `profile-${session.user.id}`,
-                    full_name: session.user.user_metadata?.full_name || 'User',
-                    department: { name: "General" },
-                    department_id: "d-000",
-                    job_title: 'Employee',
-                    role: (session.user.user_metadata?.role as UserProfile['role']) || 'employee',
-                    employee_id: `SUPA-${session.user.id.substring(0, 6)}`,
-                    profile_picture_url: session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${session.user.user_metadata?.full_name || 'User'}&background=random`,
-                    phone_number: '',
-                    status: 'Active',
-                }
-            };
-            setUser(appUser);
-            // Optional: Redirect if not already on dashboard? 
-            // Better to let components handle redirects based on user state.
+            setUser(userFromSession(session.user));
         } else if (mounted) {
             // Check if mock user is still there (e.g. strict logout from Supabase clears everything)
              const storedUser = sessionStorage.getItem('authUser');
@@ -120,15 +135,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  const signUp = async (data: any) => {
+  const signUp = async (data: { email: string; password: string; firstName?: string; lastName?: string }) => {
     setLoading(true);
-    await new Promise(res => setTimeout(res, 500)); // Simulate network delay
     const { email, password, firstName, lastName } = data;
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
-    // Check if user already exists in our mock data
-    if (mockUsers.some(u => u.email === email)) {
-        setLoading(false);
-        return { error: { message: "An account with this email already exists." } };
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName || email.split('@')[0] },
+          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        },
+      });
+      setLoading(false);
+      if (error) return { error: { message: error.message } };
+      return { error: null };
+    }
+
+    await new Promise((res) => setTimeout(res, 400));
+    if (mockUsers.some((u) => u.email === email)) {
+      setLoading(false);
+      return { error: { message: 'An account with this email already exists.' } };
     }
     
     const newProfile: UserProfile = {

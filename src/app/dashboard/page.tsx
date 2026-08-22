@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { BrandLoader } from '@/components/brand-loader';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function TenantDashboard() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -19,6 +21,7 @@ export default function TenantDashboard() {
   const [userId, setUserId] = useState<string>('');
   const [tenantId, setTenantId] = useState<string>('');
   const [employeeId, setEmployeeId] = useState<string>(''); // public.employees ID
+  const { user: authUser, loading: authLoading } = useAuth();
   const router = useRouter();
 
   // Attendance State
@@ -45,6 +48,8 @@ export default function TenantDashboard() {
   const [leaveBalance, setLeaveBalance] = useState(0);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const fetchUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -53,11 +58,11 @@ export default function TenantDashboard() {
                 .from('users')
                 .select('role, full_name, tenant_id, employees(id)')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
              
              if (userData) {
-                 setUserRole(userData.role || 'employee');
-                 setUserName(userData.full_name || 'User');
+                 setUserRole(userData.role || authUser?.role || 'employee');
+                 setUserName(userData.full_name || authUser?.profile?.full_name || 'User');
                  setTenantId(userData.tenant_id);
                  let eid = '';
                  if (userData.employees && userData.employees[0]) {
@@ -68,13 +73,22 @@ export default function TenantDashboard() {
                  
                  fetchAttendance(user.id);
                  fetchDashboardStats(userData.tenant_id, userData.role, eid);
+             } else if (!authUser) {
+                 setUserRole((user.user_metadata?.role as string) || 'employee');
+                 setUserName((user.user_metadata?.full_name as string) || user.email?.split('@')[0] || 'User');
              }
-        } else {
-            router.push('/login');
+             return;
         }
+
+        if (authUser) {
+            router.replace(`/${authUser.role}/dashboard`);
+            return;
+        }
+
+        router.replace('/login');
     };
-    fetchUser();
-  }, [router]);
+    void fetchUser();
+  }, [router, authLoading, authUser]);
 
   const fetchDashboardStats = async (tid: string, role: string, employeeId?: string) => {
       if (!tid) return;
@@ -258,7 +272,7 @@ export default function TenantDashboard() {
       }
   };
 
-  if (!userRole) return <div className="p-10 text-center">Loading dashboard...</div>;
+  if (!userRole) return <BrandLoader label="Loading dashboard" />;
 
   // --- HR / ADMIN / SUPER-ADMIN / EXECUTIVE VIEW ---
   // Roles that need high-level oversight
@@ -271,7 +285,7 @@ export default function TenantDashboard() {
               <p className="text-muted-foreground">Welcome back, {userName} ({userRole}). Here's what's happening today.</p>
             </div>
             <div className="flex gap-2">
-                <Button>
+                <Button onClick={() => router.push(`/${userRole}/employees`)}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Add Employee
                 </Button>
@@ -350,7 +364,7 @@ export default function TenantDashboard() {
                                   <p className="text-sm font-medium leading-none">Review Performance Review for Jane Smith</p>
                                   <p className="text-xs text-muted-foreground">Due Tomorrow</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="ml-auto">View</Button>
+                              <Button variant="ghost" size="sm" className="ml-auto" onClick={() => router.push(`/${userRole}/performance`)}>View</Button>
                           </div>
                       ))}
                   </div>
@@ -370,7 +384,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Recruitment Dashboard</h1>
               <p className="text-muted-foreground">Welcome back, {userName}. Track your candidates here.</p>
             </div>
-            <Button onClick={() => toast.info("Job Posting feature coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/recruitment`)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Post Job
             </Button>
@@ -421,7 +435,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Finance Dashboard</h1>
               <p className="text-muted-foreground">Payroll and Expense Overview.</p>
             </div>
-            <Button onClick={() => toast.info("Payroll processing coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/payroll`)}>
                 <FileText className="mr-2 h-4 w-4" />
                 Process Payroll
             </Button>
@@ -462,7 +476,7 @@ export default function TenantDashboard() {
               <h1 className="text-3xl font-bold font-headline">Marketing Dashboard</h1>
               <p className="text-muted-foreground">Campaigns and Company Feed.</p>
             </div>
-            <Button onClick={() => toast.info("New Post creation coming soon!")}>
+            <Button onClick={() => router.push(`/${userRole}/company-feed`)}>
                 <FileText className="mr-2 h-4 w-4" />
                 New Post
             </Button>
@@ -505,7 +519,7 @@ export default function TenantDashboard() {
               <p className="text-muted-foreground">Welcome back, {userName}.</p>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={() => router.push('/dashboard/profile')}>
+                <Button variant="outline" onClick={() => router.push(`/${userRole}/profile`)}>
                     <Users className="mr-2 h-4 w-4" />
                     My Profile
                 </Button>
@@ -619,7 +633,7 @@ export default function TenantDashboard() {
                 <CardContent>
                     <div className="text-3xl font-bold text-slate-800">{points}</div>
                     <p className="text-xs text-muted-foreground">Points Available</p>
-                    <Button variant="link" onClick={() => toast.info("Coupon redemption coming soon!")} className="p-0 h-auto text-xs mt-2 text-blue-600">Redeem &rarr;</Button>
+                    <Button variant="link" onClick={() => router.push(`/${userRole}/recognition`)} className="p-0 h-auto text-xs mt-2 text-primary">Redeem &rarr;</Button>
                 </CardContent>
             </Card>
         </div>

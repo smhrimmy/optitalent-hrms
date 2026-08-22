@@ -9,7 +9,17 @@ import {
   ForbiddenError, 
   ServerError, 
   MaintenanceError, 
-  RateLimitError 
+  RateLimitError,
+  BadRequestError,
+  BadGatewayError,
+  GatewayTimeoutError,
+  OfflineError,
+  SessionExpiredError,
+  PaymentFailedError,
+  SuspendedError,
+  ComingSoonError,
+  UnsupportedBrowserError,
+  EmptySearchError,
 } from "@/components/errors/error-variants";
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 
@@ -17,12 +27,22 @@ export default function ErrorShowcase() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const errors = [
-    { component: <NotFoundError />, label: "404 Not Found" },
+    { component: <BadRequestError />, label: "400 Bad Request" },
     { component: <UnauthorizedError />, label: "401 Unauthorized" },
     { component: <ForbiddenError />, label: "403 Forbidden" },
-    { component: <ServerError errorId="ERR-500-DEMO" />, label: "500 Server Error" },
-    { component: <MaintenanceError />, label: "503 Maintenance" },
+    { component: <NotFoundError />, label: "404 Not Found" },
     { component: <RateLimitError retryAfter={48} />, label: "429 Rate Limit" },
+    { component: <ServerError errorId="ERR-500-DEMO" />, label: "500 Server Error" },
+    { component: <BadGatewayError />, label: "502 Bad Gateway" },
+    { component: <MaintenanceError />, label: "503 Maintenance" },
+    { component: <GatewayTimeoutError />, label: "504 Timeout" },
+    { component: <OfflineError />, label: "Offline" },
+    { component: <SessionExpiredError />, label: "Session" },
+    { component: <PaymentFailedError />, label: "Payment" },
+    { component: <SuspendedError />, label: "Suspended" },
+    { component: <ComingSoonError />, label: "Coming soon" },
+    { component: <UnsupportedBrowserError />, label: "Browser" },
+    { component: <EmptySearchError />, label: "Empty search" },
   ];
 
   const nextError = () => {

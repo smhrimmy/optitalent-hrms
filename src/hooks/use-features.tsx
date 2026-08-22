@@ -34,10 +34,10 @@ const defaultFeatures: Feature[] = [
   { id: 'payroll', label: 'Payroll & Compensation', category: 'Finance', description: 'Salary, Payslips, Tax', enabled: true },
   { id: 'performance', label: 'Performance Management', category: 'Talent', description: 'Goals, Reviews, OKRs', enabled: true },
   { id: 'recruitment', label: 'Recruitment (ATS)', category: 'Talent', description: 'Jobs, Pipeline, Offers', enabled: true },
-  { id: 'timesheets', label: 'Timesheets & Projects', category: 'Operations', description: 'Project tracking, Billable hours', enabled: false },
-  { id: 'training', label: 'Training & Learning', category: 'Talent', description: 'Courses, Certifications', enabled: false },
-  { id: 'expenses', label: 'Expense & Claims', category: 'Finance', description: 'Reimbursements, Approvals', enabled: false },
-  { id: 'assets', label: 'Assets & Inventory', category: 'Operations', description: 'Hardware allocation, Tracking', enabled: false },
+  { id: 'timesheets', label: 'Timesheets & Projects', category: 'Operations', description: 'Project tracking, Billable hours', enabled: true },
+  { id: 'training', label: 'Training & Learning', category: 'Talent', description: 'Courses, Certifications', enabled: true },
+  { id: 'expenses', label: 'Expense & Claims', category: 'Finance', description: 'Reimbursements, Approvals', enabled: true },
+  { id: 'assets', label: 'Assets & Inventory', category: 'Operations', description: 'Hardware allocation, Tracking', enabled: true },
   { id: 'org_chart', label: 'Org Charts', category: 'Core', description: 'Visual hierarchy builder', enabled: true },
   { id: 'compliance', label: 'Compliance & Audit', category: 'Advanced', description: 'Logs, GDPR, Data retention', enabled: true },
   { id: 'ai_tools', label: 'AI Tools', category: 'Advanced', description: 'Career Predictor, Chatbot', enabled: true },
@@ -66,7 +66,8 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
         // Merge with default to ensure new features appear
         const merged = defaultFeatures.map(df => {
             const found = parsed.find((p: Feature) => p.id === df.id);
-            return found ? found : df;
+            if (!found) return df;
+            return { ...found, ...df, enabled: Boolean(found.enabled || df.enabled) };
         });
         setFeatures(merged);
       }

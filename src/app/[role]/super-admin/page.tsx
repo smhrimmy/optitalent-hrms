@@ -10,13 +10,13 @@ import {
   ShieldCheck, 
   Database, 
   AlertTriangle,
-  Loader2
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { BrandLoader } from '@/components/brand-loader';
 
 const revenueData = [
   { month: 'Jan', amount: 12000 },
@@ -84,7 +84,7 @@ export default function SuperAdminDashboard() {
     fetchStats();
   }, [router]);
 
-  if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading) return <BrandLoader label="Loading admin dashboard" />;
 
   return (
     <div className="space-y-6 p-6">
