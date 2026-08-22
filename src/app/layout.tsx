@@ -4,6 +4,8 @@ import ClientLayout from './client-layout'
 import { SupabaseBootstrap } from '@/components/supabase-bootstrap'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "OptiTalent HRMS",
   description: "A Next-Generation HRMS for modern businesses.",
