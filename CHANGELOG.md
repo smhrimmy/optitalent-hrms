@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-22 — Company Type Engine
+- Industry + size + workforce + geography generate modules, org model, roles, and policies
+- Wizard at `/setup` with manufacturing/retail/healthcare/IT presets
+- Feature matrix, role builder (scope + field permissions), policy/approval engines
+- Industry surfaces: plants, stores, credentials, fleet, sites — hidden unless the blueprint enables them
+
 ## 2026-08-22 — Workforce OS
 - Positioned as an AI Workforce Operating System on one employee graph
 - Digital twin, why engine, what-if simulator, talent/opportunity market

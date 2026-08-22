@@ -11,9 +11,16 @@ import { courses as mockCourses } from '@/lib/mock-data/learning';
 import { onboardingCandidates as mockOnboarding } from '@/lib/mock-data/onboarding';
 import { shifts as mockShifts } from '@/lib/mock-data/shifts';
 import { supabase } from '@/lib/supabase';
+import {
+  DEMO_ANSWERS,
+  proposeBlueprint,
+  type GeneratedConfig,
+  type AccessRole,
+  type PolicyRule,
+} from '@/lib/company-blueprint';
 
-export const DATAQUERY_VERSION = 3;
-export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v3';
+export const DATAQUERY_VERSION = 4;
+export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v4';
 export const DEMO_PASSWORD = 'password123';
 
 export function isSupabaseConfigured(): boolean {
@@ -364,6 +371,8 @@ export type HrmsDatabase = {
   policies: PolicyDoc[];
   complianceItems: ComplianceItem[];
   agentRuns: AgentRun[];
+  company: GeneratedConfig;
+  setupComplete: boolean;
 };
 
 function dayCount(from: string, to: string) {
@@ -861,6 +870,8 @@ export function createSeed(): HrmsDatabase {
       { id: uid(), statute: 'Working hours', jurisdiction: 'Shops & Establishments — KA', status: 'Watch', note: 'Engineering overtime last 6 weeks above weekly cap on 3 people', payroll_impact: 'OT payout + inspector risk' },
     ],
     agentRuns: [],
+    company: proposeBlueprint(DEMO_ANSWERS),
+    setupComplete: true,
   };
 }
 
@@ -906,6 +917,8 @@ export function hydrateDataQuery() {
     if (!parsed.policies?.length) store.policies = seed.policies;
     if (!parsed.complianceItems?.length) store.complianceItems = seed.complianceItems;
     if (!parsed.agentRuns) store.agentRuns = seed.agentRuns;
+    if (!parsed.company) store.company = seed.company;
+    if (parsed.setupComplete == null) store.setupComplete = seed.setupComplete;
   } catch {
     store = createSeed();
   }
@@ -1474,6 +1487,47 @@ export const dataQuery = {
       courses: store.courses.length,
       pendingApprovals: store.approvals.filter((a) => a.status === 'Pending').length,
     };
+  },
+
+  getCompany(): GeneratedConfig {
+    return store.company || proposeBlueprint(DEMO_ANSWERS);
+  },
+
+  isSetupComplete(): boolean {
+    return store.setupComplete !== false;
+  },
+
+  applyCompanyBlueprint(config: GeneratedConfig, complete = true) {
+    store = { ...store, company: config, setupComplete: complete };
+    emit();
+    return config;
+  },
+
+  toggleCompanyModule(moduleId: string) {
+    const company = this.getCompany();
+    const modules = company.modules.map((m) =>
+      m.id === moduleId
+        ? { ...m, state: (m.state === 'enabled' ? 'disabled' : 'enabled') as GeneratedConfig['modules'][number]['state'] }
+        : m
+    );
+    store = { ...store, company: { ...company, modules } };
+    emit();
+  },
+
+  saveAccessRole(role: AccessRole) {
+    const company = this.getCompany();
+    const exists = company.roles.some((r) => r.id === role.id);
+    const roles = exists ? company.roles.map((r) => (r.id === role.id ? role : r)) : [...company.roles, role];
+    store = { ...store, company: { ...company, roles } };
+    emit();
+  },
+
+  savePolicyRule(rule: PolicyRule) {
+    const company = this.getCompany();
+    const exists = company.policies.some((p) => p.id === rule.id);
+    const policies = exists ? company.policies.map((p) => (p.id === rule.id ? rule : p)) : [...company.policies, rule];
+    store = { ...store, company: { ...company, policies } };
+    emit();
   },
 };
 

@@ -131,6 +131,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const isPublicPage =
+    pathname === '/setup' ||
     pathname === '/' ||
     pathname === '/signup' ||
     pathname === '/login' ||

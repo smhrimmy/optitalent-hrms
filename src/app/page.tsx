@@ -49,15 +49,15 @@ export default function LandingPage() {
               Workforce OS · not another module pack
             </span>
             <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight mb-6">
-              Understand what is happening. Then do the next right thing.
+              The HRMS is generated from the company — not copied from a feature list
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Workday, Darwinbox, Keka, and greytHR already own records, payroll, and attendance. OptiTalent is an HR operating system: one employee graph, a why engine, a digital twin, simulation, and a Chief of Staff that executes.
+              Industry, size, workforce type, and geography decide plants vs stores vs credentials vs projects. Then intelligence explains why and the Chief of Staff executes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="h-12 px-8 text-lg" asChild>
-                <Link href="/login?mode=signup">
-                  Start Free Trial <ArrowRight className="ml-2 h-5 w-5" />
+                <Link href="/setup">
+                  Configure company type <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="h-12 px-8 text-lg" asChild>

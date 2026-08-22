@@ -112,10 +112,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const completeLogin = (userToLogin: User) => {
+  const completeLogin = (userToLogin: User, next?: string) => {
     setUser(userToLogin);
     persistSession(userToLogin);
-    router.push(`/${userToLogin.role}/dashboard`);
+    router.push(next || `/${userToLogin.role}/dashboard`);
   };
 
   const login = async (employeeId: string) => {
@@ -194,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: 'employee',
     });
     
-    completeLogin(created);
+    completeLogin(created, '/setup');
     setLoading(false);
     void password;
     return { error: null };

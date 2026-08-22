@@ -1,9 +1,11 @@
-
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { useDataQuery } from '@/hooks/use-dataquery';
+import { dataQuery } from '@/lib/dataquery';
+import { MODULE_REGISTRY, navFeatureEnabled } from '@/lib/company-blueprint';
 
-export type FeatureModule = 
+export type FeatureModule =
   | 'employee_management'
   | 'attendance'
   | 'leave'
@@ -18,33 +20,23 @@ export type FeatureModule =
   | 'compliance'
   | 'ai_tools'
   | 'developer_tools'
-  | 'offboarding';
+  | 'offboarding'
+  | 'factory'
+  | 'stores'
+  | 'credentials'
+  | 'fleet'
+  | 'sites'
+  | 'faculty'
+  | 'hospitality'
+  | 'volunteers';
 
 export interface Feature {
   id: FeatureModule;
   label: string;
-  category: 'Core' | 'Talent' | 'Finance' | 'Operations' | 'Advanced';
+  category: string;
   description: string;
   enabled: boolean;
 }
-
-const defaultFeatures: Feature[] = [
-  { id: 'employee_management', label: 'Employee Management', category: 'Core', description: 'Profiles, Directory, Documents', enabled: true },
-  { id: 'attendance', label: 'Attendance & Time', category: 'Operations', description: 'Check-in/out, Shifts, Logs', enabled: true },
-  { id: 'leave', label: 'Leave & Holidays', category: 'Operations', description: 'Leave requests, Calendars, Balances', enabled: true },
-  { id: 'payroll', label: 'Payroll & Compensation', category: 'Finance', description: 'Salary, Payslips, Tax', enabled: true },
-  { id: 'performance', label: 'Performance Management', category: 'Talent', description: 'Goals, Reviews, OKRs', enabled: true },
-  { id: 'recruitment', label: 'Recruitment (ATS)', category: 'Talent', description: 'Jobs, Pipeline, Offers', enabled: true },
-  { id: 'timesheets', label: 'Timesheets & Projects', category: 'Operations', description: 'Project tracking, Billable hours', enabled: true },
-  { id: 'training', label: 'Training & Learning', category: 'Talent', description: 'Courses, Certifications', enabled: true },
-  { id: 'expenses', label: 'Expense & Claims', category: 'Finance', description: 'Reimbursements, Approvals', enabled: true },
-  { id: 'assets', label: 'Assets & Inventory', category: 'Operations', description: 'Hardware allocation, Tracking', enabled: true },
-  { id: 'offboarding', label: 'Offboarding & Exit', category: 'Core', description: 'Resignations, clearance, F&F', enabled: true },
-  { id: 'org_chart', label: 'Org Charts', category: 'Core', description: 'Visual hierarchy builder', enabled: true },
-  { id: 'compliance', label: 'Compliance & Audit', category: 'Advanced', description: 'Logs, GDPR, Data retention', enabled: true },
-  { id: 'ai_tools', label: 'Workforce OS / AI', category: 'Advanced', description: 'Digital twin, why engine, simulator, Chief of Staff', enabled: true },
-  { id: 'developer_tools', label: 'Developer Panel', category: 'Advanced', description: 'API Keys, Webhooks, Sandbox', enabled: true },
-];
 
 interface FeaturesContextType {
   features: Feature[];
@@ -56,52 +48,47 @@ interface FeaturesContextType {
 const FeaturesContext = createContext<FeaturesContextType | undefined>(undefined);
 
 export function FeaturesProvider({ children }: { children: ReactNode }) {
-  const [features, setFeatures] = useState<Feature[]>(defaultFeatures);
-  const [loaded, setLoaded] = useState(false);
+  const db = useDataQuery();
+  const company = db.company;
 
-  useEffect(() => {
-    // Load from local storage
-    try {
-      const stored = localStorage.getItem('hrms_features');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Merge with default to ensure new features appear
-        const merged = defaultFeatures.map(df => {
-            const found = parsed.find((p: Feature) => p.id === df.id);
-            return found ? found : df;
-        });
-        setFeatures(merged);
-      }
-    } catch (e) {
-      console.error("Failed to load features settings", e);
-    } finally {
-        setLoaded(true);
-    }
-  }, []);
+  const value = useMemo<FeaturesContextType>(() => {
+    const features: Feature[] = MODULE_REGISTRY.filter((m) => m.navFeature).map((m) => ({
+      id: m.navFeature as FeatureModule,
+      label: m.label,
+      category: m.category,
+      description: m.description,
+      enabled: navFeatureEnabled(company, m.navFeature as string),
+    }));
+    const seen = new Set<string>();
+    const unique = features.filter((f) => {
+      if (seen.has(f.id)) return false;
+      seen.add(f.id);
+      return true;
+    });
+    unique.push({
+      id: 'developer_tools',
+      label: 'Developer panel',
+      category: 'Advanced',
+      description: 'API keys and sandbox',
+      enabled: true,
+    });
 
-  useEffect(() => {
-    if (loaded) {
-        localStorage.setItem('hrms_features', JSON.stringify(features));
-    }
-  }, [features, loaded]);
+    return {
+      features: unique,
+      isEnabled: (id: FeatureModule) => {
+        if (id === 'developer_tools') return true;
+        return navFeatureEnabled(company, id);
+      },
+      toggleFeature: (id: FeatureModule) => {
+        MODULE_REGISTRY.filter((m) => m.navFeature === id).forEach((m) => dataQuery.toggleCompanyModule(m.id));
+      },
+      resetFeatures: () => {
+        dataQuery.applyCompanyBlueprint(company);
+      },
+    };
+  }, [company]);
 
-  const toggleFeature = (id: FeatureModule) => {
-    setFeatures(prev => prev.map(f => f.id === id ? { ...f, enabled: !f.enabled } : f));
-  };
-
-  const isEnabled = (id: FeatureModule) => {
-    return features.find(f => f.id === id)?.enabled ?? false;
-  };
-
-  const resetFeatures = () => {
-      setFeatures(defaultFeatures);
-  }
-
-  return (
-    <FeaturesContext.Provider value={{ features, toggleFeature, isEnabled, resetFeatures }}>
-      {children}
-    </FeaturesContext.Provider>
-  );
+  return <FeaturesContext.Provider value={value}>{children}</FeaturesContext.Provider>;
 }
 
 export function useFeatures() {

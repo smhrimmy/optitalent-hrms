@@ -8,7 +8,7 @@ Open **People OS** after login (`/{role}/command-center`).
 
 ## Documentation
 
-* [Workforce OS](./docs/WORKFORCE_OS.md) — thesis and differentiators
+* [Company Type Engine](./docs/COMPANY_TYPE_ENGINE.md) — industry blueprints, roles, policies
 * [System Architecture](./docs/ARCHITECTURE_SPEC.md)
 * [Design system](./docs/DESIGN_SYSTEM.md)
 * [Launch checklist](./docs/PROJECT_CHECKLIST.md)

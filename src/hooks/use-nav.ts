@@ -16,6 +16,8 @@ import {
   ClipboardCheck,
   Award,
   Target,
+  Factory,
+  Building,
   Activity,
   ShieldCheck,
   Database,
@@ -40,6 +42,7 @@ import {
   Sparkles,
   FlaskConical,
   Radar,
+  Truck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { AnimatedBot } from '@/components/ui/animated-bot';
@@ -84,6 +87,11 @@ const featureMapping: Record<string, FeatureModule> = {
   '/org-chart': 'org_chart',
   '/timesheets': 'timesheets',
   '/offboarding': 'offboarding',
+  '/plants': 'factory',
+  '/stores': 'stores',
+  '/credentials': 'credentials',
+  '/fleet': 'fleet',
+  '/sites': 'sites',
 };
 
 const osNav: NavItem[] = [
@@ -105,6 +113,19 @@ const osNavEmployee: NavItem[] = [
   { label: 'Work Health', href: '/work-health', icon: Heart, featureId: 'ai_tools' },
   { label: 'Talent Market', href: '/talent-marketplace', icon: Handshake, featureId: 'ai_tools' },
   { label: 'Opportunities', href: '/opportunities', icon: Target, featureId: 'ai_tools' },
+];
+
+const typeNav: NavItem[] = [
+  { label: 'Company type', href: '/company-setup', icon: Sliders },
+  { label: 'Feature matrix', href: '/feature-matrix', icon: Puzzle },
+  { label: 'Role builder', href: '/role-builder', icon: ShieldCheck },
+  { label: 'Policy engine', href: '/policy-engine', icon: FileText },
+  { label: 'Operating model', href: '/operating-model', icon: Network },
+  { label: 'Plants', href: '/plants', icon: Factory, featureId: 'factory' },
+  { label: 'Stores', href: '/stores', icon: Building, featureId: 'stores' },
+  { label: 'Credentials', href: '/credentials', icon: Award, featureId: 'credentials' },
+  { label: 'Fleet', href: '/fleet', icon: Truck, featureId: 'fleet' },
+  { label: 'Sites', href: '/sites', icon: Factory, featureId: 'sites' },
 ];
 
 function withOs(items: NavItem[], extra: NavItem[] = osNav): NavItem[] {
@@ -163,7 +184,7 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ]),
+  ], [...typeNav, ...osNav]),
   hr: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Inbox', href: '/inbox', icon: Inbox },
@@ -192,7 +213,7 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Assessments', href: '/assessments', icon: ClipboardCheck },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ]),
+  ], [...typeNav, ...osNav]),
   manager: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Analytics', href: '/analytics', icon: BarChart2 },
