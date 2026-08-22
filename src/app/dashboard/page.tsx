@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { BrandLoader } from '@/components/brand-loader';
 
 export default function TenantDashboard() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -258,7 +259,7 @@ export default function TenantDashboard() {
       }
   };
 
-  if (!userRole) return <div className="p-10 text-center">Loading dashboard...</div>;
+  if (!userRole) return <BrandLoader label="Loading dashboard" />;
 
   // --- HR / ADMIN / SUPER-ADMIN / EXECUTIVE VIEW ---
   // Roles that need high-level oversight
@@ -271,7 +272,7 @@ export default function TenantDashboard() {
               <p className="text-muted-foreground">Welcome back, {userName} ({userRole}). Here's what's happening today.</p>
             </div>
             <div className="flex gap-2">
-                <Button>
+                <Button onClick={() => router.push(`/${userRole}/employees`)}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Add Employee
                 </Button>

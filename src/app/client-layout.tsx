@@ -3,7 +3,7 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { usePathname, useRouter } from 'next/navigation';
-import { LoadingLogo } from '@/components/loading-logo';
+import { BrandLoader } from '@/components/brand-loader';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -140,8 +140,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <LoadingLogo />
+      <div className="relative min-h-screen w-full bg-gradient-to-br from-violet-100 via-background to-slate-100 dark:from-violet-950/50 dark:via-background dark:to-slate-950">
+        <BrandLoader label="Loading OptiTalent" />
       </div>
     );
   }
