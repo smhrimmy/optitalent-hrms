@@ -49,10 +49,10 @@ export default function LandingPage() {
               v2.0 Now Available
             </span>
             <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight mb-6">
-              The Modern HR Platform for <span className="text-primary">Global Teams</span>
+              One people file from offer letter to exit clearance
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Streamline recruitment, payroll, attendance, and employee engagement in one unified, AI-powered platform.
+              Clock-in, leave balances, payslips, hiring pipeline, and manager approvals share the same employee record — so payroll does not wait on a CSV.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="h-12 px-8 text-lg" asChild>
@@ -84,45 +84,45 @@ export default function LandingPage() {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-20 bg-slate-50 dark:bg-slate-900/50">
+      <section id="features" className="py-20 bg-muted/40">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold font-headline mb-4">Everything you need to manage talent</h2>
+            <h2 className="text-3xl font-bold font-headline mb-4">What runs on the same record</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              From hiring to retiring, OptiTalent provides the tools you need to build a world-class organization.
+              Built like BambooHR for daily self-service, Rippling for approvals, and Workday for comp bands — without splitting data across tools.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Users className="h-10 w-10 text-blue-600" />}
-              title="Smart Recruitment"
-              description="AI-powered ATS that parses resumes, ranks candidates, and automates interview scheduling."
+              icon={<Users className="h-10 w-10 text-primary" />}
+              title="ATS that becomes an employee"
+              description="Walk-in and career applicants move to onboarding without re-keying name, role, or documents."
             />
             <FeatureCard 
-              icon={<ShieldCheck className="h-10 w-10 text-green-600" />}
-              title="Secure Core HR"
-              description="Centralized employee database with bank-grade security and role-based access control."
+              icon={<ShieldCheck className="h-10 w-10 text-primary" />}
+              title="Tenant-isolated core HR"
+              description="Every query is scoped by company. Managers see their team; payroll sees the ledger."
             />
             <FeatureCard 
-              icon={<BarChart3 className="h-10 w-10 text-purple-600" />}
-              title="People Analytics"
-              description="Real-time insights into retention, performance, and workforce demographics."
+              icon={<BarChart3 className="h-10 w-10 text-primary" />}
+              title="Approvals inbox"
+              description="Leave, expenses, timesheets, and offers wait in one queue instead of three mailboxes."
             />
             <FeatureCard 
-              icon={<Globe className="h-10 w-10 text-orange-600" />}
-              title="Global Payroll"
-              description="Automated payroll processing for employees and contractors in 150+ currencies."
+              icon={<Globe className="h-10 w-10 text-primary" />}
+              title="Payslips from attendance"
+              description="Hours, leave, and claims feed the same payroll history employees download."
             />
             <FeatureCard 
-              icon={<CheckCircle className="h-10 w-10 text-teal-600" />}
-              title="Time & Attendance"
-              description="Seamless clock-in/out with geofencing and automated leave balance tracking."
+              icon={<CheckCircle className="h-10 w-10 text-primary" />}
+              title="Face clock-in + calendar"
+              description="Today’s stamp, holidays, and who is out sit on one people calendar."
             />
             <FeatureCard 
-              icon={<ShieldCheck className="h-10 w-10 text-red-600" />}
-              title="Compliance"
-              description="Stay compliant with local labor laws, tax regulations, and data privacy standards."
+              icon={<ShieldCheck className="h-10 w-10 text-primary" />}
+              title="Goals, bands, benefits"
+              description="OKRs, published pay ranges, and enrolment live next to the profile that payroll already uses."
             />
           </div>
         </div>
@@ -138,12 +138,13 @@ export default function LandingPage() {
             <span className="font-bold">OptiTalent</span>
           </div>
           <div className="text-sm text-muted-foreground">
-            © 2025 OptiTalent Inc. All rights reserved.
+            © 2026 OptiTalent. People operations software.
           </div>
           <div className="flex gap-6">
-            <Link href="#" className="text-muted-foreground hover:text-foreground">Privacy</Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground">Terms</Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground">Contact</Link>
+            <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>
+            <Link href="/terms" className="text-muted-foreground hover:text-foreground">Terms</Link>
+            <Link href="/cookies" className="text-muted-foreground hover:text-foreground">Cookies</Link>
+            <Link href="mailto:support@optitalent.com" className="text-muted-foreground hover:text-foreground">Support</Link>
           </div>
         </div>
       </footer>
@@ -155,7 +156,7 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
   return (
     <Card className="border-none shadow-md bg-background hover:shadow-xl transition-all duration-300">
       <CardContent className="pt-6">
-        <div className="mb-4 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl inline-block">
+        <div className="mb-4 p-3 bg-muted rounded-md inline-block">
           {icon}
         </div>
         <h3 className="text-xl font-bold mb-2">{title}</h3>

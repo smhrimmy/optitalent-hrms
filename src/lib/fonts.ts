@@ -1,14 +1,20 @@
-import { Poppins, Space_Grotesk } from 'next/font/google';
+import { Fraunces, Source_Sans_3 } from 'next/font/google';
 
-export const poppins = Poppins({
+export const sourceSans = Source_Sans_3({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+  variable: '--font-source-sans',
+  weight: ['400', '500', '600', '700'],
 });
 
-export const spaceGrotesk = Space_Grotesk({
+export const fraunces = Fraunces({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-fraunces',
+  weight: ['500', '600', '700'],
 });
+
+/** @deprecated use sourceSans */
+export const poppins = sourceSans;
+/** @deprecated use fraunces */
+export const spaceGrotesk = fraunces;

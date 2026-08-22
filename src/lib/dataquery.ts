@@ -12,8 +12,8 @@ import { onboardingCandidates as mockOnboarding } from '@/lib/mock-data/onboardi
 import { shifts as mockShifts } from '@/lib/mock-data/shifts';
 import { supabase } from '@/lib/supabase';
 
-export const DATAQUERY_VERSION = 1;
-export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v1';
+export const DATAQUERY_VERSION = 2;
+export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v2';
 export const DEMO_PASSWORD = 'password123';
 
 export function isSupabaseConfigured(): boolean {
@@ -46,6 +46,57 @@ export type AttendanceStatus = 'Present' | 'Absent' | 'Leave' | 'Week Off' | 'Ho
 export type ExpenseStatus = 'Draft' | 'Submitted' | 'Approved' | 'Rejected' | 'Reimbursed';
 export type AssetStatus = 'Assigned' | 'Available' | 'In Repair' | 'Retired';
 export type OffboardingStatus = 'Initiated' | 'In Progress' | 'Clearance Pending' | 'Completed';
+export type ApprovalKind = 'Leave' | 'Expense' | 'Timesheet' | 'Offer' | 'Asset';
+export type GoalStatus = 'On track' | 'At risk' | 'Done';
+
+export type ApprovalRecord = {
+  id: string;
+  kind: ApprovalKind;
+  title: string;
+  requester: string;
+  status: LeaveStatus;
+  created_at: string;
+  ref_id: string;
+};
+
+export type GoalRecord = {
+  id: string;
+  owner: string;
+  owner_id: string;
+  title: string;
+  key_result: string;
+  progress: number;
+  status: GoalStatus;
+  cycle: string;
+};
+
+export type CompensationBand = {
+  id: string;
+  role: string;
+  level: string;
+  location: string;
+  min: number;
+  mid: number;
+  max: number;
+  currency: string;
+};
+
+export type BenefitPlan = {
+  id: string;
+  name: string;
+  type: 'Health' | 'Retirement' | 'Insurance' | 'Wellness';
+  coverage: string;
+  enrolled: boolean;
+};
+
+export type SurveyRecord = {
+  id: string;
+  title: string;
+  audience: string;
+  status: 'Open' | 'Closed' | 'Draft';
+  responses: number;
+  score?: number;
+};
 
 export type LeaveRequestRecord = {
   id: string;
@@ -241,6 +292,11 @@ export type HrmsDatabase = {
   kudos: KudosRecord[];
   shifts: typeof mockShifts;
   onboarding: typeof mockOnboarding;
+  approvals: ApprovalRecord[];
+  goals: GoalRecord[];
+  compensation: CompensationBand[];
+  benefits: BenefitPlan[];
+  surveys: SurveyRecord[];
 };
 
 function dayCount(from: string, to: string) {
@@ -549,6 +605,34 @@ export function createSeed(): HrmsDatabase {
     ],
     shifts: mockShifts,
     onboarding: mockOnboarding,
+    approvals: [
+      { id: uid(), kind: 'Leave', title: 'Casual leave · 1 day', requester: anika.profile.full_name, status: 'Pending', created_at: iso(), ref_id: 'leave' },
+      { id: uid(), kind: 'Expense', title: 'Travel claim ₹2,450', requester: anika.profile.full_name, status: 'Pending', created_at: iso(daysAgo(1)), ref_id: 'exp' },
+      { id: uid(), kind: 'Timesheet', title: 'Payroll Engine · 8h', requester: anika.profile.full_name, status: 'Pending', created_at: iso(daysAgo(1)), ref_id: 'ts' },
+      { id: uid(), kind: 'Offer', title: 'Offer · Noah Brooks', requester: jackson.profile.full_name, status: 'Pending', created_at: iso(daysAgo(2)), ref_id: 'offer' },
+    ],
+    goals: [
+      { id: uid(), owner: anika.profile.full_name, owner_id: anika.profile.id, title: 'Ship payslip PDF generation', key_result: '100% of July slips generated without manual edit', progress: 72, status: 'On track', cycle: 'Q3 2026' },
+      { id: uid(), owner: rohan.profile.full_name, owner_id: rohan.profile.id, title: 'Cut ATS time-to-hire', key_result: 'Median time-to-hire under 21 days', progress: 40, status: 'At risk', cycle: 'Q3 2026' },
+      { id: uid(), owner: isabella.profile.full_name, owner_id: isabella.profile.id, title: 'Engineering reliability', key_result: 'Zero Sev-1 incidents from HRMS payroll', progress: 88, status: 'On track', cycle: 'Q3 2026' },
+    ],
+    compensation: [
+      { id: uid(), role: 'Software Engineer', level: 'L3', location: 'Bengaluru', min: 1400000, mid: 1800000, max: 2200000, currency: 'INR' },
+      { id: uid(), role: 'Software Engineer', level: 'L4', location: 'Bengaluru', min: 2000000, mid: 2600000, max: 3200000, currency: 'INR' },
+      { id: uid(), role: 'HR Business Partner', level: 'M1', location: 'Bengaluru', min: 1200000, mid: 1600000, max: 2000000, currency: 'INR' },
+      { id: uid(), role: 'Support Specialist', level: 'L2', location: 'Remote', min: 600000, mid: 800000, max: 1000000, currency: 'INR' },
+    ],
+    benefits: [
+      { id: uid(), name: 'Family floater health', type: 'Health', coverage: '₹5L sum insured', enrolled: true },
+      { id: uid(), name: 'Provident fund', type: 'Retirement', coverage: '12% employer match', enrolled: true },
+      { id: uid(), name: 'Term life', type: 'Insurance', coverage: '3× CTC', enrolled: true },
+      { id: uid(), name: 'Mental health sessions', type: 'Wellness', coverage: '8 sessions / year', enrolled: false },
+    ],
+    surveys: [
+      { id: uid(), title: 'Q3 engagement pulse', audience: 'All employees', status: 'Open', responses: 42, score: 7.4 },
+      { id: uid(), title: 'Onboarding 30-day check', audience: 'New hires', status: 'Open', responses: 6, score: 8.1 },
+      { id: uid(), title: 'Exit reasons 2026 H1', audience: 'Alumni', status: 'Closed', responses: 11, score: 6.2 },
+    ],
   };
 }
 
@@ -580,12 +664,13 @@ export function hydrateDataQuery() {
     }
     const parsed = JSON.parse(raw) as Partial<HrmsDatabase>;
     const seed = createSeed();
-    store = {
-      ...seed,
-      ...parsed,
-      version: DATAQUERY_VERSION,
-      employees: parsed.employees?.length ? parsed.employees : seed.employees,
-    };
+    store = { ...seed, ...parsed, version: DATAQUERY_VERSION };
+    (Object.keys(seed) as (keyof HrmsDatabase)[]).forEach((key) => {
+      if (store[key] == null) {
+        (store as Record<string, unknown>)[key as string] = seed[key];
+      }
+    });
+    if (!parsed.employees?.length) store.employees = seed.employees;
   } catch {
     store = createSeed();
   }
@@ -1022,6 +1107,60 @@ export const dataQuery = {
     return rec;
   },
 
+  listApprovals(): ApprovalRecord[] {
+    return store.approvals;
+  },
+
+  decideApproval(id: string, status: LeaveStatus) {
+    store = {
+      ...store,
+      approvals: store.approvals.map((a) => (a.id === id ? { ...a, status } : a)),
+    };
+    emit();
+  },
+
+  listGoals(ownerId?: string): GoalRecord[] {
+    if (!ownerId) return store.goals;
+    return store.goals.filter((g) => g.owner_id === ownerId);
+  },
+
+  addGoal(input: Omit<GoalRecord, 'id'>): GoalRecord {
+    const rec = { ...input, id: uid() };
+    store = { ...store, goals: [rec, ...store.goals] };
+    emit();
+    return rec;
+  },
+
+  listCompensation(): CompensationBand[] {
+    return store.compensation;
+  },
+
+  listBenefits(): BenefitPlan[] {
+    return store.benefits;
+  },
+
+  toggleBenefit(id: string) {
+    store = {
+      ...store,
+      benefits: store.benefits.map((b) => (b.id === id ? { ...b, enrolled: !b.enrolled } : b)),
+    };
+    emit();
+  },
+
+  listSurveys(): SurveyRecord[] {
+    return store.surveys;
+  },
+
+  respondSurvey(id: string) {
+    store = {
+      ...store,
+      surveys: store.surveys.map((s) =>
+        s.id === id ? { ...s, responses: s.responses + 1 } : s
+      ),
+    };
+    emit();
+  },
+
   dashboardStats() {
     const employees = this.listEmployees();
     const pendingLeaves = store.leaveRequests.filter((r) => r.status === 'Pending').length;
@@ -1036,6 +1175,7 @@ export const dataQuery = {
       pendingExpenses,
       applicants: store.applicants.length,
       courses: store.courses.length,
+      pendingApprovals: store.approvals.filter((a) => a.status === 'Pending').length,
     };
   },
 };

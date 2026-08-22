@@ -9,7 +9,10 @@ import {
   ForbiddenError, 
   ServerError, 
   MaintenanceError, 
-  RateLimitError 
+  RateLimitError,
+  OfflineError,
+  SessionExpiredError,
+  PaymentFailedError,
 } from "@/components/errors/error-variants";
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 
@@ -23,6 +26,9 @@ export default function ErrorShowcase() {
     { component: <ServerError errorId="ERR-500-DEMO" />, label: "500 Server Error" },
     { component: <MaintenanceError />, label: "503 Maintenance" },
     { component: <RateLimitError retryAfter={48} />, label: "429 Rate Limit" },
+    { component: <OfflineError />, label: "Offline" },
+    { component: <SessionExpiredError />, label: "Session" },
+    { component: <PaymentFailedError />, label: "Payment" },
   ];
 
   const nextError = () => {
