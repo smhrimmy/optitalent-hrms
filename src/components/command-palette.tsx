@@ -49,6 +49,19 @@ export function CommandPalette() {
       <CommandInput placeholder="Jump to a person, page, or approval…" />
       <CommandList>
         <CommandEmpty>No match. Try a name or module.</CommandEmpty>
+        <CommandGroup heading="Workforce OS">
+          {[
+            ['People OS', '/command-center'],
+            ['Digital twin', '/digital-twin'],
+            ['Simulator', '/simulator'],
+            ['Why engine', '/why'],
+            ['Chief of Staff', '/ai-tools/chatbot'],
+          ].map(([label, href]) => (
+            <CommandItem key={href} onSelect={() => go(href)}>
+              {label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
         <CommandGroup heading="Pages">
           {pages.map((p) => (
             <CommandItem key={p.href} onSelect={() => go(p.href)}>

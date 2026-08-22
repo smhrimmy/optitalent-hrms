@@ -7,19 +7,19 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://optitalent.example'),
   title: {
-    default: 'OptiTalent — Hire to retire in one people system',
+    default: 'OptiTalent — AI Workforce Operating System',
     template: '%s · OptiTalent',
   },
-  description: 'OptiTalent runs employee records, attendance, leave, payroll, hiring, and manager approvals from a single tenant-isolated database.',
+  description: 'Understand what is happening in the workforce, explain why, predict what happens next, recommend the action, and execute it — on one employee graph.',
   openGraph: {
-    title: 'OptiTalent HRMS',
-    description: 'People operations from hire to exit — leave, payroll, ATS, and self-service.',
+    title: 'OptiTalent Workforce OS',
+    description: 'Digital twin, why engine, simulator, and HR Chief of Staff — not another HRMS module pack.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'OptiTalent HRMS',
-    description: 'People operations from hire to exit — leave, payroll, ATS, and self-service.',
+    title: 'OptiTalent Workforce OS',
+    description: 'Digital twin, why engine, simulator, and HR Chief of Staff — not another HRMS module pack.',
   },
   icons: [{ rel: 'icon', url: '/favicon.svg' }],
   manifest: '/manifest.json',

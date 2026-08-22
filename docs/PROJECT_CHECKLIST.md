@@ -5,7 +5,7 @@ Source: complete-project-checklist PDF. Evidence in this repo (not a claim of pr
 ## 1. Planning
 - KPIs: dashboard headcount, pending leave, open jobs, tickets, expenses, approvals (`dataQuery.dashboardStats`)
 - Personas: admin, HR, manager, employee (`use-nav`)
-- Competitors: BambooHR ESS, Rippling inbox/IT-HR, Workday comp/OKRs (`docs/DESIGN_SYSTEM.md`)
+- Competitors: Workday/Darwinbox suites as table stakes; OptiTalent differentiates on workforce intelligence (`docs/WORKFORCE_OS.md`)
 - Stack: Next.js App Router, TypeScript, Supabase optional, local dataquery (`README`)
 
 ## 2. UI/UX

@@ -42,7 +42,7 @@ const defaultFeatures: Feature[] = [
   { id: 'offboarding', label: 'Offboarding & Exit', category: 'Core', description: 'Resignations, clearance, F&F', enabled: true },
   { id: 'org_chart', label: 'Org Charts', category: 'Core', description: 'Visual hierarchy builder', enabled: true },
   { id: 'compliance', label: 'Compliance & Audit', category: 'Advanced', description: 'Logs, GDPR, Data retention', enabled: true },
-  { id: 'ai_tools', label: 'AI Tools', category: 'Advanced', description: 'Career Predictor, Chatbot', enabled: true },
+  { id: 'ai_tools', label: 'Workforce OS / AI', category: 'Advanced', description: 'Digital twin, why engine, simulator, Chief of Staff', enabled: true },
   { id: 'developer_tools', label: 'Developer Panel', category: 'Advanced', description: 'API Keys, Webhooks, Sandbox', enabled: true },
 ];
 

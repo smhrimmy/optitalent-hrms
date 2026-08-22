@@ -1,6 +1,6 @@
 # OptiTalent design system
 
-**Product sentence:** OptiTalent helps HR ops and managers run hire-to-exit on one employee record instead of spreadsheets plus three SaaS tools.
+**Product sentence:** OptiTalent is an AI workforce operating system: one employee graph that explains why, predicts next, recommends, and executes — not another HRMS module pack.
 
 **Adjectives:** quiet, paper-accurate, stamp-certain.
 

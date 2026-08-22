@@ -15,15 +15,10 @@ import {
   DollarSign,
   ClipboardCheck,
   Award,
-  Building,
-  Target,
-  Factory,
   Activity,
-  Server,
   ShieldCheck,
   Database,
   Puzzle,
-  BookOpen,
   TrendingUp,
   Handshake,
   GraduationCap,
@@ -31,7 +26,6 @@ import {
   Newspaper,
   Clock,
   Heart,
-  BrainCircuit,
   Sliders,
   Code,
   Wallet,
@@ -41,7 +35,10 @@ import {
   Inbox,
   Gift,
   ClipboardList,
-  BookUser
+  BookUser,
+  Sparkles,
+  FlaskConical,
+  Radar,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { AnimatedBot } from '@/components/ui/animated-bot';
@@ -68,6 +65,17 @@ const featureMapping: Record<string, FeatureModule> = {
   '/ai-tools': 'ai_tools',
   '/ai-tools/chatbot': 'ai_tools',
   '/ai-tools/career-predictor': 'ai_tools',
+  '/command-center': 'ai_tools',
+  '/digital-twin': 'ai_tools',
+  '/simulator': 'ai_tools',
+  '/why': 'ai_tools',
+  '/talent-marketplace': 'ai_tools',
+  '/opportunities': 'ai_tools',
+  '/manager-copilot': 'ai_tools',
+  '/work-health': 'ai_tools',
+  '/workflows': 'ai_tools',
+  '/people-brief': 'ai_tools',
+  '/compliance-iq': 'compliance',
   '/admin-config': 'developer_tools', // Or just available for admin
   '/developer-panel': 'developer_tools',
   '/expenses': 'expenses',
@@ -76,6 +84,39 @@ const featureMapping: Record<string, FeatureModule> = {
   '/timesheets': 'timesheets',
   '/offboarding': 'offboarding',
 };
+
+const osNav: NavItem[] = [
+  { label: 'People OS', href: '/command-center', icon: Sparkles, featureId: 'ai_tools' },
+  { label: 'Digital Twin', href: '/digital-twin', icon: Radar, featureId: 'ai_tools' },
+  { label: 'Why Engine', href: '/why', icon: HelpCircle, featureId: 'ai_tools' },
+  { label: 'Simulator', href: '/simulator', icon: FlaskConical, featureId: 'ai_tools' },
+  { label: 'Talent Market', href: '/talent-marketplace', icon: Handshake, featureId: 'ai_tools' },
+  { label: 'Opportunities', href: '/opportunities', icon: Target, featureId: 'ai_tools' },
+  { label: 'Manager Copilot', href: '/manager-copilot', icon: Users, featureId: 'ai_tools' },
+  { label: 'Work Health', href: '/work-health', icon: Heart, featureId: 'ai_tools' },
+  { label: 'Workflows', href: '/workflows', icon: Puzzle, featureId: 'ai_tools' },
+  { label: 'Compliance IQ', href: '/compliance-iq', icon: ShieldCheck, featureId: 'compliance' },
+  { label: 'People Brief', href: '/people-brief', icon: Newspaper, featureId: 'ai_tools' },
+];
+
+const osNavEmployee: NavItem[] = [
+  { label: 'People OS', href: '/command-center', icon: Sparkles, featureId: 'ai_tools' },
+  { label: 'Work Health', href: '/work-health', icon: Heart, featureId: 'ai_tools' },
+  { label: 'Talent Market', href: '/talent-marketplace', icon: Handshake, featureId: 'ai_tools' },
+  { label: 'Opportunities', href: '/opportunities', icon: Target, featureId: 'ai_tools' },
+];
+
+function withOs(items: NavItem[], extra: NavItem[] = osNav): NavItem[] {
+  if (!items.length) return extra;
+  const dash = items[0];
+  if (dash.href === '/dashboard' || dash.href === '/super-admin') {
+    const rest = items.slice(1).map((item) =>
+      item.href === '/ai-tools/chatbot' ? { ...item, label: 'Chief of Staff' } : item
+    );
+    return [dash, ...extra, ...rest];
+  }
+  return [...extra, ...items];
+}
 
 export const navConfig: Record<string, NavItem[]> = {
   'super-admin': [
@@ -86,7 +127,7 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Backups & DR', href: '/super-admin/backups', icon: Database },
     { label: 'Global Settings', href: '/settings', icon: Settings },
   ],
-  admin: [
+  admin: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Server Status', href: '/super-admin/server-health', icon: Activity }, // New WHM
     { label: 'Security Center', href: '/super-admin/security', icon: ShieldCheck }, // New WHM
@@ -121,8 +162,8 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ],
-  hr: [
+  ]),
+  hr: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Inbox', href: '/inbox', icon: Inbox },
     { label: 'Analytics', href: '/analytics', icon: BarChart2 },
@@ -150,8 +191,8 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Assessments', href: '/assessments', icon: ClipboardCheck },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ],
-  manager: [
+  ]),
+  manager: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Analytics', href: '/analytics', icon: BarChart2 },
     { label: 'My Team', href: '/employees', icon: Users, featureId: 'employee_management' },
@@ -173,8 +214,8 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ],
-  employee: [
+  ]),
+  employee: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Inbox', href: '/inbox', icon: Inbox },
     { label: 'Directory', href: '/directory', icon: BookUser, featureId: 'employee_management' },
@@ -194,9 +235,8 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ],
-  // ... (Other roles can be added similarly, keeping existing config for brevity but applying filtering)
-  recruiter: [
+  ], osNavEmployee),
+  recruiter: withOs([
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Analytics', href: '/analytics', icon: BarChart2 },
     { label: 'Recruitment', href: '/recruitment', icon: Briefcase, featureId: 'recruitment' },
@@ -204,7 +244,7 @@ export const navConfig: Record<string, NavItem[]> = {
     { label: 'AI Tools', href: '/ai-tools/chatbot', icon: AnimatedBot, featureId: 'ai_tools' },
     { label: 'Company Feed', href: '/company-feed', icon: Newspaper },
     { label: 'Settings', href: '/settings', icon: Settings },
-  ],
+  ]),
   trainee: [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'My Assessments', href: '/assessments', icon: ClipboardCheck },

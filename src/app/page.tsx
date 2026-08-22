@@ -46,13 +46,13 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              v2.0 Now Available
+              Workforce OS · not another module pack
             </span>
             <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight mb-6">
-              One people file from offer letter to exit clearance
+              Understand what is happening. Then do the next right thing.
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Clock-in, leave balances, payslips, hiring pipeline, and manager approvals share the same employee record — so payroll does not wait on a CSV.
+              Workday, Darwinbox, Keka, and greytHR already own records, payroll, and attendance. OptiTalent is an HR operating system: one employee graph, a why engine, a digital twin, simulation, and a Chief of Staff that executes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="h-12 px-8 text-lg" asChild>
@@ -87,42 +87,42 @@ export default function LandingPage() {
       <section id="features" className="py-20 bg-muted/40">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold font-headline mb-4">What runs on the same record</h2>
+            <h2 className="text-3xl font-bold font-headline mb-4">Intelligence on top of the system of record</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Built like BambooHR for daily self-service, Rippling for approvals, and Workday for comp bands — without splitting data across tools.
+              Payroll, leave, and ATS stay table stakes. Differentiation is predict → explain → recommend → execute.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard 
               icon={<Users className="h-10 w-10 text-primary" />}
-              title="ATS that becomes an employee"
-              description="Walk-in and career applicants move to onboarding without re-keying name, role, or documents."
+              title="Workforce digital twin"
+              description="Org tree plus per-person skills, load, engagement, and compensation position — a live model, not a static org chart."
             />
             <FeatureCard 
               icon={<ShieldCheck className="h-10 w-10 text-primary" />}
-              title="Tenant-isolated core HR"
-              description="Every query is scoped by company. Managers see their team; payroll sees the ledger."
+              title="Why engine + risk"
+              description="Every metric has contributors and an intervention. Attrition attention is decision support, not a verdict."
             />
             <FeatureCard 
               icon={<BarChart3 className="h-10 w-10 text-primary" />}
-              title="Approvals inbox"
-              description="Leave, expenses, timesheets, and offers wait in one queue instead of three mailboxes."
+              title="What-if simulator"
+              description="Hire 20 developers and see cost, manager span, induction desks, and bottlenecks before the req."
             />
             <FeatureCard 
               icon={<Globe className="h-10 w-10 text-primary" />}
-              title="Payslips from attendance"
-              description="Hours, leave, and claims feed the same payroll history employees download."
+              title="Talent & opportunity market"
+              description="Skill gaps, internal matches, projects, and mentors — mobility before another external hire."
             />
             <FeatureCard 
               icon={<CheckCircle className="h-10 w-10 text-primary" />}
-              title="Face clock-in + calendar"
-              description="Today’s stamp, holidays, and who is out sit on one people calendar."
+              title="Chief of Staff agents"
+              description="Onboarding packs, approvals, and recipes actually write to the graph — greytHR NAVOS direction, on one record."
             />
             <FeatureCard 
               icon={<ShieldCheck className="h-10 w-10 text-primary" />}
-              title="Goals, bands, benefits"
-              description="OKRs, published pay ranges, and enrolment live next to the profile that payroll already uses."
+              title="India compliance IQ"
+              description="PF, ESI, PT, TDS, LWF, gratuity, and working-hours health — not only a payslip line."
             />
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function LandingPage() {
             <span className="font-bold">OptiTalent</span>
           </div>
           <div className="text-sm text-muted-foreground">
-            © 2026 OptiTalent. People operations software.
+            © 2026 OptiTalent. Workforce operating system.
           </div>
           <div className="flex gap-6">
             <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>

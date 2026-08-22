@@ -12,8 +12,8 @@ import { onboardingCandidates as mockOnboarding } from '@/lib/mock-data/onboardi
 import { shifts as mockShifts } from '@/lib/mock-data/shifts';
 import { supabase } from '@/lib/supabase';
 
-export const DATAQUERY_VERSION = 2;
-export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v2';
+export const DATAQUERY_VERSION = 3;
+export const DATAQUERY_STORAGE_KEY = 'optitalent_hrms_dataquery_v3';
 export const DEMO_PASSWORD = 'password123';
 
 export function isSupabaseConfigured(): boolean {
@@ -96,6 +96,66 @@ export type SurveyRecord = {
   status: 'Open' | 'Closed' | 'Draft';
   responses: number;
   score?: number;
+};
+
+export type SkillRecord = {
+  id: string;
+  employee_id: string;
+  name: string;
+  proficiency: number;
+  category: string;
+};
+
+export type JourneyEvent = {
+  id: string;
+  employee_id: string;
+  at: string;
+  kind: string;
+  title: string;
+  detail: string;
+};
+
+export type OpportunityRecord = {
+  id: string;
+  title: string;
+  kind: 'Project' | 'Assignment' | 'Mentoring' | 'Training' | 'Open role' | 'Leadership';
+  skills: string[];
+  owner: string;
+  seats: number;
+};
+
+export type WorkflowRecipe = {
+  id: string;
+  name: string;
+  description: string;
+  trigger: string;
+  steps: string[];
+  installed: boolean;
+};
+
+export type PolicyDoc = {
+  id: string;
+  title: string;
+  body: string;
+  executable: boolean;
+};
+
+export type ComplianceItem = {
+  id: string;
+  statute: string;
+  jurisdiction: string;
+  status: 'Healthy' | 'Watch' | 'Action';
+  note: string;
+  payroll_impact: string;
+};
+
+export type AgentRun = {
+  id: string;
+  at: string;
+  actor: string;
+  prompt: string;
+  summary: string;
+  actions: string[];
 };
 
 export type LeaveRequestRecord = {
@@ -297,6 +357,13 @@ export type HrmsDatabase = {
   compensation: CompensationBand[];
   benefits: BenefitPlan[];
   surveys: SurveyRecord[];
+  skills: SkillRecord[];
+  journeyEvents: JourneyEvent[];
+  opportunities: OpportunityRecord[];
+  workflowRecipes: WorkflowRecipe[];
+  policies: PolicyDoc[];
+  complianceItems: ComplianceItem[];
+  agentRuns: AgentRun[];
 };
 
 function dayCount(from: string, to: string) {
@@ -349,6 +416,94 @@ function seedAttendance(employees: User[]): AttendanceRecord[] {
   }
   void today;
   return records;
+}
+
+function skillsForRole(title: string): { name: string; proficiency: number; category: string }[] {
+  const t = title.toLowerCase();
+  if (t.includes('devops')) {
+    return [
+      { name: 'AWS', proficiency: 70, category: 'Cloud' },
+      { name: 'Docker', proficiency: 55, category: 'Platform' },
+      { name: 'Kubernetes', proficiency: 30, category: 'Platform' },
+      { name: 'Terraform', proficiency: 35, category: 'Platform' },
+    ];
+  }
+  if (t.includes('software') || t.includes('engineer') || t.includes('frontend') || t.includes('backend')) {
+    return [
+      { name: 'JavaScript', proficiency: 82, category: 'Language' },
+      { name: 'React', proficiency: 78, category: 'Frontend' },
+      { name: 'SQL', proficiency: 64, category: 'Data' },
+      { name: 'AWS', proficiency: 38, category: 'Cloud' },
+    ];
+  }
+  if (t.includes('qa')) {
+    return [
+      { name: 'Test design', proficiency: 80, category: 'QA' },
+      { name: 'Selenium', proficiency: 55, category: 'QA' },
+      { name: 'SQL', proficiency: 50, category: 'Data' },
+    ];
+  }
+  if (t.includes('hr') || t.includes('talent') || t.includes('recruiter')) {
+    return [
+      { name: 'Workforce planning', proficiency: 72, category: 'HR' },
+      { name: 'Interviewing', proficiency: 80, category: 'HR' },
+      { name: 'Indian labour compliance', proficiency: 68, category: 'HR' },
+    ];
+  }
+  if (t.includes('finance') || t.includes('payroll')) {
+    return [
+      { name: 'Payroll accounting', proficiency: 75, category: 'Finance' },
+      { name: 'TDS', proficiency: 70, category: 'Compliance' },
+    ];
+  }
+  return [
+    { name: 'Communication', proficiency: 70, category: 'Core' },
+    { name: 'Domain knowledge', proficiency: 65, category: 'Core' },
+  ];
+}
+
+function seedSkills(employees: User[]): SkillRecord[] {
+  return employees.flatMap((emp) =>
+    skillsForRole(emp.profile.job_title).map((s) => ({
+      id: uid(),
+      employee_id: emp.profile.id,
+      ...s,
+    }))
+  );
+}
+
+function seedJourney(employees: User[]): JourneyEvent[] {
+  const events: JourneyEvent[] = [];
+  for (const emp of employees) {
+    events.push({
+      id: uid(),
+      employee_id: emp.profile.id,
+      at: emp.profile.hire_date || '2023-04-12',
+      kind: 'Hire',
+      title: 'Joined OptiTalent',
+      detail: `${emp.profile.job_title} · ${emp.profile.department.name}`,
+    });
+    events.push({
+      id: uid(),
+      employee_id: emp.profile.id,
+      at: '2024-04-01',
+      kind: 'Review',
+      title: 'Annual performance cycle',
+      detail: 'Goals locked and 360 requested',
+    });
+  }
+  const anika = employees.find((e) => e.profile.employee_id === 'PEP0012');
+  if (anika) {
+    events.push({
+      id: uid(),
+      employee_id: anika.profile.id,
+      at: '2025-11-12',
+      kind: 'Promotion wait',
+      title: 'Promotion packet opened',
+      detail: 'L3 → L4 discussion started; no decision recorded',
+    });
+  }
+  return events.sort((a, b) => a.at.localeCompare(b.at));
 }
 
 export function createSeed(): HrmsDatabase {
@@ -633,6 +788,79 @@ export function createSeed(): HrmsDatabase {
       { id: uid(), title: 'Onboarding 30-day check', audience: 'New hires', status: 'Open', responses: 6, score: 8.1 },
       { id: uid(), title: 'Exit reasons 2026 H1', audience: 'Alumni', status: 'Closed', responses: 11, score: 6.2 },
     ],
+    skills: seedSkills(employees),
+    journeyEvents: seedJourney(employees),
+    opportunities: [
+      { id: uid(), title: 'Payroll reliability squad', kind: 'Project', skills: ['SQL', 'React'], owner: isabella.profile.full_name, seats: 2 },
+      { id: uid(), title: 'Shadow DevOps onboarding week', kind: 'Assignment', skills: ['AWS', 'Docker'], owner: 'Platform', seats: 1 },
+      { id: uid(), title: 'Mentor a trainee engineer', kind: 'Mentoring', skills: ['JavaScript', 'Communication'], owner: isabella.profile.full_name, seats: 4 },
+      { id: uid(), title: 'AWS Practitioner cohort', kind: 'Training', skills: ['AWS'], owner: 'Learning', seats: 12 },
+      { id: uid(), title: 'Open: DevOps Engineer', kind: 'Open role', skills: ['AWS', 'Kubernetes', 'Terraform'], owner: jackson.profile.full_name, seats: 1 },
+      { id: uid(), title: 'People lead rotation', kind: 'Leadership', skills: ['Workforce planning'], owner: jackson.profile.full_name, seats: 1 },
+    ],
+    workflowRecipes: [
+      {
+        id: 'wf-new-hire',
+        name: 'New employee',
+        description: 'Record → documents → email → laptop → access → orientation',
+        trigger: 'Candidate marked Hired',
+        steps: ['Create employee', 'Request documents', 'IT account', 'Laptop', 'Orientation', 'Probation workflow'],
+        installed: true,
+      },
+      {
+        id: 'wf-promotion',
+        name: 'Promotion',
+        description: 'Manager request → performance → approval → salary → letter → payroll',
+        trigger: 'Promotion request',
+        steps: ['Performance check', 'Comp band check', 'Approvals', 'Letter', 'Payroll eligibility'],
+        installed: true,
+      },
+      {
+        id: 'wf-exit',
+        name: 'Exit',
+        description: 'Resignation → notice → assets → access → F&F → alumni',
+        trigger: 'Resignation submitted',
+        steps: ['Approve resignation', 'Notice period', 'Asset recovery', 'Revoke access', 'Settlement', 'Exit survey'],
+        installed: true,
+      },
+    ],
+    policies: [
+      {
+        id: 'pol-leave',
+        title: 'Company Leave Policy.pdf',
+        body: 'Casual leave 12 days. Sick leave 7 days. WFH up to 8 days per month for eligible roles after manager approval. Unused casual leave does not encash.',
+        executable: true,
+      },
+      {
+        id: 'pol-remote',
+        title: 'Remote Work Policy.pdf',
+        body: 'Engineering and Product may WFH if remaining monthly quota > 0 and the manager has not set a team office-only week. Support floor roles are office-first.',
+        executable: true,
+      },
+      {
+        id: 'pol-expense',
+        title: 'Expense Policy.pdf',
+        body: 'Internet reimbursement of ₹1,200/month for confirmed employees on hybrid/remote. Receipts required above ₹500. Travel requires pre-approval.',
+        executable: true,
+      },
+      {
+        id: 'pol-travel',
+        title: 'Travel Policy.pdf',
+        body: 'Domestic travel: manager + finance. International: HRBP + finance. Economy under 6 hours.',
+        executable: true,
+      },
+    ],
+    complianceItems: [
+      { id: uid(), statute: 'PF', jurisdiction: 'India (EPFO)', status: 'Healthy', note: '12% employee + 12% employer on basic; challan window open', payroll_impact: 'Deduction + employer cost' },
+      { id: uid(), statute: 'ESI', jurisdiction: 'India (ESIC)', status: 'Watch', note: 'Two employees near wage ceiling — confirm coverage next cycle', payroll_impact: '0.75% / 3.25% if covered' },
+      { id: uid(), statute: 'PT', jurisdiction: 'Karnataka', status: 'Healthy', note: 'Profession tax slab applied on Bengaluru payroll', payroll_impact: 'State PT slab' },
+      { id: uid(), statute: 'TDS', jurisdiction: 'India (IT Act)', status: 'Healthy', note: 'Form 16 pack staged for Q2', payroll_impact: 'Withholding' },
+      { id: uid(), statute: 'LWF', jurisdiction: 'Karnataka', status: 'Watch', note: 'Half-yearly contribution due next month', payroll_impact: 'Nominal employee/employer' },
+      { id: uid(), statute: 'Gratuity', jurisdiction: 'India', status: 'Healthy', note: 'Accrual running for staff past 4.5 years', payroll_impact: 'Provision' },
+      { id: uid(), statute: 'Bonus Act', jurisdiction: 'India', status: 'Action', note: 'Eligible headcount not tagged for two trainees', payroll_impact: 'Annual bonus provision' },
+      { id: uid(), statute: 'Working hours', jurisdiction: 'Shops & Establishments — KA', status: 'Watch', note: 'Engineering overtime last 6 weeks above weekly cap on 3 people', payroll_impact: 'OT payout + inspector risk' },
+    ],
+    agentRuns: [],
   };
 }
 
@@ -671,6 +899,13 @@ export function hydrateDataQuery() {
       }
     });
     if (!parsed.employees?.length) store.employees = seed.employees;
+    if (!parsed.skills?.length) store.skills = seed.skills;
+    if (!parsed.journeyEvents?.length) store.journeyEvents = seed.journeyEvents;
+    if (!parsed.opportunities?.length) store.opportunities = seed.opportunities;
+    if (!parsed.workflowRecipes?.length) store.workflowRecipes = seed.workflowRecipes;
+    if (!parsed.policies?.length) store.policies = seed.policies;
+    if (!parsed.complianceItems?.length) store.complianceItems = seed.complianceItems;
+    if (!parsed.agentRuns) store.agentRuns = seed.agentRuns;
   } catch {
     store = createSeed();
   }
@@ -1159,6 +1394,68 @@ export const dataQuery = {
       ),
     };
     emit();
+  },
+
+  listSkills(employeeId?: string): SkillRecord[] {
+    if (!employeeId) return store.skills || [];
+    return (store.skills || []).filter((s) => s.employee_id === employeeId);
+  },
+
+  listJourney(employeeId?: string): JourneyEvent[] {
+    const rows = store.journeyEvents || [];
+    if (!employeeId) return rows;
+    return rows.filter((e) => e.employee_id === employeeId);
+  },
+
+  addJourneyEvent(input: Omit<JourneyEvent, 'id'>): JourneyEvent {
+    const rec: JourneyEvent = { ...input, id: uid() };
+    store = { ...store, journeyEvents: [rec, ...(store.journeyEvents || [])] };
+    emit();
+    return rec;
+  },
+
+  listOpportunities(): OpportunityRecord[] {
+    return store.opportunities || [];
+  },
+
+  listWorkflowRecipes(): WorkflowRecipe[] {
+    return store.workflowRecipes || [];
+  },
+
+  toggleWorkflowInstall(id: string) {
+    store = {
+      ...store,
+      workflowRecipes: (store.workflowRecipes || []).map((w) =>
+        w.id === id ? { ...w, installed: !w.installed } : w
+      ),
+    };
+    emit();
+  },
+
+  listPolicies(): PolicyDoc[] {
+    return store.policies || [];
+  },
+
+  listCompliance(): ComplianceItem[] {
+    return store.complianceItems || [];
+  },
+
+  listAgentRuns(): AgentRun[] {
+    return store.agentRuns || [];
+  },
+
+  logAgentRun(input: Omit<AgentRun, 'id' | 'at'>): AgentRun {
+    const rec: AgentRun = { ...input, id: uid(), at: iso() };
+    store = { ...store, agentRuns: [rec, ...(store.agentRuns || [])] };
+    emit();
+    return rec;
+  },
+
+  addAsset(input: Omit<AssetRecord, 'id'>): AssetRecord {
+    const rec: AssetRecord = { ...input, id: uid() };
+    store = { ...store, assets: [rec, ...store.assets] };
+    emit();
+    return rec;
   },
 
   dashboardStats() {

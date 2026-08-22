@@ -105,6 +105,9 @@ export default function DashboardPage() {
         <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground text-sm mt-1">Welcome back, {displayName}!</p>
+            <Button asChild variant="outline" size="sm" className="mt-3">
+              <Link href={`/${user?.role || 'hr'}/command-center`}>Open People OS — why, risk, next action</Link>
+            </Button>
         </div>
       </motion.div>
 
