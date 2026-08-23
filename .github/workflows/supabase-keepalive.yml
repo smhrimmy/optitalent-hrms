@@ -1,0 +1,33 @@
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Touch heartbeat RPC
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          KEEPALIVE_URL: ${{ secrets.KEEPALIVE_URL }}
+          KEEPALIVE_API_KEY: ${{ secrets.KEEPALIVE_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "${KEEPALIVE_URL:-}" ] && [ -n "${KEEPALIVE_API_KEY:-}" ]; then
+            curl -fsS -X POST "${KEEPALIVE_URL}" \
+              -H "Authorization: Bearer ${KEEPALIVE_API_KEY}" \
+              -H "Content-Type: application/json"
+            echo
+          fi
+          if [ -n "${SUPABASE_URL:-}" ] && [ -n "${SUPABASE_ANON_KEY:-}" ]; then
+            curl -fsS -X POST "${SUPABASE_URL}/rest/v1/rpc/touch_heartbeat" \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"p_source":"github-actions"}'
+            echo
+          fi
