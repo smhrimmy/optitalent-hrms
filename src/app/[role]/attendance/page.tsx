@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { FaceVerificationDialog } from '@/components/attendance/face-verification-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import AttendanceLogUI from '@/components/reference/AttendanceLogUI';
 
 
 // Function to generate mock attendance data for a given month and year
@@ -516,6 +517,10 @@ export default function AttendancePage() {
             </div>
         </div>
         
+        <div className="mt-8 pb-8">
+            <AttendanceLogUI />
+        </div>
+
         {selectedDate && <AttendanceDetailPanel date={selectedDate} onClose={() => setSelectedDate(null)} dayData={attendanceLog[format(selectedDate, 'yyyy-MM-dd')]}/>}
     </div>
   );
