@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -17,34 +17,33 @@ export default {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
+        card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
+        popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },
+        // Custom palette from design.md
+        primary: '#fe6e00',
+        'primary-strong': '#ff6b00',
+        'primary-warm': '#ffb74d',
+        'primary-focus': '#f97015',
+        'on-primary': '#ffffff',
+        shell: { base: '#000000', on: '#ffffff', border: '#ffffff' },
+        success: '#00c758',
+        warning: '#edb200',
+        danger: '#fb2c36',
+        info: '#3080ff',
+        'status-mock-bg': '#fef9c2',
+        'status-mock-fg': '#874b00',
+        'status-planned-bg': '#f3f4f6',
+        'status-planned-fg': '#364153',
+        'status-development-bg': '#dbeafe',
+        'status-development-fg': '#1447e6',
+        'status-integrated-bg': '#f3e8ff',
+        'status-integrated-fg': '#8200da',
+        'status-production-bg': '#dcfce7',
+        'status-production-fg': '#016630',
+        'dark-background': '#413830',
+        'dark-surface': '#4a423a',
+        'dark-on-surface': '#fafaf9',
+        'dark-on-surface-muted': '#b9b3ac',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -57,33 +56,39 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        xs: '4px',
+        sm: '6px',
+        md: '8px',
+        lg: '12px',
+        pill: '9999px',
       },
-      keyframes: {
-        'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-        },
-        'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
-        },
+      spacing: {
+        xs: '4px',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
+        xl: '24px',
+        '2xl': '32px',
+        '3xl': '40px',
+        '4xl': '64px',
+        'container-padding': '32px',
       },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
+    },
+    keyframes: {
+      'accordion-down': {
+        from: { height: '0' },
+        to: { height: 'var(--radix-accordion-content-height)' },
       },
+      'accordion-up': {
+        from: { height: 'var(--radix-accordion-content-height)' },
+        to: { height: '0' },
+      },
+    },
+    animation: {
+      'accordion-down': 'accordion-down 0.2s ease-out',
+      'accordion-up': 'accordion-up 0.2s ease-out',
     },
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+

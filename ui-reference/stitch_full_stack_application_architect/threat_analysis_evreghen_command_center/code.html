@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Threat Analysis - Evreghen Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"tertiary-container": "#734e00", "status-development-fg": "#1447e6", "surface-container-high": "#f2e4f1", "on-secondary": "#ffffff", "inverse-primary": "#ebb2ff", "secondary-container": "#e9affd", "on-primary-fixed": "#320047", "status-integrated-bg": "#f3e8ff", "on-surface": "#201922", "on-tertiary-container": "#f6c26f", surface: "#fff7fb", "status-planned-bg": "#f3f4f6", "on-error": "#ffffff", "secondary-fixed-dim": "#ebb2ff", "surface-elevated": "#ffffff", "on-tertiary": "#ffffff", primary: "#67008e", "outline-variant": "#d2c1d4", info: "#3080ff", "on-background": "#201922", "surface-soft": "#edebe9", "on-tertiary-fixed-variant": "#604100", "on-primary": "#ffffff", "on-secondary-fixed-variant": "#623277", background: "#fff7fb", "surface-variant": "#ecdeec", "secondary-fixed": "#f8d8ff", "status-development-bg": "#dbeafe", "primary-fixed": "#f8d8ff", "inverse-surface": "#362e37", "status-production-bg": "#dcfce7", "on-secondary-fixed": "#320047", "inverse-on-surface": "#fbedfa", "primary-fixed-dim": "#ebb2ff", secondary: "#7c4a91", tertiary: "#553900", warning: "#edb200", "status-production-fg": "#016630", "surface-container-lowest": "#ffffff", "surface-container-highest": "#ecdeec", success: "#00c758", outline: "#817284", "status-mock-bg": "#fef9c2", "on-secondary-container": "#6d3c82", "surface-tint": "#9223c2", "tertiary-fixed-dim": "#f2be6b", "status-planned-fg": "#364153", "primary-container": "#8812b8", "surface-container": "#f8eaf7", "status-integrated-fg": "#8200da", "shell-base": "#000000", "on-error-container": "#93000a", "tertiary-fixed": "#ffdeae", "on-primary-container": "#edb8ff", "on-tertiary-fixed": "#281900", "status-mock-fg": "#874b00", "error-container": "#ffdad6", error: "#ba1a1a", "surface-dim": "#e3d6e3", "on-primary-fixed-variant": "#7400a0", "surface-bright": "#fff7fb", "surface-container-low": "#feeffd", "on-surface-variant": "#4f4352", danger: "#fb2c36"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"3xl": "40px", "4xl": "64px", xl: "24px", "container-max": "1400px", "sidebar-expanded": "256px", "2xl": "32px", "sidebar-collapsed": "64px", "container-padding": "32px", lg: "16px", sm: "8px", xs: "4px", "header-height": "64px", md: "12px"}, fontFamily: {"label-sm": ["\"ui-sans-serif, system-ui, sans-serif\""], "display-hero": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-md": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-lg": ["\"ui-sans-serif, system-ui, sans-serif\""], "headline-lg": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-sm": ["\"ui-sans-serif, system-ui, sans-serif\""], "title-md": ["\"ui-sans-serif, system-ui, sans-serif\""], "code-sm": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""], "headline-xl": ["\"ui-sans-serif, system-ui, sans-serif\""], "label-md": ["\"ui-sans-serif, system-ui, sans-serif\""], headline: ["\"ui-sans-serif, system-ui, sans-serif\""], display: ["\"ui-sans-serif, system-ui, sans-serif\""], body: ["\"ui-sans-serif, system-ui, sans-serif\""], label: ["\"ui-sans-serif, system-ui, sans-serif\""]}, fontSize: {"label-sm": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.05em", fontWeight: "600"}], "display-hero": ["6rem", {lineHeight: "1", letterSpacing: "-0.025em", fontWeight: "600"}], "body-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-lg": ["1.5rem", {lineHeight: "2rem", fontWeight: "700"}], "body-sm": ["0.8125rem", {lineHeight: "1rem", fontWeight: "700"}], "title-md": ["1.125rem", {lineHeight: "1.75rem", fontWeight: "700"}], "code-sm": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "headline-xl": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.025em", fontWeight: "700"}], "label-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "500"}]}}}};</script>
+<style>
+        .glass-shell {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .shell-border-r {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .shell-border-b {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .table-header-accent {
+            background-color: rgba(254, 110, 0, 0.05);
+        }
+        .table-row-hover:hover {
+            background-color: rgba(254, 110, 0, 0.02);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-lg fixed left-0 top-0 w-sidebar-expanded shadow-xl shell-border-r glass-shell z-50">
+<div class="px-xl mb-2xl">
+<h1 class="font-headline-xl text-headline-xl text-primary">Mission Control</h1>
+<p class="font-body-sm text-body-sm text-white/50">All Systems Nominal</p>
+</div>
+<div class="px-lg mb-xl">
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md py-sm px-lg rounded-lg shadow-md hover:bg-primary transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Analysis
+            </button>
+</div>
+<ul class="flex-1 px-sm space-y-xs overflow-y-auto">
+<li>
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md bg-primary text-on-primary rounded-lg mx-2 my-1 font-label-md text-label-md shadow-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="security">security</span>
+                    Threat Intelligence
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+                    Telemetry
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="assignment_turned_in">assignment_turned_in</span>
+                    Operations
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="assessment">assessment</span>
+                    Security Reports
+                </a>
+</li>
+</ul>
+<div class="mt-auto px-sm pt-lg border-t border-white/10">
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings_input_component">settings_input_component</span>
+                System Health
+            </a>
+<a class="flex items-center gap-md px-lg py-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                Sign Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-sidebar-expanded min-w-0 bg-background relative">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full md:w-[calc(100%-256px)] h-16 glass-shell shell-border-b shadow-md z-40 flex justify-between items-center px-lg">
+<div class="flex items-center gap-md md:hidden">
+<button class="text-white/70 hover:text-white transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Evreghen</span>
+</div>
+<div class="flex-1 flex items-center hidden md:flex">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-[18px]">search</span>
+<input class="w-full bg-white/10 border-none rounded-full py-2 pl-10 pr-4 text-white placeholder-white/50 focus:ring-1 focus:ring-primary font-body-sm text-body-sm transition-all focus:bg-white/20" placeholder="Search telemetry..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-sm border border-white/20 cursor-pointer hover:border-primary transition-colors">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a system administrator in a high-tech control room environment, sharp lighting, corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTBJWvdAyugO9kQKfHPkCrWKap90D62d10zyuNFiemj_kvaByKCJhtMGhDbe4mropiO6J-pD4TYFDyBFC4G5-E1Izjg9xx3t3HoBYvBEuw4CGeX5tdS4yOC8kKuSSZduqID9V90C0bI1Tu21oghth5IKQNRQy-w9q4C93WjJ3dBdfx95gUidgHLMuJvrLeeDOJRl_XT3bxwCnkTsHtQv5TXIwmfEMXEkOqgIiWSILxEgzIFn9nR7NNzQ"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 mt-16 p-container-padding overflow-y-auto w-full max-w-container-max mx-auto">
+<div class="mb-xl flex justify-between items-end">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Threat Intelligence</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time monitoring of security events and anomalies.</p>
+</div>
+<div class="flex gap-md">
+<button class="bg-surface-elevated border border-outline px-lg py-sm rounded-lg font-label-md text-label-md text-on-surface shadow-sm hover:shadow-md transition-shadow flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+<button class="bg-surface-elevated border border-outline px-lg py-sm rounded-lg font-label-md text-label-md text-on-surface shadow-sm hover:shadow-md transition-shadow flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- Legacy Table Container -->
+<div class="bg-surface-elevated rounded-xl shadow-sm border border-outline overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="table-header-accent border-b border-outline">
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Event ID</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Timestamp</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Source IP</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Threat Type</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Environment</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider">Severity</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-primary uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-code-sm text-code-sm text-on-surface-variant divide-y divide-outline">
+<tr class="table-row-hover bg-white transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9921</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 14:32:01</td>
+<td class="py-md px-lg">192.168.1.104</td>
+<td class="py-md px-lg">Unauthorized Access Attempt</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-production-bg text-status-production-fg border border-status-production-fg/20">
+                                        Production
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-danger">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill">error</span>
+<span class="font-semibold">Critical</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="table-row-hover bg-surface-soft transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9920</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 14:15:22</td>
+<td class="py-md px-lg">10.0.4.55</td>
+<td class="py-md px-lg">SQL Injection Payload Detected</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-development-bg text-status-development-fg border border-status-development-fg/20">
+                                        Development
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-warning">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill">warning</span>
+<span class="font-medium">High</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="table-row-hover bg-white transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9919</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 13:50:05</td>
+<td class="py-md px-lg">172.16.0.22</td>
+<td class="py-md px-lg">Anomalous Data Exfiltration</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-mock-bg text-status-mock-fg border border-status-mock-fg/20">
+                                        Mock Data
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-info">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Medium</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="table-row-hover bg-surface-soft transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9918</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 12:05:41</td>
+<td class="py-md px-lg">192.168.1.5</td>
+<td class="py-md px-lg">Failed Authentication Spike</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-planned-bg text-status-planned-fg border border-outline">
+                                        Planned
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+<span>Low</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="table-row-hover bg-white transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9917</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 11:30:12</td>
+<td class="py-md px-lg">10.0.0.1</td>
+<td class="py-md px-lg">Malware Signature Match</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-integrated-bg text-status-integrated-fg border border-status-integrated-fg/20">
+                                        Integrated
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-danger">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill">error</span>
+<span class="font-semibold">Critical</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="table-row-hover bg-surface-soft transition-colors">
+<td class="py-md px-lg text-on-surface font-medium">EVT-9916</td>
+<td class="py-md px-lg whitespace-nowrap">2023-10-24 10:15:00</td>
+<td class="py-md px-lg">192.168.2.150</td>
+<td class="py-md px-lg">Suspicious Process Execution</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-production-bg text-status-production-fg border border-status-production-fg/20">
+                                        Production
+                                    </span>
+</td>
+<td class="py-md px-lg">
+<div class="flex items-center gap-xs text-warning">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill">warning</span>
+<span class="font-medium">High</span>
+</div>
+</td>
+<td class="py-md px-lg text-right">
+<button class="text-tertiary hover:text-primary font-label-md text-label-md transition-colors">View Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-surface-soft border-t border-outline px-lg py-sm flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 6 of 142 entries</span>
+<div class="flex gap-xs">
+<button class="p-xs rounded hover:bg-surface text-on-surface-variant disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary-container text-on-primary font-label-sm text-label-sm flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface text-on-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface text-on-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">3</button>
+<button class="p-xs rounded hover:bg-surface text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

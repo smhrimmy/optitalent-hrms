@@ -15,7 +15,7 @@ export class LearningService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
 
         const enrollment: LearningEnrollment = {
             id: crypto.randomUUID(),
@@ -52,7 +52,7 @@ export class LearningService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
 
         enrollment.assessmentScore = score;
         

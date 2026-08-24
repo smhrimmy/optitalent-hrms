@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OptiTalent HRMS - Recruitment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#b941cb",
+                        "secondary": "#824988",
+                        "inverse-primary": "#faabff",
+                        "background": "#fff7fa",
+                        "on-primary-container": "#100014",
+                        "primary-fixed": "#ffd6fd",
+                        "tertiary-fixed-dim": "#d2ca60",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#221921",
+                        "outline-variant": "#d5c0d2",
+                        "on-secondary-fixed": "#35003f",
+                        "surface-container-highest": "#eedeea",
+                        "secondary-container": "#fab5fc",
+                        "surface-variant": "#eedeea",
+                        "inverse-on-surface": "#fdecf9",
+                        "primary": "#9c21af",
+                        "inverse-surface": "#372d37",
+                        "surface-container-low": "#ffeffb",
+                        "on-primary-fixed-variant": "#7c008e",
+                        "surface-bright": "#fff7fa",
+                        "secondary-fixed": "#ffd6fd",
+                        "on-tertiary-container": "#454100",
+                        "on-primary-fixed": "#36003f",
+                        "surface": "#fff7fa",
+                        "on-secondary-fixed-variant": "#68316e",
+                        "on-surface-variant": "#514250",
+                        "surface-dim": "#e6d5e2",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#9c21b0",
+                        "surface-container-high": "#f4e3f0",
+                        "on-tertiary-fixed": "#1f1c00",
+                        "on-primary": "#ffffff",
+                        "outline": "#837282",
+                        "surface-container": "#fae9f6",
+                        "primary-fixed-dim": "#faabff",
+                        "secondary-fixed-dim": "#f4aff7",
+                        "on-surface": "#221921",
+                        "on-tertiary-fixed-variant": "#4d4800",
+                        "on-secondary-container": "#79407f",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#efe679",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#b6ae48",
+                        "tertiary": "#666000",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "margin": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "tabular-nums": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline-variant fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-md overflow-y-auto hidden md:flex z-40">
+<!-- Header -->
+<div class="px-margin mb-lg flex flex-col gap-sm">
+<div class="flex items-center gap-sm">
+<img alt="Company Logo" class="w-8 h-8 rounded" data-alt="A small, crisp, corporate logo for Acme Corp. Modern geometric shapes in shades of deep purple and magenta. Minimalist and professional suitable for a high-end HR software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGED-kCDy574mRsMP-nz240fTdwSE7nSzkugLTnuXNN9N0O0-uOKfFQOqp4-KU0DZVSdclZFcBxmh8LOP8TQiKUVb0WsGMNLkykFnMk7HjQnMy6OUuhHy7KCuxqYiryCPzyGn577geLJwb3VTUyNOTapfkq4GxvADuC_qUZIsJnQSujk9U2rwe44bwfXi-KkZJ7fuGXtiRMwvcP85dUnc3en9ILeU9ErQIgvWAneA-DWfs5Y0Uzwar6A"/>
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface">Acme Corp</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">HR Administration</span>
+</div>
+<!-- Main Tabs -->
+<div class="flex-1 flex flex-col gap-xs">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Employee Directory</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Payroll</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Time &amp; Attendance</span>
+</a>
+<a class="bg-primary-container text-on-primary-container dark:bg-primary dark:text-on-primary font-bold flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+<span class="font-label-md text-label-md">Recruitment</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-label-md text-label-md">Performance</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto flex flex-col gap-xs border-t border-outline-variant pt-sm mx-sm">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-md text-label-md">Account Settings</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-secondary-fixed-variant transition-all flex items-center gap-md px-md py-sm rounded-lg my-xs cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-margin h-16 fixed top-0 z-50">
+<!-- Brand & Search -->
+<div class="flex items-center gap-xl">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">OptiTalent HRMS</span>
+<div class="hidden md:flex items-center bg-surface-container rounded px-sm py-xs border border-outline-variant focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface px-sm w-64 placeholder:text-on-surface-variant" placeholder="Search candidates, jobs..." type="text"/>
+<span class="font-label-md text-label-md text-outline px-xs py-unit border border-outline-variant rounded bg-surface-container-low">Cmd+K</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-sm">
+<button class="p-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors rounded cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors rounded cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors rounded cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 md:ml-64 p-margin flex flex-col gap-lg overflow-x-auto min-w-0">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-background">Recruitment Pipeline</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage active candidates across 12 open requisitions.</p>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex gap-xs">
+<select class="bg-surface border border-outline-variant rounded font-body-sm text-body-sm px-sm py-[6px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20">
+<option>All Departments</option>
+<option>Engineering</option>
+<option>Sales</option>
+</select>
+<select class="bg-surface border border-outline-variant rounded font-body-sm text-body-sm px-sm py-[6px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20">
+<option>All Roles</option>
+<option>Frontend Eng</option>
+<option>Account Exec</option>
+</select>
+</div>
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-md py-sm rounded flex items-center gap-xs hover:bg-secondary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    Post Job
+                </button>
+</div>
+</div>
+<!-- Kanban Board Area -->
+<div class="flex-1 flex gap-md overflow-x-auto pb-sm snap-x">
+<!-- Column: Sourcing -->
+<div class="flex-none w-80 flex flex-col gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm snap-start">
+<div class="flex justify-between items-center px-xs py-unit mb-xs">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Sourcing <span class="bg-surface-container-high text-on-surface-variant px-xs py-unit rounded ml-unit">12</span></h3>
+<button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-[16px]" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<!-- Card 1 -->
+<div class="bg-surface border border-outline-variant rounded p-sm shadow-sm hover:shadow-md cursor-pointer transition-shadow">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">REQ-042</span>
+<span class="font-label-md text-[10px] bg-tertiary-container/20 text-on-tertiary-container px-xs py-unit rounded">Passive</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-on-background mb-unit">Sarah Jenkins</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-sm">Senior Frontend Engineer</p>
+<div class="flex items-center gap-xs mt-auto pt-xs border-t border-outline-variant/50">
+<img alt="Recruiter" class="w-5 h-5 rounded-full" data-alt="A professional headshot avatar of a young female recruiter with a neutral background, small rounded image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjplDzjBA9bbzgz9jqxw4TNBArELk2lgx_RwIQWX64eQ2bN7M_nT2_dD1RVX0NrsA-Yg83sv_z37m0qndf6ACWRrrnaH95-1Wzuk7i4YHHr7Ii-7Tq-FkUA5aNOEOZnDF7BC2UdrG6LB7xvUamZ-de2zBHehv114euliKYmI1mbMo1ZldlqsMx0VZF721V704ZpSDS9BtrYfVdNwJj7O7D9_9_oXGveaFGgerIuvAqzlJ6__b-cMpCAg"/>
+<span class="font-body-sm text-[11px] text-outline">Added 2d ago</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-outline-variant rounded p-sm shadow-sm hover:shadow-md cursor-pointer transition-shadow">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">REQ-045</span>
+<span class="font-label-md text-[10px] bg-tertiary-container/20 text-on-tertiary-container px-xs py-unit rounded">Referral</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-on-background mb-unit">Marcus Chen</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-sm">Product Marketing Manager</p>
+<div class="flex items-center gap-xs mt-auto pt-xs border-t border-outline-variant/50">
+<img alt="Recruiter" class="w-5 h-5 rounded-full" data-alt="A professional headshot avatar of a male recruiter with a neutral background, small rounded image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR3IFpW5DSh4wi0CK0WXo1yoFrCtErT_O9fBu9yaxr3bW-cQtF0d68vBCyIw-37bdyDTNkrTxyrqn1D8XzMbAfEKxMn6qWIHYHUjorqKGCje1UKZX7F2SxOS8oFkEmdplm22yl168i922G-WfSs6pSdV6K8aFr0EfyNu7mZ12__vyJw8pUHmjLRN6mdNO71SYFYVrquyEqYCv53idn_2jJ0Z490w0sXdltrQq3UQflp-vgEz9gminSSg"/>
+<span class="font-body-sm text-[11px] text-outline">Added 4h ago</span>
+</div>
+</div>
+</div>
+<!-- Column: Applied -->
+<div class="flex-none w-80 flex flex-col gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm snap-start">
+<div class="flex justify-between items-center px-xs py-unit mb-xs">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Applied <span class="bg-surface-container-high text-on-surface-variant px-xs py-unit rounded ml-unit">8</span></h3>
+<button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-[16px]" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface border border-outline-variant rounded p-sm shadow-sm hover:shadow-md cursor-pointer transition-shadow">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">REQ-042</span>
+<span class="font-label-md text-[10px] bg-surface-container-highest text-on-surface-variant px-xs py-unit rounded">Direct</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-on-background mb-unit">Emily Davis</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-sm">Frontend Engineer</p>
+<div class="flex items-center gap-xs mt-auto pt-xs border-t border-outline-variant/50">
+<span class="font-label-md text-[10px] text-primary bg-primary/10 px-xs py-unit rounded">Screening</span>
+</div>
+</div>
+</div>
+<!-- Column: Interview -->
+<div class="flex-none w-80 flex flex-col gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm snap-start">
+<div class="flex justify-between items-center px-xs py-unit mb-xs">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Interview <span class="bg-surface-container-high text-on-surface-variant px-xs py-unit rounded ml-unit">4</span></h3>
+<button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-[16px]" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface border-primary/50 border-2 rounded p-sm shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] cursor-pointer transition-shadow relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start mb-xs ml-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">REQ-039</span>
+<span class="font-label-md text-[10px] bg-secondary-container/30 text-on-secondary-container px-xs py-unit rounded">Agency</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-on-background mb-unit ml-1">David Kim</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-sm ml-1">VP of Sales</p>
+<div class="flex items-center gap-xs mt-auto pt-xs border-t border-outline-variant/50 ml-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="event">event</span>
+<span class="font-body-sm text-[11px] text-secondary font-medium">Tomorrow, 2:00 PM (Panel)</span>
+</div>
+</div>
+</div>
+<!-- Column: Offer -->
+<div class="flex-none w-80 flex flex-col gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm snap-start opacity-75">
+<div class="flex justify-between items-center px-xs py-unit mb-xs">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Offer <span class="bg-surface-container-high text-on-surface-variant px-xs py-unit rounded ml-unit">1</span></h3>
+<button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-[16px]" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<!-- Empty State -->
+<div class="border border-dashed border-outline-variant rounded p-lg flex flex-col items-center justify-center text-center text-outline">
+<span class="material-symbols-outlined mb-xs" data-icon="inbox">inbox</span>
+<span class="font-body-sm text-body-sm">No candidates currently in offer stage</span>
+</div>
+</div>
+</div>
+</main>
+</body></html>

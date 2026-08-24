@@ -19,7 +19,7 @@ export class AITools {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         
         const twin = getDigitalTwin(context.companyId);
         return {
@@ -35,7 +35,7 @@ export class AITools {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         return whyEngine.explainAnomaly(context.companyId, metricName, metricValue);
     }
 
@@ -46,7 +46,7 @@ export class AITools {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         
         const twin = getDigitalTwin(context.companyId);
         const emp = twin.employees.get(employeeId);
@@ -63,7 +63,7 @@ export class AITools {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         return workforceSimulator.simulateHiringEvent(context.companyId, count, departmentId, managerId);
     }
 }

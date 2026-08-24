@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OptiTalent Employee Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"inverse-surface": "#372d36", "on-primary": "#ffffff", "on-surface": "#211921", "on-primary-fixed-variant": "#7c008f", error: "#ba1a1a", "secondary-fixed": "#ffd6fd", "primary-fixed": "#ffd6fd", "inverse-on-surface": "#fcecf8", "surface-dim": "#e5d6e1", "on-secondary": "#ffffff", "surface-container-highest": "#eedeea", outline: "#837282", "surface-bright": "#fff7fa", "on-tertiary": "#ffffff", "primary-container": "#a72fba", "on-primary-container": "#ffdefc", "on-surface-variant": "#514250", "tertiary-fixed-dim": "#cec984", tertiary: "#636026", "surface-variant": "#eedeea", "surface-container-lowest": "#ffffff", "on-tertiary-container": "#444109", secondary: "#824988", primary: "#8a029f", "on-secondary-container": "#7b4281", "surface-tint": "#9c21af", "on-secondary-fixed-variant": "#67316e", "tertiary-fixed": "#ebe59d", "tertiary-container": "#b2ae6b", "error-container": "#ffdad6", "primary-fixed-dim": "#faabff", "on-primary-fixed": "#36003f", "on-secondary-fixed": "#36003f", "surface-container-high": "#f4e4f0", background: "#fff7fa", "on-error-container": "#93000a", "outline-variant": "#d5c0d2", "surface-container": "#fae9f5", "on-tertiary-fixed": "#1e1c00", "on-tertiary-fixed-variant": "#4b4810", "secondary-container": "#fcb8ff", surface: "#fff7fa", "inverse-primary": "#faabff", "surface-container-low": "#ffeffb", "on-error": "#ffffff", "on-background": "#211921", "secondary-fixed-dim": "#f3b0f6"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {sm: "8px", margin: "24px", gutter: "16px", md: "16px", lg: "24px", xs: "4px", xl: "32px", unit: "4px"}, fontFamily: {"headline-md": ["Inter"], "display-lg": ["Inter"], "tabular-nums": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "display-lg": ["36px", {lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700"}], "tabular-nums": ["14px", {lineHeight: "20px", fontWeight: "500"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "20px", fontWeight: "400"}], "headline-lg": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["13px", {lineHeight: "18px", fontWeight: "400"}], "label-md": ["12px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600"}]}}}};</script>
+<style>
+        body { background-color: #F8FAFC; }
+    </style>
+</head>
+<body class="font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest text-primary flex justify-between items-center w-full px-margin h-16 fixed top-0 z-50 border-b border-outline-variant flat no shadows">
+<div class="flex items-center gap-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">OptiTalent HRMS</span>
+<div class="relative ml-8 hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg w-64 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant transition-all" placeholder="Search employees... (Cmd+K)" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="notifications" class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full flex items-center justify-center cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="help" class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full flex items-center justify-center cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button aria-label="apps" class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full flex items-center justify-center cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined">apps</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 pt-16">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-[calc(100vh-64px)] w-64 bg-surface-container-low border-r border-outline-variant fixed left-0 py-md overflow-y-auto flat no shadows z-40">
+<div class="px-margin mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md font-bold overflow-hidden">
+<img alt="Company Logo" class="w-full h-full object-cover" data-alt="A small, professional corporate logo for Acme Corp, featuring a clean, minimalist geometric design in shades of blue and white, suitable for a light-mode dashboard avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJuY_2ah0nh3IlUodqpDWTxwmIvQD8FkuVY94XJe-nOwngPU232Cwl84eynvqV41wnaDuCzwZem9mwgih7HYUjhpiZrdo8yF0yKVfQfRhxws-m4Yjr4MY-hMPwIy7TUeRzuq6RyHqO7iwDLyGe41Qa7oK9ZWumNdNfqvxXQsKjE18H8PVNvZC0GnsHn2hNb8aXw3APrF8lPSXsz-YHzEwQqDGwo-UXCc8JA6v1RCi0TrxpQyGzN53CCA"/>
+</div>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-on-surface">Acme Corp</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">HR Administration</div>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer bg-primary-container text-on-primary-container font-bold font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+                    Employee Directory
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                    Payroll
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+                    Time &amp; Attendance
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">person_search</span>
+                    Recruitment
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+                    Performance
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg mx-sm my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                    Settings
+                </a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant mx-sm flex flex-col gap-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+                    Account Settings
+                </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg my-xs cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                    Logout
+                </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-margin max-w-[1440px] mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-lg">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-1">Employee Directory</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and view all employee records across departments.</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md flex items-center gap-2 hover:bg-surface-tint transition-colors w-fit">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Add Employee
+                </button>
+</div>
+<!-- Filters & Controls Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md mb-lg flex flex-col lg:flex-row gap-4 items-center justify-between shadow-sm">
+<div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+<!-- Department Filter -->
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-40">
+<option value="">All Departments</option>
+<option value="engineering">Engineering</option>
+<option value="design">Design</option>
+<option value="sales">Sales</option>
+<option value="hr">HR</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+</div>
+<!-- Status Filter -->
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-36">
+<option value="">All Statuses</option>
+<option value="active">Active</option>
+<option value="on-leave">On Leave</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+</div>
+<!-- Tenure Filter -->
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-36">
+<option value="">All Tenure</option>
+<option value="&lt;1">&lt; 1 Year</option>
+<option value="1-3">1 - 3 Years</option>
+<option value="3+">3+ Years</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-2 w-full lg:w-auto justify-end">
+<button class="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Grid View">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</button>
+<button class="p-2 border border-outline-variant rounded-lg bg-surface-container text-primary transition-colors" title="List View">
+<span class="material-symbols-outlined text-[20px]">view_list</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-2 border border-outline-variant rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors ml-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- Data Table (Dense Grid) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#F1F5F9] border-b border-[#E2E8F0]">
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[30%]">Employee</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[20%]">Role</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[20%]">Department</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[15%]">Status</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[15%]">Location</th>
+<th class="py-3 px-4 w-12"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#F1F5F9]">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="py-2 px-4">
+<div class="flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a smiling woman in her 30s with dark hair, wearing a white blouse, against a clean light grey background, high resolution corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC88HCBYSbGHpZs8yKzc9l7ozpHhEFnRg8nxWIytUH-4PQGsREjxlUHYt32bA-v-bNaWrSrzDAhQcKP1ty12_mwOLrP5nmVwWmI-u0qDu0POubWXikx-BI86AiCjv38clM2_SmN04UZkHWp5BiWCgwKu2wBSdBh10EvUwwyEfSh7e-SvrrbfzJn_b5QIw-S1wXYI8SjQd9P16INbc7Lt3xnrE1MUmGU59U_FqWcFCuCjrSgFuD5Xh2s9w"/>
+<div>
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Sarah Jenkins</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">EMP-00142</div>
+</div>
+</div>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Senior Frontend Engineer</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Engineering</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DEF7EC] text-[#03543F]">Active</span>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                                    San Francisco
+                                </td>
+<td class="py-2 px-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="py-2 px-4">
+<div class="flex items-center gap-3">
+<img alt="Marcus Chen" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a man in his 40s with short graying hair and glasses, wearing a navy blazer, against a clean light studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBApUzcs-aFf11NY3gH4l3onaxCagVr5yVR_feXu9hMYv78xRnfceADtTvpo2ToxagvBLoC40tIg3I6F4JYKKrE8sKaWm85FbMU_34Dg1ga1FydVU1Udcd9_pguVQtrVIUjmnf26L263-Z_FleYbD8aUhVdO5Jyx-MN03yL5C2_R6CCdp9bqQpyDRgY32Lxdqrrxp6czSQFYmpO8qnUnF1Rt1f-PJg8bmRzKi2JMRa4I1iIUie4-mNm_w"/>
+<div>
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Marcus Chen</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">EMP-00289</div>
+</div>
+</div>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Product Design Lead</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Design</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DEF7EC] text-[#03543F]">Active</span>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                                    New York
+                                </td>
+<td class="py-2 px-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="py-2 px-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-md font-bold text-[14px] border border-outline-variant">
+                                            ER
+                                        </div>
+<div>
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Elena Rodriguez</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">EMP-00301</div>
+</div>
+</div>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">HR Business Partner</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Human Resources</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF08A] text-[#854D0E]">On Leave</span>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">public</span>
+                                    Remote
+                                </td>
+<td class="py-2 px-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="py-2 px-4">
+<div class="flex items-center gap-3">
+<img alt="David Osei" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a young Black man with neat locs, wearing a light blue button-down shirt, neutral studio lighting, corporate portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-Z0dDAJS2aMwTsk9AMtM2LFnFF8CidANiZeKliYwDYgwoTBuu05qxU09BYggsYDT_AbOsdL-AIYLgtzeKBzKS-l5kJbbeGxs2HJ4jFBXe5A_E4MrVksjFQI-xyIY61clox4tOYiH2-d01x0tvBoERTjKl5POEYbHgCq_jULP8KVWQPGTJHrXESSnOQaQYMaGXYgUKquoZa5m350JP5APMO2FqHhCz5z1C4FmsGLKugV_wnptFI0V-9g"/>
+<div>
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">David Osei</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">EMP-00412</div>
+</div>
+</div>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Account Executive</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface">Sales</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DEF7EC] text-[#03543F]">Active</span>
+</td>
+<td class="py-2 px-4 font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                                    Chicago
+                                </td>
+<td class="py-2 px-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-4 py-3 border-t border-outline-variant bg-surface-bright flex items-center justify-between sm:px-6">
+<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                                Showing <span class="font-medium text-on-surface">1</span> to <span class="font-medium text-on-surface">4</span> of <span class="font-medium text-on-surface">248</span> results
+                            </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+<a class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-outline-variant bg-surface-container-lowest font-label-md text-label-md text-on-surface-variant hover:bg-surface-container" href="#">
+<span class="sr-only">Previous</span>
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</a>
+<a aria-current="page" class="z-10 bg-primary-container border-primary text-on-primary-container relative inline-flex items-center px-4 py-2 border font-tabular-nums text-tabular-nums font-bold" href="#">
+                                    1
+                                </a>
+<a class="bg-surface-container-lowest border-outline-variant text-on-surface-variant hover:bg-surface-container relative inline-flex items-center px-4 py-2 border font-tabular-nums text-tabular-nums" href="#">
+                                    2
+                                </a>
+<a class="bg-surface-container-lowest border-outline-variant text-on-surface-variant hover:bg-surface-container relative inline-flex items-center px-4 py-2 border font-tabular-nums text-tabular-nums" href="#">
+                                    3
+                                </a>
+<a class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-outline-variant bg-surface-container-lowest font-label-md text-label-md text-on-surface-variant hover:bg-surface-container" href="#">
+<span class="sr-only">Next</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

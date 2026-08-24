@@ -13,7 +13,7 @@ export class BenefitsService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
 
         const enrollment: BenefitEnrollment = {
             id: crypto.randomUUID(),
@@ -40,7 +40,7 @@ export class BenefitsService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
 
         enrollment.status = 'ACTIVE';
         this.enrollments.set(enrollmentId, enrollment);

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Evreghen Command Center - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"tertiary-container": "#734e00", "status-development-fg": "#1447e6", "surface-container-high": "#f2e4f1", "on-secondary": "#ffffff", "inverse-primary": "#ebb2ff", "secondary-container": "#e9affd", "on-primary-fixed": "#320047", "status-integrated-bg": "#f3e8ff", "on-surface": "#201922", "on-tertiary-container": "#f6c26f", surface: "#fff7fb", "status-planned-bg": "#f3f4f6", "on-error": "#ffffff", "secondary-fixed-dim": "#ebb2ff", "surface-elevated": "#ffffff", "on-tertiary": "#ffffff", primary: "#67008e", "outline-variant": "#d2c1d4", info: "#3080ff", "on-background": "#201922", "surface-soft": "#edebe9", "on-tertiary-fixed-variant": "#604100", "on-primary": "#ffffff", "on-secondary-fixed-variant": "#623277", background: "#fff7fb", "surface-variant": "#ecdeec", "secondary-fixed": "#f8d8ff", "status-development-bg": "#dbeafe", "primary-fixed": "#f8d8ff", "inverse-surface": "#362e37", "status-production-bg": "#dcfce7", "on-secondary-fixed": "#320047", "inverse-on-surface": "#fbedfa", "primary-fixed-dim": "#ebb2ff", secondary: "#7c4a91", tertiary: "#553900", warning: "#edb200", "status-production-fg": "#016630", "surface-container-lowest": "#ffffff", "surface-container-highest": "#ecdeec", success: "#00c758", outline: "#817284", "status-mock-bg": "#fef9c2", "on-secondary-container": "#6d3c82", "surface-tint": "#9223c2", "tertiary-fixed-dim": "#f2be6b", "status-planned-fg": "#364153", "primary-container": "#8812b8", "surface-container": "#f8eaf7", "status-integrated-fg": "#8200da", "shell-base": "#000000", "on-error-container": "#93000a", "tertiary-fixed": "#ffdeae", "on-primary-container": "#edb8ff", "on-tertiary-fixed": "#281900", "status-mock-fg": "#874b00", "error-container": "#ffdad6", error: "#ba1a1a", "surface-dim": "#e3d6e3", "on-primary-fixed-variant": "#7400a0", "surface-bright": "#fff7fb", "surface-container-low": "#feeffd", "on-surface-variant": "#4f4352", danger: "#fb2c36"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"3xl": "40px", "4xl": "64px", xl: "24px", "container-max": "1400px", "sidebar-expanded": "256px", "2xl": "32px", "sidebar-collapsed": "64px", "container-padding": "32px", lg: "16px", sm: "8px", xs: "4px", "header-height": "64px", md: "12px"}, fontFamily: {"label-sm": ["\"ui-sans-serif, system-ui, sans-serif\""], "display-hero": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-md": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-lg": ["\"ui-sans-serif, system-ui, sans-serif\""], "headline-lg": ["\"ui-sans-serif, system-ui, sans-serif\""], "body-sm": ["\"ui-sans-serif, system-ui, sans-serif\""], "title-md": ["\"ui-sans-serif, system-ui, sans-serif\""], "code-sm": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""], "headline-xl": ["\"ui-sans-serif, system-ui, sans-serif\""], "label-md": ["\"ui-sans-serif, system-ui, sans-serif\""], headline: ["\"ui-sans-serif, system-ui, sans-serif\""], display: ["\"ui-sans-serif, system-ui, sans-serif\""], body: ["\"ui-sans-serif, system-ui, sans-serif\""], label: ["\"ui-sans-serif, system-ui, sans-serif\""]}, fontSize: {"label-sm": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.05em", fontWeight: "600"}], "display-hero": ["6rem", {lineHeight: "1", letterSpacing: "-0.025em", fontWeight: "600"}], "body-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-lg": ["1.5rem", {lineHeight: "2rem", fontWeight: "700"}], "body-sm": ["0.8125rem", {lineHeight: "1rem", fontWeight: "700"}], "title-md": ["1.125rem", {lineHeight: "1.75rem", fontWeight: "700"}], "code-sm": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "headline-xl": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.025em", fontWeight: "700"}], "label-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "500"}]}}}};</script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+      </style>
+</head>
+<body class="h-full bg-background text-on-background flex overflow-hidden">
+<!-- Left Panel: Visualization -->
+<div class="hidden lg:flex w-1/2 relative bg-surface-elevated items-center justify-center overflow-hidden">
+<!-- Background Map Image -->
+<div class="absolute inset-0 z-0 opacity-10" data-alt="A subtle, high-contrast digital world map representing a global security threat network. The image is styled in a minimalist, corporate modern aesthetic with off-white and light grey tones. Thin, intricate geometric lines connect various nodes across the continents, suggesting telemetry data transmission. The overall lighting is soft and flat, emphasizing clarity and precision over dramatic shadows, perfect for a high-end enterprise dashboard background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_-SO0c0g5vD1Pq_fsEwB7bAraukQ1u2YWfltoNUC_S7LF57XpBSZp-_ugrLJtTyhZB67OfwHeYE_T_ivjgNqJHO6Gt_hmnIN9PSdlxmrHg7Kb_xfYuM1w8aRXaltPpLzGQVCVd9KdSrWo_alDk94kIq4IS4bW8brKTAa3v7J4sWKlFNIvNQP1EAMletFflZtDjpfkIYrgU2nx6zx4-c-MKtXraZ5rm6b_nNi2poLLMhjS0De2hG7bRg')"></div>
+<!-- Abstract Lattice Overlay -->
+<div class="absolute inset-0 z-10 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, rgba(159, 66, 0, 0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
+<div class="z-20 p-2xl max-w-lg">
+<h2 class="font-headline-xl text-headline-xl text-primary mb-lg">Secure Telemetry Access</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                Evreghen Command Center provides real-time threat intelligence and operational oversight. Ensure all systems are nominal before initiating authorization sequence.
+            </p>
+<div class="mt-xl flex items-center space-x-md text-status-production-fg bg-status-production-bg px-lg py-sm rounded-full inline-flex font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>All Global Nodes Online</span>
+</div>
+</div>
+</div>
+<!-- Right Panel: Login -->
+<div class="w-full lg:w-1/2 bg-primary-container flex items-center justify-center relative shadow-[inset_24px_0_48px_-24px_rgba(0,0,0,0.3)]">
+<!-- Decorative subtle elements -->
+<div class="absolute top-0 right-0 p-2xl text-on-primary-container/50 font-code-sm text-code-sm">
+            SYS.AUTH.v4.2.1
+        </div>
+<!-- Login Card -->
+<div class="glass-panel w-full max-w-md mx-auto rounded-xl shadow-xl p-2xl relative z-10">
+<div class="text-center mb-xl">
+<span class="material-symbols-outlined text-4xl text-primary mb-md" style="font-variation-settings: 'FILL' 1;">security</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Evreghen Command Center</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enter your credentials to proceed</p>
+</div>
+<form class="space-y-lg">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs" for="agent_id">Operator ID</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50 text-[20px]">badge</span>
+</div>
+<input class="block w-full pl-[40px] pr-md py-[10px] bg-surface border border-outline rounded-lg font-body-md text-body-md text-on-surface focus:ring-primary focus:border-primary transition-colors" id="agent_id" name="agent_id" placeholder="e.g. EVR-7734" type="text"/>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs" for="passcode">Passcode</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50 text-[20px]">key</span>
+</div>
+<input class="block w-full pl-[40px] pr-md py-[10px] bg-surface border border-outline rounded-lg font-body-md text-body-md text-on-surface focus:ring-primary focus:border-primary transition-colors" id="passcode" name="passcode" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<input class="h-4 w-4 text-primary focus:ring-primary border-outline rounded cursor-pointer" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-sm block font-body-sm text-body-sm text-on-surface-variant cursor-pointer" for="remember-me">
+                            Maintain session
+                        </label>
+</div>
+<div class="text-sm">
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="#">Emergency Access?</a>
+</div>
+</div>
+<button class="w-full flex justify-center items-center py-[10px] px-lg border border-transparent rounded-lg shadow-sm font-label-md text-label-md text-on-primary bg-primary hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors" type="submit">
+                    Initialize Uplink
+                    <span class="material-symbols-outlined ml-sm text-[18px]">arrow_forward</span>
+</button>
+</form>
+<div class="mt-xl border-t border-outline pt-lg text-center">
+<p class="font-code-sm text-code-sm text-on-surface-variant/60">
+                    Connection encrypted via AES-256
+                </p>
+</div>
+</div>
+</div>
+</body></html>

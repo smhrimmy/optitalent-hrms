@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OptiTalent HRMS - Time &amp; Attendance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"inverse-surface": "#372d36", "on-primary": "#ffffff", "on-surface": "#211921", "on-primary-fixed-variant": "#7c008f", error: "#ba1a1a", "secondary-fixed": "#ffd6fd", "primary-fixed": "#ffd6fd", "inverse-on-surface": "#fcecf8", "surface-dim": "#e5d6e1", "on-secondary": "#ffffff", "surface-container-highest": "#eedeea", outline: "#837282", "surface-bright": "#fff7fa", "on-tertiary": "#ffffff", "primary-container": "#a72fba", "on-primary-container": "#ffdefc", "on-surface-variant": "#514250", "tertiary-fixed-dim": "#cec984", tertiary: "#636026", "surface-variant": "#eedeea", "surface-container-lowest": "#ffffff", "on-tertiary-container": "#444109", secondary: "#824988", primary: "#8a029f", "on-secondary-container": "#7b4281", "surface-tint": "#9c21af", "on-secondary-fixed-variant": "#67316e", "tertiary-fixed": "#ebe59d", "tertiary-container": "#b2ae6b", "error-container": "#ffdad6", "primary-fixed-dim": "#faabff", "on-primary-fixed": "#36003f", "on-secondary-fixed": "#36003f", "surface-container-high": "#f4e4f0", background: "#fff7fa", "on-error-container": "#93000a", "outline-variant": "#d5c0d2", "surface-container": "#fae9f5", "on-tertiary-fixed": "#1e1c00", "on-tertiary-fixed-variant": "#4b4810", "secondary-container": "#fcb8ff", surface: "#fff7fa", "inverse-primary": "#faabff", "surface-container-low": "#ffeffb", "on-error": "#ffffff", "on-background": "#211921", "secondary-fixed-dim": "#f3b0f6"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {sm: "8px", margin: "24px", gutter: "16px", md: "16px", lg: "24px", xs: "4px", xl: "32px", unit: "4px"}, fontFamily: {"headline-md": ["Inter"], "display-lg": ["Inter"], "tabular-nums": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "display-lg": ["36px", {lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700"}], "tabular-nums": ["14px", {lineHeight: "20px", fontWeight: "500"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "20px", fontWeight: "400"}], "headline-lg": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["13px", {lineHeight: "18px", fontWeight: "400"}], "label-md": ["12px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600"}]}}}};</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface h-full flex overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin h-16 fixed top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">OptiTalent HRMS</span>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-xl pr-sm py-sm border border-outline-variant rounded bg-surface focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim outline-none text-body-md w-64 transition-all" placeholder="Search..." type="text"/>
+<span class="absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant font-label-md bg-surface-container px-xs rounded">Cmd+K</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-sm rounded hover:bg-surface-container transition-colors cursor-pointer active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm rounded hover:bg-surface-container transition-colors cursor-pointer active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-sm rounded hover:bg-surface-container transition-colors cursor-pointer active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-sm cursor-pointer border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate HR manager. Bright, even lighting with a neutral modern office background. High resolution, clear focus, natural skin tones. Business casual attire." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0E0NI7RbeybiX_2qF9FoanU_-c477lvOAGKHibgOpL2jC-c0fWQW1A20FAncoO09ehzsunTLYDtGsSUnOs0I4CoNmmg4YFbX7fmmyd-nL2nAHkkxVKVsEYrMh2XEk4yd5BZaATG2b0Zz-s1ThEeUripBqDG2lkuSfbL0dVKAth8A-fs6TVW8A6t3s0EOKDIc4EmluIFnmdYEv8FewSzofoxEwTdEi7CUnk5xfwxVrs05MzIcgjQFEEQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-low border-r border-outline-variant py-md overflow-y-auto z-40">
+<div class="px-margin mb-md">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md">AC</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Acme Corp</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">HR Administration</p>
+</div>
+</div>
+</div>
+<ul class="flex-1 px-sm space-y-xs">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+                    Employee Directory
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Payroll
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer bg-primary-container text-on-primary-container font-bold font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined fill" data-icon="schedule">schedule</span>
+                    Time &amp; Attendance
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+                    Recruitment
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                    Performance
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<div class="mt-auto px-sm pt-md border-t border-outline-variant space-y-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                Account Settings
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg cursor-pointer text-on-surface-variant hover:bg-surface-container-highest transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 pt-16 md:pl-64 overflow-y-auto h-full">
+<div class="p-margin max-w-[1440px] mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Time &amp; Attendance</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Manage employee schedules, track attendance, and process leave requests.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm border border-secondary text-secondary rounded font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Calendar View
+                    </button>
+<button class="px-md py-sm bg-primary text-on-primary rounded font-label-md text-label-md hover:bg-surface-tint transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Policy
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-margin">
+<!-- KPIs -->
+<div class="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-margin">
+<!-- KPI Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Total Workforce</span>
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-display-lg text-on-surface">1,248</span>
+<span class="font-body-sm text-body-sm text-emerald-600 flex items-center bg-emerald-50 px-xs rounded"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2.4%</span>
+</div>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Present Today</span>
+<span class="material-symbols-outlined text-emerald-600">how_to_reg</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-display-lg text-on-surface">1,180</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">94.5% Rate</span>
+</div>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">On Leave</span>
+<span class="material-symbols-outlined text-amber-600">event_busy</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-display-lg text-on-surface">45</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">3.6% Rate</span>
+</div>
+</div>
+<!-- KPI Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Pending Requests</span>
+<span class="material-symbols-outlined text-error">pending_actions</span>
+</div>
+<div class="flex items-end justify-between">
+<span class="font-display-lg text-display-lg text-on-surface">23</span>
+<span class="font-body-sm text-body-sm text-error-container bg-error px-xs rounded text-on-error">Action Required</span>
+</div>
+</div>
+</div>
+<!-- Main Chart Area -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col">
+<div class="flex justify-between items-center mb-md border-b border-surface-container pb-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface">Weekly Attendance Overview</h3>
+<select class="border border-outline-variant rounded px-sm py-xs text-body-sm font-body-sm bg-surface outline-none focus:border-primary">
+<option>This Week</option>
+<option>Last Week</option>
+<option>This Month</option>
+</select>
+</div>
+<div class="flex-1 relative min-h-[300px]">
+<canvas id="attendanceChart"></canvas>
+</div>
+</div>
+<!-- Who's In Widget -->
+<div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col">
+<div class="flex justify-between items-center mb-md border-b border-surface-container pb-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface">Who's In Right Now</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] cursor-pointer">more_horiz</span>
+</div>
+<div class="flex-1 overflow-y-auto space-y-sm pr-xs custom-scrollbar">
+<!-- User Row -->
+<div class="flex items-center justify-between p-xs hover:bg-surface-container rounded transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional portrait of a young male software engineer in a modern office setting. Casual professional attire, natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqmf2D_9DonP8koy0kkH7YglHwUoZSyiyIX-4mZBpaXcoysbBIgy2n2GnvNI9w33xhpnGCSIeBXVae7b2zzjhiL_2P5b1yk40aFWCmd8q57Fb3UD_qbSsIUSD8C_ARCiY9QyCNIUnSayzjigC2QRniYEQ04YIupTlAB3YKBW9IPc2IXLWxh0xk3adpROVl3c8fLvh3F3ID5_ndcD4-B9zNWjNXEUIts_FBqm3TvRPDvjtFcCP8idTpWg"/>
+</div>
+<div>
+<p class="font-tabular-nums text-tabular-nums text-on-surface">Marcus Johnson</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Engineering</p>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<!-- User Row -->
+<div class="flex items-center justify-between p-xs hover:bg-surface-container rounded transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant flex items-center justify-center bg-surface-variant text-on-surface-variant font-label-md">
+                                    SL
+                                </div>
+<div>
+<p class="font-tabular-nums text-tabular-nums text-on-surface">Sarah Lee</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Design</p>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<!-- User Row -->
+<div class="flex items-center justify-between p-xs hover:bg-surface-container rounded transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a mature female marketing director. Well-lit, modern corporate background. Business formal attire." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxl8MyCVIahDmiW5PZXZrXQq1CUtLpLbg5t4c8QvPhT0b0yi3HLmTtecVktPOhaMD8OBBbrbzvfwxryGsPTUMMcwTexXjoBXvxmZNA2_av3eIiSfjyLxFd4GjD4xG5mAFel3qp7MAcGHIQXtIRnHmv0ADkDwMXhLPOFIdxRTTvZWAYoV6GFxAFOVZg7RqXYqCaBdX8t6QtjMFkXiufuusqwABLPHKTNhF-BuGGDRx7TyngltuzEI3LyQ"/>
+</div>
+<div>
+<p class="font-tabular-nums text-tabular-nums text-on-surface">Elena Rodriguez</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Marketing</p>
+</div>
+</div>
+<span class="text-body-sm text-amber-600 bg-amber-50 px-xs rounded font-label-md">Late</span>
+</div>
+<!-- User Row -->
+<div class="flex items-center justify-between p-xs hover:bg-surface-container rounded transition-colors cursor-pointer opacity-60">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant flex items-center justify-center bg-surface-variant text-on-surface-variant font-label-md">
+                                    DT
+                                </div>
+<div>
+<p class="font-tabular-nums text-tabular-nums text-on-surface">David Thompson</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sales</p>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+</div>
+</div>
+<button class="mt-sm w-full py-sm border border-outline-variant rounded font-label-md text-label-md hover:bg-surface-container transition-colors text-on-surface-variant">View Full Directory</button>
+</div>
+<!-- Leave Requests Table -->
+<div class="md:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col">
+<div class="flex justify-between items-center p-md border-b border-surface-container">
+<h3 class="font-headline-md text-headline-md text-on-surface">Leave Requests</h3>
+<div class="flex gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">filter_list</span>
+<select class="pl-xl pr-sm py-xs border border-outline-variant rounded bg-surface font-body-sm text-body-sm outline-none focus:border-primary appearance-none">
+<option>All Statuses</option>
+<option>Pending</option>
+<option>Approved</option>
+<option>Denied</option>
+</select>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container font-label-md text-label-md text-on-surface-variant uppercase">
+<th class="p-sm font-semibold border-b border-surface-container w-1/4">Employee</th>
+<th class="p-sm font-semibold border-b border-surface-container">Type</th>
+<th class="p-sm font-semibold border-b border-surface-container">Duration</th>
+<th class="p-sm font-semibold border-b border-surface-container">Applied On</th>
+<th class="p-sm font-semibold border-b border-surface-container">Status</th>
+<th class="p-sm font-semibold border-b border-surface-container text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-tabular-nums text-tabular-nums divide-y divide-surface-container">
+<!-- Pending Row -->
+<tr class="hover:bg-surface-bright transition-colors h-[48px]">
+<td class="p-sm">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-outline-variant shrink-0">
+<img class="w-full h-full object-cover" data-alt="Headshot of a male administrative assistant in a bright office environment. Friendly expression, casual shirt." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWiZA-Wix8UO59JUAvPu7FO5WkYZ6BdJ9mMhNvQv6f85Nzwwchnj62Sb0K3QMej5mFtIMSE_F0Ebe9olsgHCOUY09WNZJj6erOkYp_7HN-LVtXSUASfJBjr_xFwmgZUW-Ihng5oeEKJYDql6027oXcV2A31r7I79yh43SCs1P6Wkpj74-oHTowI6Xv7Mx9NRE43069VL81GOISb9FZTdB_a67IA2lo-haVuJpxFilz8oWfpZS4PFk5TA"/>
+</div>
+<span class="text-on-surface truncate">Alex Chen</span>
+</div>
+</td>
+<td class="p-sm text-on-surface-variant">Annual Leave</td>
+<td class="p-sm text-on-surface-variant">Oct 12 - Oct 15 (4 days)</td>
+<td class="p-sm text-on-surface-variant">Oct 01, 2023</td>
+<td class="p-sm">
+<span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending</span>
+</td>
+<td class="p-sm text-right">
+<button class="text-primary hover:text-primary-container px-xs py-1 rounded hover:bg-surface-container transition-colors mr-1">Approve</button>
+<button class="text-error hover:text-error-container px-xs py-1 rounded hover:bg-surface-container transition-colors">Deny</button>
+</td>
+</tr>
+<!-- Approved Row -->
+<tr class="hover:bg-surface-bright transition-colors h-[48px]">
+<td class="p-sm">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-outline-variant shrink-0 bg-primary-container text-on-primary-container flex items-center justify-center text-[10px] font-bold">
+                                                JW
+                                            </div>
+<span class="text-on-surface truncate">Jessica Wong</span>
+</div>
+</td>
+<td class="p-sm text-on-surface-variant">Sick Leave</td>
+<td class="p-sm text-on-surface-variant">Oct 05 (1 day)</td>
+<td class="p-sm text-on-surface-variant">Oct 04, 2023</td>
+<td class="p-sm">
+<span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Approved</span>
+</td>
+<td class="p-sm text-right">
+<button class="text-on-surface-variant hover:text-on-surface px-xs py-1 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] align-middle">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Denied Row -->
+<tr class="hover:bg-surface-bright transition-colors h-[48px]">
+<td class="p-sm">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-outline-variant shrink-0">
+<img class="w-full h-full object-cover" data-alt="Portrait of a female project manager looking directly at the camera. Professional setting, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1zelafYJCVaI8GwczEDInH9qxb7e0cnsF-jY89bpCNm3gqzb7_mBhyRqsK_l9K7K1j62zogSs6ebxSviKjUYzaHtXNC8sWp0BB2JiLj9viFe6Q2edYPGDrTf4X-6Fc5rrRFVBUN3N6bN_BcgqvLf5B2Fngjbc5dVkZAxWY2HlqZQHlxFCK1odp7LoSNVphBLlSuaXTHuMUvOQEAtsk225L1FoD18yijP03omtJn6RZy6Dfl9vtEHDWQ"/>
+</div>
+<span class="text-on-surface truncate">Samantha Miller</span>
+</div>
+</td>
+<td class="p-sm text-on-surface-variant">Unpaid Leave</td>
+<td class="p-sm text-on-surface-variant">Nov 20 - Nov 24 (5 days)</td>
+<td class="p-sm text-on-surface-variant">Sep 28, 2023</td>
+<td class="p-sm">
+<span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Denied</span>
+</td>
+<td class="p-sm text-right">
+<button class="text-on-surface-variant hover:text-on-surface px-xs py-1 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] align-middle">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm border-t border-surface-container bg-surface-bright flex justify-center">
+<button class="text-primary font-label-md text-label-md hover:underline">View All Requests</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        /* Custom Scrollbar for better UI density */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #c5c5d5;
+            border-radius: 4px;
+        }
+    </style>
+<script>
+        // Chart.js implementation for the Weekly Attendance Overview
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            
+            // Design System Colors
+            const primaryColor = '#0932a1';
+            const primaryLight = '#dde1ff';
+            const secondaryColor = '#505f76';
+            const gridColor = '#e7eeff';
+            const textColor = '#444653';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                    datasets: [
+                        {
+                            label: 'Present',
+                            data: [1150, 1180, 1175, 1160, 1120],
+                            backgroundColor: primaryColor,
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        },
+                        {
+                            label: 'Absent/Leave',
+                            data: [98, 68, 73, 88, 128],
+                            backgroundColor: primaryLight,
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: '500'
+                                },
+                                color: textColor
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#111c2d',
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 12 },
+                            padding: 10,
+                            cornerRadius: 4,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                font: { family: 'Inter', size: 12 },
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                font: { family: 'Inter', size: 12 },
+                                color: textColor
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+        });
+    </script>
+</body></html>

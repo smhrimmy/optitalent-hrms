@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background dark:bg-background" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Feature Flags - OptiTalent HRMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#221921",
+                    "secondary-fixed": "#ffd6fd",
+                    "primary-container": "#b941cb",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#68316e",
+                    "surface-container-highest": "#eedeea",
+                    "tertiary-fixed-dim": "#d2ca60",
+                    "primary-fixed": "#ffd6fd",
+                    "surface-container-high": "#f4e3f0",
+                    "surface-container": "#fae9f6",
+                    "secondary": "#824988",
+                    "on-tertiary-fixed-variant": "#4d4800",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#fdecf9",
+                    "inverse-surface": "#372d37",
+                    "on-secondary-container": "#79407f",
+                    "surface-bright": "#fff7fa",
+                    "on-primary-fixed": "#36003f",
+                    "primary-fixed-dim": "#faabff",
+                    "secondary-fixed-dim": "#f4aff7",
+                    "on-tertiary-container": "#454100",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#d5c0d2",
+                    "surface-dim": "#e6d5e2",
+                    "outline": "#837282",
+                    "surface-tint": "#9c21b0",
+                    "tertiary": "#666000",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#514250",
+                    "on-error-container": "#93000a",
+                    "background": "#fff7fa",
+                    "tertiary-fixed": "#efe679",
+                    "secondary-container": "#fab5fc",
+                    "on-background": "#221921",
+                    "on-primary-container": "#100014",
+                    "on-tertiary-fixed": "#1f1c00",
+                    "on-secondary-fixed": "#35003f",
+                    "surface-container-low": "#ffeffb",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#faabff",
+                    "primary": "#9c21af",
+                    "surface-variant": "#eedeea",
+                    "on-primary-fixed-variant": "#7c008e",
+                    "surface": "#fff7fa",
+                    "tertiary-container": "#b6ae48"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "gutter": "16px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "unit": "4px",
+                    "margin": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "tabular-nums": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "tabular-nums": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* High-density table styles */
+        .table-compact th, .table-compact td {
+            padding: 8px 16px;
+            height: 40px;
+        }
+        
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #9c21af;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #9c21af;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+        .toggle-label {
+            width: 36px;
+            height: 20px;
+            background-color: #d5c0d2;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background flex h-screen overflow-hidden" x-data="{ sidebarExpanded: true }">
+<!-- SideNavBar (Shared Component) -->
+<nav :class="sidebarExpanded ? 'w-64' : 'w-20'" class="bg-surface-container dark:bg-surface-container h-screen fixed left-0 top-0 bg-surface-container border-r border-outline-variant flex flex-col h-full py-lg z-40 transition-all duration-300">
+<div class="px-md mb-xl flex items-center justify-between relative group">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold shrink-0">OT</div>
+<div class="whitespace-nowrap transition-opacity duration-300" x-show="sidebarExpanded">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface leading-tight">OptiTalent HRMS</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Enterprise Admin</p>
+</div>
+</div>
+<button @click="sidebarExpanded = !sidebarExpanded" class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary z-50">
+<span :class="sidebarExpanded ? 'rotate-180' : ''" class="material-symbols-outlined text-[16px] transition-transform duration-300" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<ul class="flex-1 overflow-y-auto overflow-x-hidden">
+<li>
+<a :class="sidebarExpanded ? '' : 'justify-center'" class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 transition-transform duration-150 group-hover:justify-center" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span class="whitespace-nowrap" x-show="sidebarExpanded">Dashboard</span>
+</a>
+</li>
+<li>
+<a :class="sidebarExpanded ? '' : 'justify-center border-r-0'" class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-primary dark:text-inverse-primary font-bold border-r-2 border-primary hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 transition-transform duration-150 bg-surface-container-low" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="admin_panel_settings" data-weight="fill">admin_panel_settings</span>
+<span class="whitespace-nowrap" x-show="sidebarExpanded">Platform Management</span>
+</a>
+</li>
+<li>
+<a :class="sidebarExpanded ? '' : 'justify-center'" class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="business">business</span>
+<span class="whitespace-nowrap" x-show="sidebarExpanded">Companies</span>
+</a>
+</li>
+<li>
+<a :class="sidebarExpanded ? '' : 'justify-center'" class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="group">group</span>
+<span class="whitespace-nowrap" x-show="sidebarExpanded">Users</span>
+</a>
+</li>
+<li>
+<a :class="sidebarExpanded ? '' : 'justify-center'" class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="settings">settings</span>
+<span class="whitespace-nowrap" x-show="sidebarExpanded">Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- TopNavBar (Shared Component) -->
+<header :class="sidebarExpanded ? 'w-[calc(100%-16rem)] ml-64' : 'w-[calc(100%-5rem)] ml-20'" class="bg-surface dark:bg-surface fixed top-0 right-0 z-50 border-b border-outline-variant bg-surface flex justify-between items-center h-16 px-lg transition-all duration-300">
+<div class="flex items-center gap-md flex-1">
+<h2 class="font-headline-sm text-headline-sm font-black text-primary mr-xl">OptiTalent</h2>
+<div class="relative max-w-md w-full hidden md:block focus-within:ring-2 focus-within:ring-primary/20 rounded-DEFAULT">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]" data-icon="search">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all placeholder:text-on-surface-variant" placeholder="Search features (Cmd+K)" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="h-10 px-md border border-outline-variant rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors">Switch Org</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<img alt="Admin Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar image of a professional woman in her 30s with dark hair, wearing a navy blazer, smiling subtly against a neutral light grey background. High quality, clear, well-lit corporate headshot style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDERKiC0bo2Gp_RCPabjKq2D1X0N5hJWdDwLK_Umel_CTMqWLa-nyntvDCal7e6NHnenyXPQEKmsuji-X62ozRbI52f-yyH1xECyb-nT9JBLHKTZ3Wj_nFCUZ5ddmfI2FkmU3br9v5mObp9UwOtRJs385kkhOsnuV8HlYsDph5EQrS1292BkkuO_eswgJ8-YKTkmRRTPMLAiHbU0PTH3hTopYZj0dfzpTVt9pPN0eCQCFFciC_KAIYH9A"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main :class="sidebarExpanded ? 'ml-64' : 'ml-20'" class="flex-1 mt-16 p-lg bg-surface-bright overflow-y-auto h-[calc(100vh-4rem)] transition-all duration-300">
+<div class="max-w-[1440px] mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-xl gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Feature Flags</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage platform-wide feature rollouts and targeting rules.</p>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex items-center bg-surface-container-highest rounded-DEFAULT p-xs mr-md">
+<button class="px-sm py-xs font-label-md text-label-md rounded-DEFAULT bg-surface text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Staging</button>
+<button class="px-sm py-xs font-label-md text-label-md rounded-DEFAULT text-on-surface-variant hover:text-on-surface transition-colors">Production</button>
+</div>
+<button class="h-10 px-md bg-primary-container text-on-tertiary font-label-md text-label-md rounded-DEFAULT hover:bg-primary transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                        Create New Flag
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

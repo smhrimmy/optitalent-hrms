@@ -14,7 +14,7 @@ export class PerformanceService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         this.goals.set(goal.id, goal);
         return goal;
     }
@@ -28,7 +28,7 @@ export class PerformanceService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
 
         const kr = goal.keyResults.find(k => k.id === krId);
         if (!kr) throw new Error('KeyResult not found');

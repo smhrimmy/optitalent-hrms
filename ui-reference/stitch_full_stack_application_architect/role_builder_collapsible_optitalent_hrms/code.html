@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Role Builder - OptiTalent HRMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#221921",
+                      "secondary-fixed": "#ffd6fd",
+                      "primary-container": "#b941cb",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#68316e",
+                      "surface-container-highest": "#eedeea",
+                      "tertiary-fixed-dim": "#d2ca60",
+                      "primary-fixed": "#ffd6fd",
+                      "surface-container-high": "#f4e3f0",
+                      "surface-container": "#fae9f6",
+                      "secondary": "#824988",
+                      "on-tertiary-fixed-variant": "#4d4800",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#fdecf9",
+                      "inverse-surface": "#372d37",
+                      "on-secondary-container": "#79407f",
+                      "surface-bright": "#fff7fa",
+                      "on-primary-fixed": "#36003f",
+                      "primary-fixed-dim": "#faabff",
+                      "secondary-fixed-dim": "#f4aff7",
+                      "on-tertiary-container": "#454100",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#d5c0d2",
+                      "surface-dim": "#e6d5e2",
+                      "outline": "#837282",
+                      "surface-tint": "#9c21b0",
+                      "tertiary": "#666000",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#514250",
+                      "on-error-container": "#93000a",
+                      "background": "#fff7fa",
+                      "tertiary-fixed": "#efe679",
+                      "secondary-container": "#fab5fc",
+                      "on-background": "#221921",
+                      "on-primary-container": "#100014",
+                      "on-tertiary-fixed": "#1f1c00",
+                      "on-secondary-fixed": "#35003f",
+                      "surface-container-low": "#ffeffb",
+                      "error": "#ba1a1a",
+                      "inverse-primary": "#faabff",
+                      "primary": "#9c21af",
+                      "surface-variant": "#eedeea",
+                      "on-primary-fixed-variant": "#7c008e",
+                      "surface": "#fff7fa",
+                      "tertiary-container": "#b6ae48"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "gutter": "16px",
+                      "md": "16px",
+                      "xl": "32px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "unit": "4px",
+                      "margin": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "tabular-nums": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "tabular-nums": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        [x-cloak] { display: none !important; }
+        .compact-table-row {
+            height: 40px;
+        }
+        .standard-table-row {
+            height: 48px;
+        }
+        .form-input-focus:focus {
+            border-color: #9c21af;
+            box-shadow: 0 0 0 2px rgba(156, 33, 175, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased overflow-hidden flex" x-data="{ sidebarCollapsed: false }">
+<!-- SideNavBar -->
+<nav :class="sidebarCollapsed ? 'w-20' : 'w-64'" aria-label="Sidebar Navigation" class="bg-surface-container border-r border-outline-variant h-screen fixed left-0 top-0 flex flex-col h-full py-lg z-40 hidden md:flex transition-all duration-300 relative">
+<button @click="sidebarCollapsed = !sidebarCollapsed" class="absolute -right-3.5 top-6 bg-surface border border-outline-variant shadow-sm rounded-full w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors z-50">
+<span class="material-symbols-outlined text-[20px]" x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'">chevron_left</span>
+</button>
+<div :class="sidebarCollapsed ? 'px-2 flex justify-center' : 'px-md'" class="mb-xl flex items-center h-12 overflow-hidden">
+<div class="flex flex-col" x-show="!sidebarCollapsed">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface whitespace-nowrap">OptiTalent HRMS</h1>
+<p class="font-label-md text-label-md text-on-surface-variant mt-xs whitespace-nowrap">Enterprise Admin</p>
+</div>
+<div class="w-10 h-10 bg-primary-container text-on-primary rounded flex items-center justify-center font-bold text-lg" x-cloak="" x-show="sidebarCollapsed">
+            OT
+        </div>
+</div>
+<ul class="flex flex-col gap-sm flex-grow px-sm">
+<li>
+<a :class="sidebarCollapsed ? 'justify-center px-0' : 'px-md'" class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-150 relative group" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md whitespace-nowrap" x-show="!sidebarCollapsed">Dashboard</span>
+<div class="absolute left-14 bg-inverse-surface text-inverse-on-surface px-sm py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-sm" x-cloak="" x-show="sidebarCollapsed">Dashboard</div>
+</a>
+</li>
+<li>
+<a :class="sidebarCollapsed ? 'justify-center px-0' : 'px-md'" class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-150 relative group" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-label-md text-label-md whitespace-nowrap" x-show="!sidebarCollapsed">Platform Management</span>
+<div class="absolute left-14 bg-inverse-surface text-inverse-on-surface px-sm py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-sm" x-cloak="" x-show="sidebarCollapsed">Platform Management</div>
+</a>
+</li>
+<li>
+<a :class="sidebarCollapsed ? 'justify-center px-0' : 'px-md'" class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-150 relative group" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="business">business</span>
+<span class="font-label-md text-label-md whitespace-nowrap" x-show="!sidebarCollapsed">Companies</span>
+<div class="absolute left-14 bg-inverse-surface text-inverse-on-surface px-sm py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-sm" x-cloak="" x-show="sidebarCollapsed">Companies</div>
+</a>
+</li>
+<li>
+<a :class="sidebarCollapsed ? 'justify-center px-0' : 'px-md'" class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-150 relative group" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="group">group</span>
+<span class="font-label-md text-label-md whitespace-nowrap" x-show="!sidebarCollapsed">Users</span>
+<div class="absolute left-14 bg-inverse-surface text-inverse-on-surface px-sm py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-sm" x-cloak="" x-show="sidebarCollapsed">Users</div>
+</a>
+</li>
+<li>
+<a :class="sidebarCollapsed ? 'justify-center px-0 border-l-2 border-l-primary border-r-0 rounded-l-none' : 'px-md border-r-2 border-primary'" class="flex items-center gap-md py-sm text-primary font-bold bg-surface-container-low hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-150 relative group" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="settings" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-md text-label-md whitespace-nowrap" x-show="!sidebarCollapsed">Settings</span>
+<div class="absolute left-14 bg-inverse-surface text-inverse-on-surface px-sm py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-sm font-normal" x-cloak="" x-show="sidebarCollapsed">Settings</div>
+</a>
+</li>
+</ul>
+<div :class="sidebarCollapsed ? 'px-2 justify-center' : 'px-md'" class="mt-auto pt-lg border-t border-outline-variant flex overflow-hidden">
+<div class="flex items-center gap-md">
+<img alt="Admin Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant shrink-0" data-alt="A professional corporate headshot of a middle-aged male executive with short greying hair, wearing a dark blue suit and white shirt, smiling slightly against a solid light grey background. High resolution, bright studio lighting, confident and trustworthy mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxsPXtA_2CV-nvnpi3f7_GWCDWvHZsqBId5JgSI-TnNXBsZTs6zeNm8-VoC0J1c9lNv4nCbByzrQ94ZCWysB4bmj-gMaTKRcvr5G6dp4kCzrzddKbikTQx6yma_Zmb_03CdWf98_lNuDnwTyI53T02TNPx2ZrIby5TVsHQYIbQJYvde7UfJjYGamoG1E7sWwHxs6sY3LhKSqleEVU0p-YiIDNb5lC96w4DWjcJWfj5f3lnmR5N29LjlA"/>
+<div x-show="!sidebarCollapsed">
+<p class="font-label-md text-label-md text-on-surface whitespace-nowrap">Super Admin</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs whitespace-nowrap">admin@optitalent.com</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header :class="sidebarCollapsed ? 'md:w-[calc(100%-5rem)] md:ml-20' : 'md:w-[calc(100%-16rem)] md:ml-64'" aria-label="Top Navigation" class="bg-surface border-b border-outline-variant fixed top-0 right-0 w-full z-50 flex justify-between items-center h-16 px-lg shadow-sm transition-all duration-300">
+<div class="flex items-center gap-md lg:w-1/3">
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-sm text-headline-sm font-black text-primary md:hidden">OptiTalent</h2>
+<div class="hidden lg:flex items-center bg-surface-container rounded-lg px-md py-xs w-full focus-within:ring-2 focus-within:ring-primary/20 border border-outline-variant transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm text-on-surface w-full placeholder-on-surface-variant" placeholder="Search roles, modules..." type="text"/>
+<div class="flex items-center gap-1 text-on-surface-variant bg-surface rounded px-1 border border-outline-variant">
+<span class="font-label-md text-xs">Cmd</span>
+<span class="font-label-md text-xs">K</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="hidden sm:flex items-center gap-md border-r border-outline-variant pr-lg">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Switch Org</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-xs rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-xs rounded-full transition-colors hidden sm:block">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main :class="sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'" class="w-full h-screen pt-16 overflow-y-auto bg-surface-bright flex flex-col transition-all duration-300">
+<!-- Page Header -->
+<div class="px-xl py-lg border-b border-outline-variant bg-surface shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div>
+<div class="flex items-center gap-sm text-on-surface-variant mb-xs">
+<a class="font-label-md text-label-md hover:text-primary transition-colors" href="#">Settings</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="font-label-md text-label-md hover:text-primary transition-colors" href="#">Roles &amp; Permissions</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-label-md text-label-md text-on-surface">Role Builder</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Create New Role</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Define granular access controls and scope for enterprise users.</p>
+</div>
+<div class="flex items-center gap-md">
+<button class="px-md py-sm border border-secondary text-secondary font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors">Cancel</button>
+<button class="px-md py-sm bg-primary-container text-on-primary font-label-md text-label-md rounded shadow-sm hover:opacity-90 transition-opacity flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm" data-icon="save">save</span>
+                    Save Role
+                </button>
+</div>
+</div>
+<!-- Scrollable Content Layout -->
+<div class="flex-1 p-lg overflow-y-auto">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-lg items-start">
+<!-- Left Column (Form Fields) -->
+<div class="xl:col-span-4 flex flex-col gap-lg">
+<!-- Basic Info Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Role Details</h3>
+<div class="flex flex-col gap-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="roleName">Role Name <span class="text-error">*</span></label>
+<input class="w-full bg-surface-container-lowest border border-outline rounded px-sm py-sm text-body-md text-on-surface form-input-focus transition-colors" id="roleName" placeholder="e.g., Regional HR Manager" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="roleDesc">Description</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline rounded px-sm py-sm text-body-md text-on-surface form-input-focus transition-colors resize-none" id="roleDesc" placeholder="Describe the responsibilities and scope of this role..." rows="3"></textarea>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="inheritRole">Inherit Permissions From</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline rounded px-sm py-sm text-body-md text-on-surface form-input-focus transition-colors appearance-none cursor-pointer" id="inheritRole">
+<option value="">-- Start from Scratch --</option>
+<option value="hr_admin">Standard HR Admin</option>
+<option value="recruiter">Recruiter</option>
+<option value="payroll_clerk">Payroll Specialist</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs text-xs">Inheriting will populate the matrix below. You can customize further.</p>
+</div>
+</div>
+</div>
+<!-- Scope Definition Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Tenant Scope</h3>
+<div class="flex flex-col gap-sm">
+<label class="flex items-start gap-sm cursor-pointer p-sm rounded hover:bg-surface-container-low border border-transparent hover:border-outline-variant transition-colors">
+<input class="mt-1 text-primary focus:ring-primary border-outline" name="scope" type="radio"/>
+<div>
+<span class="block font-label-md text-label-md text-on-surface">Global (All Tenants)</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Role applies across the entire platform instance.</span>
+</div>
+</label>
+<label class="flex items-start gap-sm cursor-pointer p-sm rounded hover:bg-surface-container-low border border-transparent hover:border-outline-variant transition-colors bg-surface-container-low border-outline-variant">
+<input checked="" class="mt-1 text-primary focus:ring-primary border-outline" name="scope" type="radio"/>
+<div class="w-full">
+<span class="block font-label-md text-label-md text-on-surface">Specific Organizations</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant mb-sm">Role is limited to selected entities.</span>
+<div class="relative w-full">
+<select class="w-full bg-surface border border-outline rounded px-sm py-sm text-body-sm text-on-surface form-input-focus appearance-none">
+<option>North America Group</option>
+<option>EMEA Division</option>
+<option>APAC Operations</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">expand_more</span>
+</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Right Column (Matrix & Users) -->
+<div class="xl:col-span-8 flex flex-col gap-lg">
+<!-- Module Permissions Matrix -->
+<div class="bg-surface border border-outline-variant rounded-lg shadow-sm overflow-hidden flex flex-col">
+<div class="p-lg border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Module Permissions</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure granular access levels per functional module.</p>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary font-label-md text-label-md text-xs transition-colors">Select All</button>
+<span class="text-outline-variant">|</span>
+<button class="text-on-surface-variant hover:text-error font-label-md text-label-md text-xs transition-colors">Clear</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr class="border-b border-outline-variant font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+<th class="py-sm px-md font-semibold w-1/3">Module / Resource</th>
+<th class="py-sm px-sm text-center font-semibold"><span title="Read/View Access">Read</span></th>
+<th class="py-sm px-sm text-center font-semibold"><span title="Create/Write Access">Write</span></th>
+<th class="py-sm px-sm text-center font-semibold"><span title="Update/Edit Access">Edit</span></th>
+<th class="py-sm px-sm text-center font-semibold"><span title="Delete Access">Delete</span></th>
+<th class="py-sm px-sm text-center font-semibold"><span title="Export Data Access">Export</span></th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant">
+<!-- HR Core -->
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm h-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="badge">badge</span>
+<span class="font-medium">Employee Directory</span>
+</td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+</tr>
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm pl-xl h-full border-l-2 border-transparent group-hover:border-outline-variant">
+<span class="text-on-surface-variant text-sm">↳</span>
+<span class="text-on-surface-variant text-sm">Compensation Data</span>
+</td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-outline rounded border-outline bg-surface-container h-4 w-4 opacity-50 cursor-not-allowed" disabled="" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-outline rounded border-outline bg-surface-container h-4 w-4 opacity-50 cursor-not-allowed" disabled="" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-outline rounded border-outline bg-surface-container h-4 w-4 opacity-50 cursor-not-allowed" disabled="" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-outline rounded border-outline bg-surface-container h-4 w-4 opacity-50 cursor-not-allowed" disabled="" type="checkbox"/></td>
+</tr>
+<!-- Payroll -->
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm h-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="payments">payments</span>
+<span class="font-medium">Payroll Management</span>
+</td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+</tr>
+<!-- Recruitment -->
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm h-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="how_to_reg">how_to_reg</span>
+<span class="font-medium">Recruitment (ATS)</span>
+</td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+</tr>
+<!-- Performance -->
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm h-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-medium">Performance Reviews</span>
+</td>
+<td class="py-xs px-sm text-center"><input checked="" class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+</tr>
+<!-- Settings -->
+<tr class="bg-surface-container-lowest compact-table-row hover:bg-surface-container-low transition-colors group">
+<td class="py-xs px-md flex items-center gap-sm h-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="settings_applications">settings_applications</span>
+<span class="font-medium">System Configuration</span>
+</td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+<td class="py-xs px-sm text-center"><input class="text-primary rounded border-outline focus:ring-primary h-4 w-4" type="checkbox"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Assigned Users Preview -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-sm">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">Assigned Users (Preview)</h3>
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
+                                Assign Users
+                            </button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">This role is currently active. Changes saved will immediately affect these users.</p>
+<div class="flex flex-wrap gap-sm">
+<div class="flex items-center gap-xs bg-surface-container border border-outline-variant rounded-full px-sm py-xs">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-md text-[10px]">JD</div>
+<span class="font-body-sm text-body-sm text-on-surface pr-xs">John Doe</span>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</div>
+<div class="flex items-center gap-xs bg-surface-container border border-outline-variant rounded-full px-sm py-xs">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-md text-[10px]">AS</div>
+<span class="font-body-sm text-body-sm text-on-surface pr-xs">Alice Smith</span>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</div>
+<div class="flex items-center gap-xs bg-surface-container border border-outline-variant rounded-full px-sm py-xs border-dashed cursor-pointer hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="font-body-sm text-body-sm pr-xs text-sm">12 More...</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Spacer -->
+<div class="h-xl"></div>
+</div>
+</main>
+</body></html>

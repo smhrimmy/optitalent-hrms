@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Evreghen Command Center - System Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#ffdeae",
+                      "secondary-container": "#e9affd",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#320047",
+                      "surface-variant": "#ecdfeb",
+                      "on-primary": "#ffffff",
+                      "inverse-on-surface": "#faedf9",
+                      "secondary-fixed": "#f8d8ff",
+                      "on-secondary-container": "#6d3c81",
+                      "on-tertiary-fixed-variant": "#604100",
+                      "tertiary-container": "#734e00",
+                      "on-tertiary-fixed": "#281900",
+                      "primary-fixed-dim": "#ebb2ff",
+                      "surface-tint": "#9223c2",
+                      "tertiary": "#553900",
+                      "outline": "#817284",
+                      "surface-container-low": "#fdf0fc",
+                      "surface-dim": "#e3d6e3",
+                      "background": "#fff7fb",
+                      "inverse-primary": "#ebb2ff",
+                      "secondary-fixed-dim": "#ebb2ff",
+                      "on-surface-variant": "#4f4352",
+                      "on-secondary-fixed": "#320047",
+                      "on-primary-fixed-variant": "#7400a0",
+                      "outline-variant": "#d2c1d4",
+                      "surface-container-high": "#f1e4f1",
+                      "on-primary-container": "#edb8ff",
+                      "secondary": "#7c4a90",
+                      "inverse-surface": "#352e37",
+                      "tertiary-fixed-dim": "#f2be6b",
+                      "on-background": "#201922",
+                      "error": "#ba1a1a",
+                      "surface-container": "#f7eaf7",
+                      "surface-bright": "#fff7fb",
+                      "primary-container": "#8812b8",
+                      "primary": "#67008e",
+                      "primary-fixed": "#f8d8ff",
+                      "surface": "#fff7fb",
+                      "on-secondary-fixed-variant": "#623277",
+                      "surface-container-highest": "#ecdfeb",
+                      "on-tertiary-container": "#f6c26f",
+                      "error-container": "#ffdad6",
+                      "on-secondary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#201922"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "16px",
+                      "md": "12px",
+                      "xs": "4px",
+                      "container-padding": "32px",
+                      "sidebar-expanded": "256px",
+                      "3xl": "40px",
+                      "sidebar-collapsed": "64px",
+                      "2xl": "32px",
+                      "xl": "24px",
+                      "container-max": "1400px",
+                      "header-height": "64px",
+                      "4xl": "64px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "body-sm": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "display-hero": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "label-sm": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "title-md": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "headline-xl": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "body-lg": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "label-md": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ],
+                      "headline-lg": [
+                              "\"ui-sans-serif, system-ui, sans-serif\""
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "0.875rem",
+                              {
+                                      "lineHeight": "1.25rem",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "0.8125rem",
+                              {
+                                      "lineHeight": "1rem",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-hero": [
+                              "6rem",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "-0.025em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "0.75rem",
+                              {
+                                      "lineHeight": "1rem",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "1.125rem",
+                              {
+                                      "lineHeight": "1.75rem",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-xl": [
+                              "2rem",
+                              {
+                                      "lineHeight": "2.5rem",
+                                      "letterSpacing": "-0.025em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "1rem",
+                              {
+                                      "lineHeight": "1.5rem",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "0.875rem",
+                              {
+                                      "lineHeight": "1.25rem",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "1.5rem",
+                              {
+                                      "lineHeight": "2rem",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex font-body-md">
+<!-- Sidebar Navigation -->
+<nav class="fixed left-0 top-0 h-full w-sidebar-expanded bg-black/70 backdrop-blur-md shadow-xl border-r border-white/10 z-50 flex flex-col py-lg hidden md:flex">
+<!-- Header -->
+<div class="px-xl mb-2xl">
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold">Mission Control</h1>
+<p class="font-body-sm text-body-sm text-white/70">All Systems Nominal</p>
+</div>
+<!-- Main Nav -->
+<div class="flex flex-col flex-1 gap-xs">
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span class="font-label-md text-label-md">Threat Intelligence</span>
+</a>
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Telemetry</span>
+</a>
+<a class="flex items-center gap-md bg-primary text-on-primary rounded-lg mx-2 my-1 p-md shadow-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md font-bold">System Settings</span>
+</a>
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-label-md">Security Reports</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-xl mt-auto mb-lg">
+<button class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-md rounded-lg hover:opacity-90 transition-opacity">
+                New Analysis
+            </button>
+</div>
+<!-- Footer Nav -->
+<div class="flex flex-col gap-xs mt-auto">
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-label-md text-label-md">System Health</span>
+</a>
+<a class="flex items-center gap-md text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out p-md rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-sidebar-expanded flex flex-col min-h-screen">
+<!-- Top App Bar (Mobile Placeholder) -->
+<header class="bg-black/70 backdrop-blur-md shadow-md flex justify-between items-center px-lg w-full h-16 border-b border-white/10 md:hidden sticky top-0 z-40">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Evreghen</span>
+<div class="flex gap-md text-white/70">
+<span class="material-symbols-outlined cursor-pointer hover:text-white">notifications</span>
+<span class="material-symbols-outlined cursor-pointer text-primary">settings</span>
+</div>
+</header>
+<div class="p-container-padding max-w-container-max mx-auto w-full flex-1 flex flex-col md:flex-row gap-2xl">
+<!-- Secondary Vertical Navigation -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<h2 class="font-headline-lg text-headline-lg font-bold mb-xl text-on-surface">Settings</h2>
+<nav class="flex flex-col gap-sm">
+<a class="px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+                        General
+                        <span class="material-symbols-outlined text-transparent group-hover:text-outline opacity-50 transition-all text-sm">chevron_right</span>
+</a>
+<a class="px-md py-sm rounded-lg font-label-md text-label-md bg-tertiary-container text-on-tertiary-container font-bold flex items-center justify-between border-l-4 border-tertiary-fixed-dim" href="#">
+                        Security &amp; API
+                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+</a>
+<a class="px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+                        User Management
+                        <span class="material-symbols-outlined text-transparent group-hover:text-outline opacity-50 transition-all text-sm">chevron_right</span>
+</a>
+<a class="px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+                        Notification Rules
+                        <span class="material-symbols-outlined text-transparent group-hover:text-outline opacity-50 transition-all text-sm">chevron_right</span>
+</a>
+</nav>
+</aside>
+<!-- Main Settings Content -->
+<div class="flex-1 flex flex-col gap-xl">
+<div class="bg-surface-container rounded-xl p-xl shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg border-b border-outline-variant/30 pb-md">
+<div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface">API Key Management</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Manage programmatic access tokens for external integrations.</p>
+</div>
+<button class="bg-tertiary text-on-tertiary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-tertiary/90 transition-colors flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span> Generate Key
+                        </button>
+</div>
+<div class="space-y-md">
+<!-- Key Item -->
+<div class="bg-surface rounded-lg p-md border border-outline-variant/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-label-md text-label-md font-bold text-on-surface">Production Telemetry Ingest</span>
+<span class="bg-secondary-container/20 text-on-secondary-container text-xs px-2 py-0.5 rounded-full font-label-sm border border-secondary-container/30">Active</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<code class="bg-surface-container-high px-1 py-0.5 rounded font-mono text-xs">evr_live_8f92...3b1a</code>
+<span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary transition-colors" title="Copy to clipboard">content_copy</span>
+</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs text-xs">Last used: 2 mins ago • Created: Oct 12, 2023</div>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none px-md py-sm rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm">Revoke</button>
+<button class="flex-1 md:flex-none px-md py-sm rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm">Edit Scope</button>
+</div>
+</div>
+<!-- Key Item -->
+<div class="bg-surface rounded-lg p-md border border-outline-variant/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-md opacity-70">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-label-md text-label-md font-bold text-on-surface">Staging Environment</span>
+<span class="bg-outline-variant/20 text-outline text-xs px-2 py-0.5 rounded-full font-label-sm border border-outline-variant/30">Revoked</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<code class="bg-surface-container-high px-1 py-0.5 rounded font-mono text-xs">evr_test_44x1...9p0z</code>
+</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs text-xs">Revoked: Jan 05, 2024 by admin@evreghen.com</div>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none px-md py-sm rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" disabled="">Revoked</button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-xl shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg border-b border-outline-variant/30 pb-md">
+<div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface">IP Whitelisting</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Restrict command center access to known network origins.</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Enforce Whitelist</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+</div>
+<div class="space-y-sm">
+<div class="flex gap-md">
+<input class="flex-1 bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-on-surface focus:outline-none focus:border-tertiary focus:ring-1 focus:ring-tertiary transition-all" placeholder="e.g. 192.168.1.1/24 or 203.0.113.50" type="text"/>
+<button class="bg-surface-variant text-on-surface-variant font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-surface-container-highest transition-colors border border-outline-variant/50">Add Rule</button>
+</div>
+<div class="mt-lg">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/50">
+<th class="py-sm px-xs font-label-sm text-label-sm text-on-surface-variant font-semibold">IP Range / CIDR</th>
+<th class="py-sm px-xs font-label-sm text-label-sm text-on-surface-variant font-semibold">Description</th>
+<th class="py-sm px-xs font-label-sm text-label-sm text-on-surface-variant font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">
+<td class="py-md px-xs font-mono text-body-sm text-on-surface">10.0.0.0/8</td>
+<td class="py-md px-xs font-body-sm text-on-surface-variant">Internal Corporate VPN</td>
+<td class="py-md px-xs text-right">
+<button class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">
+<td class="py-md px-xs font-mono text-body-sm text-on-surface">198.51.100.14</td>
+<td class="py-md px-xs font-body-sm text-on-surface-variant">HQ Gateway Primary</td>
+<td class="py-md px-xs text-right">
+<button class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

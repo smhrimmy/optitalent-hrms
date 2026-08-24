@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Policy Management - OptiTalent</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#221921",
+                        "secondary-fixed": "#ffd6fd",
+                        "primary-container": "#b941cb",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#68316e",
+                        "surface-container-highest": "#eedeea",
+                        "tertiary-fixed-dim": "#d2ca60",
+                        "primary-fixed": "#ffd6fd",
+                        "surface-container-high": "#f4e3f0",
+                        "surface-container": "#fae9f6",
+                        "secondary": "#824988",
+                        "on-tertiary-fixed-variant": "#4d4800",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#fdecf9",
+                        "inverse-surface": "#372d37",
+                        "on-secondary-container": "#79407f",
+                        "surface-bright": "#fff7fa",
+                        "on-primary-fixed": "#36003f",
+                        "primary-fixed-dim": "#faabff",
+                        "secondary-fixed-dim": "#f4aff7",
+                        "on-tertiary-container": "#454100",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#d5c0d2",
+                        "surface-dim": "#e6d5e2",
+                        "outline": "#837282",
+                        "surface-tint": "#9c21b0",
+                        "tertiary": "#666000",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#514250",
+                        "on-error-container": "#93000a",
+                        "background": "#fff7fa",
+                        "tertiary-fixed": "#efe679",
+                        "secondary-container": "#fab5fc",
+                        "on-background": "#221921",
+                        "on-primary-container": "#100014",
+                        "on-tertiary-fixed": "#1f1c00",
+                        "on-secondary-fixed": "#35003f",
+                        "surface-container-low": "#ffeffb",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#faabff",
+                        "primary": "#9c21af",
+                        "surface-variant": "#eedeea",
+                        "on-primary-fixed-variant": "#7c008e",
+                        "surface": "#fff7fa",
+                        "tertiary-container": "#b6ae48"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "unit": "4px",
+                        "margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "tabular-nums": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Sidebar Collapse Transitions */
+        #sidebar, #main-content, #top-header {
+            transition: all 0.3s ease-in-out;
+        }
+        body.collapsed #sidebar { width: 80px !important; }
+        body.collapsed #main-content { margin-left: 80px !important; }
+        @media (min-width: 768px) {
+            body.collapsed #top-header { width: calc(100% - 80px) !important; }
+        }
+        body.collapsed .sidebar-text { display: none !important; }
+        body.collapsed .sidebar-header { justify-content: center; padding-left: 0; padding-right: 0; flex-direction: column; gap: 16px; }
+        body.collapsed #sidebar ul a { justify-content: center; padding-left: 0; padding-right: 0; }
+        body.collapsed #sidebar ul a .material-symbols-outlined { margin: 0; }
+    </style>
+<script>
+        function toggleSidebar() {
+            document.body.classList.toggle('collapsed');
+            const icon = document.getElementById('sidebar-toggle-icon');
+            if (document.body.classList.contains('collapsed')) {
+                icon.textContent = 'chevron_right';
+            } else {
+                icon.textContent = 'chevron_left';
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-background text-on-background font-body-md antialiased overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container h-screen w-64 fixed left-0 top-0 border-r border-outline-variant z-40 hidden md:flex flex-col py-lg" id="sidebar">
+<div class="px-md mb-xl flex items-center justify-between sidebar-header">
+<div class="flex items-center gap-sm overflow-hidden">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold shrink-0">O</div>
+<div class="sidebar-text whitespace-nowrap">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface">OptiTalent HRMS</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Admin</p>
+</div>
+</div>
+<button class="p-xs rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant flex-shrink-0" onclick="toggleSidebar()">
+<span class="material-symbols-outlined" id="sidebar-toggle-icon">chevron_left</span>
+</button>
+</div>
+<ul class="flex-1 overflow-y-auto px-sm space-y-unit">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span class="sidebar-text whitespace-nowrap">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="sidebar-text whitespace-nowrap">Platform Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded text-primary dark:text-inverse-primary font-bold border-r-2 border-primary bg-surface-container-high font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined fill shrink-0" data-icon="business" data-weight="fill">business</span>
+<span class="sidebar-text whitespace-nowrap">Companies</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="group">group</span>
+<span class="sidebar-text whitespace-nowrap">Users</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="settings">settings</span>
+<span class="sidebar-text whitespace-nowrap">Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-0 md:ml-64 flex flex-col h-screen" id="main-content">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-50 border-b border-outline-variant flex justify-between items-center h-16 px-lg" id="top-header">
+<div class="flex items-center gap-md flex-1">
+<div class="relative w-64 focus-within:ring-2 focus-within:ring-primary/20 rounded">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="search">search</span>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant rounded font-body-sm text-body-sm focus:border-primary focus:outline-none focus:ring-0 transition-colors" placeholder="Search policies..." type="text"/>
+<span class="absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-xs border border-outline-variant rounded px-1">Cmd+K</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-6 w-px bg-outline-variant mx-xs"></div>
+<button class="font-label-md text-label-md text-primary hover:bg-surface-container-low px-sm py-xs rounded transition-colors">Switch Org</button>
+<img alt="Admin Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover ml-xs" data-alt="Professional headshot of a corporate HR administrator with a warm, confident expression in a well-lit modern office setting. Crisp focus on the subject with a softly blurred background featuring subtle orchid and plum corporate brand colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNjkyHoRHKNsSlg5U4UoEga3gpTY-4pLt9e9GZ53I20XsroIdfUNpS4d-9QK3rIPDhoB9VlRf0bIL3TGY5ozuhfmWsUVzX6AtMA1rNqx0gWvlB0Yt3nYZ_wTMLvPTE_qrgbqcvDVc4YzA8GxG4AWGisY2NWwyZl83Z0q-3_inbaiUYUJlQCfvDuPDJGYgbekRNqXk0Z6V6l-A2iyTL14yfQbHSLP74NcgohKW9SVs40TxzR3iU5ffaQA"/>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 mt-16 p-lg bg-surface-container-lowest overflow-y-auto">
+<div class="max-w-[1440px] mx-auto flex gap-lg h-full">
+<!-- Left Column: Policy List -->
+<div class="flex-1 flex flex-col min-w-0 border border-outline-variant rounded bg-surface">
+<!-- Header -->
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Company Policies</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage and publish organizational guidelines</p>
+</div>
+<button class="bg-primary-container text-on-primary font-label-md text-label-md px-md py-sm rounded hover:bg-primary transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                            New Policy
+                        </button>
+</div>
+<!-- Category Tabs -->
+<div class="flex border-b border-outline-variant px-md gap-md overflow-x-auto bg-surface-container-lowest">
+<button class="py-sm font-label-md text-label-md text-primary border-b-2 border-primary whitespace-nowrap">All Policies</button>
+<button class="py-sm font-label-md text-label-md text-on-surface-variant hover:text-on-surface whitespace-nowrap">Attendance</button>
+<button class="py-sm font-label-md text-label-md text-on-surface-variant hover:text-on-surface whitespace-nowrap">Benefits</button>
+<button class="py-sm font-label-md text-label-md text-on-surface-variant hover:text-on-surface whitespace-nowrap">Conduct</button>
+<button class="py-sm font-label-md text-label-md text-on-surface-variant hover:text-on-surface whitespace-nowrap">Remote Work</button>
+</div>
+<!-- List Content -->
+<div class="flex-1 overflow-y-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase w-1/2">Policy Name</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Version</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Effective Date</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase text-right">Status</th>
+</tr>
+</thead>
+<tbody>
+<!-- Active Item -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer bg-surface-container">
+<td class="py-md px-md">
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-medium">Remote Work Guidelines</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Defines WFH eligibility and equipment allowance.</div>
+</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant">v2.1</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant">Oct 1, 2023</td>
+<td class="py-md px-md text-right">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md">Active</span>
+</td>
+</tr>
+<!-- Draft Item -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-md px-md">
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-medium">Annual Leave Policy</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Updated accrual rates for senior staff.</div>
+</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant">v3.0</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant">--</td>
+<td class="py-md px-md text-right">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-md text-label-md">Draft</span>
+</td>
+</tr>
+<!-- Archived Item -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-md px-md">
+<div class="font-tabular-nums text-tabular-nums text-on-surface font-medium opacity-60">Office Attire Standards</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs opacity-60">Pre-2020 dress code policy.</div>
+</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant opacity-60">v1.4</td>
+<td class="py-md px-md font-tabular-nums text-tabular-nums text-on-surface-variant opacity-60">Jan 15, 2018</td>
+<td class="py-md px-md text-right">
+<span class="inline-flex items-center px-2 py-1 rounded border border-outline-variant text-on-surface-variant font-label-md text-label-md opacity-60">Archived</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column: Policy Editor Panel -->
+<div class="w-[480px] flex flex-col border border-outline-variant rounded bg-surface shadow-sm shrink-0">
+<!-- Editor Header -->
+<div class="p-md border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-md text-label-md text-[10px]">Remote Work</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md text-[10px]">Active</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Remote Work Guidelines</h3>
+<div class="flex items-center gap-md mt-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Version: 2.1</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Effective: Oct 1, 2023</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-xs rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+<!-- Editor Content Area -->
+<div class="flex-1 overflow-y-auto p-md space-y-md">
+<!-- Rich Text Editor Mockup -->
+<div class="border border-outline-variant rounded focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<div class="bg-surface-container-low border-b border-outline-variant p-sm flex gap-sm items-center">
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]" data-icon="format_bold">format_bold</span></button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]" data-icon="format_italic">format_italic</span></button>
+<div class="w-px h-4 bg-outline-variant mx-xs"></div>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]" data-icon="format_list_bulleted">format_list_bulleted</span></button>
+</div>
+<textarea class="w-full h-64 p-md font-body-md text-body-md text-on-surface bg-transparent border-none focus:ring-0 resize-none" placeholder="Enter policy content...">1. Purpose
+This policy outlines the guidelines for remote work, ensuring productivity, communication, and clear expectations for all eligible employees.
+
+2. Eligibility
+Employees who have completed their probationary period and maintain satisfactory performance are eligible to request up to 3 remote days per week.
+
+3. Equipment
+The company will provide a standard laptop. A one-time stipend of $500 is available for home office setup.</textarea>
+</div>
+<!-- Settings -->
+<div class="p-md bg-surface-container-low rounded border border-outline-variant">
+<h4 class="font-label-md text-label-md text-on-surface mb-sm">Distribution Settings</h4>
+<label class="flex items-center justify-between cursor-pointer">
+<div>
+<div class="font-tabular-nums text-tabular-nums text-on-surface">Require Acknowledgement</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Employees must sign to confirm receipt.</div>
+</div>
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+</div>
+<!-- Editor Footer / Actions -->
+<div class="p-md border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center gap-md">
+<button class="font-label-md text-label-md text-error px-md py-sm rounded border border-transparent hover:bg-error-container/20 transition-colors">Archive</button>
+<div class="flex gap-sm">
+<button class="font-label-md text-label-md text-secondary border border-secondary px-md py-sm rounded hover:bg-surface-container-low transition-colors">Schedule...</button>
+<button class="font-label-md text-label-md bg-primary-container text-on-primary px-md py-sm rounded hover:bg-primary transition-colors">Publish Update</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

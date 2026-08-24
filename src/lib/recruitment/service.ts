@@ -16,7 +16,7 @@ export class RecruitmentService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         this.requisitions.set(req.id, req);
         return req;
     }
@@ -45,7 +45,7 @@ export class RecruitmentService {
             resource: 'legacy',
             action: 'legacy'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error('Forbidden');
         }
 
         const pipeline = this.pipelines.get(pipelineId);

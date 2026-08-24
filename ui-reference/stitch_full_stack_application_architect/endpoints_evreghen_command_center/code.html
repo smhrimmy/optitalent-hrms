@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Endpoints - Evreghen Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=ui-sans-serif,+system-ui,+sans-serif:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"tertiary-container": "#734e00", "status-development-fg": "#1447e6", "surface-container-high": "#f2e4f1", "on-secondary": "#ffffff", "inverse-primary": "#ebb2ff", "secondary-container": "#e9affd", "on-primary-fixed": "#320047", "status-integrated-bg": "#f3e8ff", "on-surface": "#201922", "on-tertiary-container": "#f6c26f", surface: "#fff7fb", "status-planned-bg": "#f3f4f6", "on-error": "#ffffff", "secondary-fixed-dim": "#ebb2ff", "surface-elevated": "#ffffff", "on-tertiary": "#ffffff", primary: "#67008e", "outline-variant": "#d2c1d4", info: "#3080ff", "on-background": "#201922", "surface-soft": "#edebe9", "on-tertiary-fixed-variant": "#604100", "on-primary": "#ffffff", "on-secondary-fixed-variant": "#623277", background: "#fff7fb", "surface-variant": "#ecdeec", "secondary-fixed": "#f8d8ff", "status-development-bg": "#dbeafe", "primary-fixed": "#f8d8ff", "inverse-surface": "#362e37", "status-production-bg": "#dcfce7", "on-secondary-fixed": "#320047", "inverse-on-surface": "#fbedfa", "primary-fixed-dim": "#ebb2ff", secondary: "#7c4a91", tertiary: "#553900", warning: "#edb200", "status-production-fg": "#016630", "surface-container-lowest": "#ffffff", "surface-container-highest": "#ecdeec", success: "#00c758", outline: "#817284", "status-mock-bg": "#fef9c2", "on-secondary-container": "#6d3c82", "surface-tint": "#9223c2", "tertiary-fixed-dim": "#f2be6b", "status-planned-fg": "#364153", "primary-container": "#8812b8", "surface-container": "#f8eaf7", "status-integrated-fg": "#8200da", "shell-base": "#000000", "on-error-container": "#93000a", "tertiary-fixed": "#ffdeae", "on-primary-container": "#edb8ff", "on-tertiary-fixed": "#281900", "status-mock-fg": "#874b00", "error-container": "#ffdad6", error: "#ba1a1a", "surface-dim": "#e3d6e3", "on-primary-fixed-variant": "#7400a0", "surface-bright": "#fff7fb", "surface-container-low": "#feeffd", "on-surface-variant": "#4f4352", danger: "#fb2c36"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"3xl": "40px", "4xl": "64px", xl: "24px", "container-max": "1400px", "sidebar-expanded": "256px", "2xl": "32px", "sidebar-collapsed": "64px", "container-padding": "32px", lg: "16px", sm: "8px", xs: "4px", "header-height": "64px", md: "12px"}, fontFamily: {"label-sm": ["ui-sans-serif, system-ui, sans-serif"], "display-hero": ["ui-sans-serif, system-ui, sans-serif"], "body-md": ["ui-sans-serif, system-ui, sans-serif"], "body-lg": ["ui-sans-serif, system-ui, sans-serif"], "headline-lg": ["ui-sans-serif, system-ui, sans-serif"], "body-sm": ["ui-sans-serif, system-ui, sans-serif"], "title-md": ["ui-sans-serif, system-ui, sans-serif"], "code-sm": ["ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"], "headline-xl": ["ui-sans-serif, system-ui, sans-serif"], "label-md": ["ui-sans-serif, system-ui, sans-serif"], headline: ["\"ui-sans-serif, system-ui, sans-serif\""], display: ["\"ui-sans-serif, system-ui, sans-serif\""], body: ["\"ui-sans-serif, system-ui, sans-serif\""], label: ["\"ui-sans-serif, system-ui, sans-serif\""]}, fontSize: {"label-sm": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.05em", fontWeight: "600"}], "display-hero": ["6rem", {lineHeight: "1", letterSpacing: "-0.025em", fontWeight: "600"}], "body-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-lg": ["1.5rem", {lineHeight: "2rem", fontWeight: "700"}], "body-sm": ["0.8125rem", {lineHeight: "1rem", fontWeight: "700"}], "title-md": ["1.125rem", {lineHeight: "1.75rem", fontWeight: "700"}], "code-sm": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "400"}], "headline-xl": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.025em", fontWeight: "700"}], "label-md": ["0.875rem", {lineHeight: "1.25rem", fontWeight: "500"}]}}}};</script>
+<style>
+        body {
+            background-color: theme('colors.background');
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-sidebar-expanded bg-black/70 backdrop-blur-md border-r border-white/10 shadow-xl flex-col py-lg z-20">
+<div class="px-xl mb-xl">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-xs">Mission Control</h1>
+<p class="font-label-sm text-label-sm text-white/70">All Systems Nominal</p>
+</div>
+<div class="px-xl mb-xl">
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md h-[40px] rounded-sm flex items-center justify-center hover:bg-white/10 transition-colors duration-300 ease-in-out cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined mr-sm" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Analysis
+            </button>
+</div>
+<ul class="flex-1 overflow-y-auto px-sm">
+<li class="mb-xs">
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li class="mb-xs">
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">security</span>
+<span class="font-label-md text-label-md">Threat Intelligence</span>
+</a>
+</li>
+<li class="mb-xs">
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">analytics</span>
+<span class="font-label-md text-label-md">Telemetry</span>
+</a>
+</li>
+<li class="mb-xs">
+<a class="flex items-center px-md py-md rounded-lg bg-primary text-on-primary mx-2 my-1 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+<span class="font-label-md text-label-md font-bold">Operations</span>
+</a>
+</li>
+<li class="mb-xs">
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">assessment</span>
+<span class="font-label-md text-label-md">Security Reports</span>
+</a>
+</li>
+</ul>
+<div class="px-sm mt-auto border-t border-white/10 pt-md">
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">settings_input_component</span>
+<span class="font-label-md text-label-md">System Health</span>
+</a>
+<a class="flex items-center px-md py-md rounded-lg text-white/70 mx-2 my-1 hover:bg-white/5 hover:text-white transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-md">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-sidebar-expanded relative w-full overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full h-16 bg-black/70 backdrop-blur-md border-b border-white/10 shadow-md z-10 hidden md:flex justify-between items-center px-lg max-w-container-max mx-auto md:w-[calc(100%-256px)]">
+<div class="flex items-center">
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary mr-xl">Evreghen Command Center</h2>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 transform -translate-y-1/2 text-white/70">search</span>
+<input class="bg-white/10 border-none rounded-sm pl-[36px] pr-sm py-sm text-white/90 placeholder-white/50 focus:ring-1 focus:ring-primary focus:outline-none w-64 font-label-md text-label-md h-[32px]" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-md">
+<button class="text-white/70 hover:bg-white/10 transition-colors p-sm rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-white/70 hover:bg-white/10 transition-colors p-sm rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-white/70 hover:bg-white/10 transition-colors p-sm rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-white/20 ml-sm">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A small, professional user avatar portrait of an individual against a dark, neutral background. The lighting is soft and corporate, matching the high-contrast aesthetic of a modern command center interface. The subject appears focused and ready." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC23xjgQnH1inCvlBxOgjXgUwovo6AfSIM3RFC7nT0fjrYRwT7vWVJNjVYG1fkFRaghPdp3GQs27jQHg00WBr1y2EtXrXwv787WUsIvgfwtyOhdLjdN8_i9T6ldeWFy0mqMD9X_anhGp0ARKKq4MeI6NlaHSt6Gl0C9z6UAp2js3gK0XmkRsrKSb-OMpFlwaqUyjIwNIrPfvoAWnCkcAO-bFNE8PR0SlPwuwcyg9jvAHfHbFSPm37f8Mg"/>
+</div>
+</div>
+</header>
+<!-- Workspace Workspace Canvas -->
+<main class="flex-1 overflow-y-auto pt-[80px] px-container-padding pb-container-padding bg-background relative z-0">
+<div class="max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="mb-xl flex justify-between items-end">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Endpoints Management</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Monitor and control managed devices across the network.</p>
+</div>
+</div>
+<!-- Controls Bar -->
+<div class="bg-surface-elevated rounded-lg shadow-sm p-lg mb-lg border border-outline flex flex-wrap gap-md items-center justify-between">
+<div class="flex-1 min-w-[280px] max-w-[400px] relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 transform -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-[36px] pr-md py-sm border border-outline rounded-sm focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md bg-surface-soft" placeholder="Search by Device ID, IP, or User..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<select class="border border-outline rounded-sm py-sm pl-md pr-[36px] font-body-md text-body-md bg-surface-soft focus:ring-primary focus:border-primary">
+<option>Status: All</option>
+<option>Online</option>
+<option>Offline</option>
+<option>Quarantined</option>
+</select>
+<select class="border border-outline rounded-sm py-sm pl-md pr-[36px] font-body-md text-body-md bg-surface-soft focus:ring-primary focus:border-primary">
+<option>Group: All</option>
+<option>Engineering</option>
+<option>Finance</option>
+<option>Executive</option>
+</select>
+<button class="bg-surface border border-outline text-on-surface hover:bg-surface-variant transition-colors px-md py-sm rounded-sm font-label-md text-label-md flex items-center h-[40px]">
+<span class="material-symbols-outlined mr-xs text-[18px]">filter_list</span> Filters
+                        </button>
+</div>
+</div>
+<!-- Endpoints Table -->
+<div class="bg-surface-elevated rounded-xl shadow-sm border border-outline overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 border-b border-outline">
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Device ID</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Status</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider">OS</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider">IP Address</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Last Sync</th>
+<th class="py-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline">
+<tr class="hover:bg-surface-soft transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center">
+<span class="material-symbols-outlined mr-sm text-on-surface-variant">laptop_mac</span>
+<span class="font-body-sm text-body-sm text-on-surface">ENG-MBP-1042</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">user.name@evreghen.com</div>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-production-bg text-status-production-fg">
+<span class="w-2 h-2 rounded-full bg-status-production-fg mr-1"></span> Online
+                                        </span>
+</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">macOS 14.2.1</td>
+<td class="py-md px-lg font-code-sm text-on-surface-variant">192.168.1.104</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">Just now</td>
+<td class="py-md px-lg text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-soft transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center">
+<span class="material-symbols-outlined mr-sm text-on-surface-variant">desktop_windows</span>
+<span class="font-body-sm text-body-sm text-on-surface">FIN-WIN-992</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">finance.user@evreghen.com</div>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-planned-bg text-status-planned-fg">
+<span class="w-2 h-2 rounded-full bg-secondary mr-1"></span> Offline
+                                        </span>
+</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">Windows 11 Pro</td>
+<td class="py-md px-lg font-code-sm text-on-surface-variant">10.0.0.45</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">2 hours ago</td>
+<td class="py-md px-lg text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-soft transition-colors group bg-error-container/30">
+<td class="py-md px-lg">
+<div class="flex items-center">
+<span class="material-symbols-outlined mr-sm text-error">warning</span>
+<span class="font-body-sm text-body-sm text-on-surface">EXEC-MBP-001</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">ceo@evreghen.com</div>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-error-container text-on-error-container">
+<span class="w-2 h-2 rounded-full bg-error mr-1"></span> Quarantined
+                                        </span>
+</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">macOS 14.1.0</td>
+<td class="py-md px-lg font-code-sm text-on-surface-variant">192.168.1.2</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">5 mins ago</td>
+<td class="py-md px-lg text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-soft transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center">
+<span class="material-symbols-outlined mr-sm text-on-surface-variant">smartphone</span>
+<span class="font-body-sm text-body-sm text-on-surface">MBL-IOS-554</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">ops.lead@evreghen.com</div>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-production-bg text-status-production-fg">
+<span class="w-2 h-2 rounded-full bg-status-production-fg mr-1"></span> Online
+                                        </span>
+</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">iOS 17.2</td>
+<td class="py-md px-lg font-code-sm text-on-surface-variant">172.16.0.22</td>
+<td class="py-md px-lg font-body-md text-on-surface-variant">12 mins ago</td>
+<td class="py-md px-lg text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface border-t border-outline px-lg py-md flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface-variant">Showing 1 to 4 of 1,248 entries</span>
+<div class="flex gap-xs">
+<button class="p-xs rounded-sm hover:bg-surface-variant text-on-surface-variant disabled:opacity-50"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-xs rounded-sm bg-primary text-on-primary font-label-sm w-8 h-8 flex items-center justify-center">1</button>
+<button class="p-xs rounded-sm hover:bg-surface-variant text-on-surface-variant font-label-sm w-8 h-8 flex items-center justify-center">2</button>
+<button class="p-xs rounded-sm hover:bg-surface-variant text-on-surface-variant font-label-sm w-8 h-8 flex items-center justify-center">3</button>
+<span class="p-xs flex items-center text-on-surface-variant">...</span>
+<button class="p-xs rounded-sm hover:bg-surface-variant text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

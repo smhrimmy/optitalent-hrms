@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Log - OptiTalent HRMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#221921",
+                        "tertiary": "#666000",
+                        "outline-variant": "#d5c0d2",
+                        "inverse-on-surface": "#fdecf9",
+                        "on-secondary-container": "#79407f",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#faabff",
+                        "secondary-fixed-dim": "#f4aff7",
+                        "background": "#fff7fa",
+                        "primary-fixed-dim": "#faabff",
+                        "on-tertiary-fixed-variant": "#4d4800",
+                        "primary-fixed": "#ffd6fd",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#fae9f6",
+                        "secondary-container": "#fab5fc",
+                        "on-primary-container": "#100014",
+                        "inverse-surface": "#372d37",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fff7fa",
+                        "tertiary-fixed": "#efe679",
+                        "surface-container-highest": "#eedeea",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#9c21b0",
+                        "surface-container-low": "#ffeffb",
+                        "on-secondary-fixed": "#35003f",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#68316e",
+                        "primary-container": "#b941cb",
+                        "secondary-fixed": "#ffd6fd",
+                        "surface-bright": "#fff7fa",
+                        "on-error-container": "#93000a",
+                        "primary": "#9c21af",
+                        "surface-dim": "#e6d5e2",
+                        "outline": "#837282",
+                        "tertiary-fixed-dim": "#d2ca60",
+                        "surface-container-high": "#f4e3f0",
+                        "on-background": "#221921",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1f1c00",
+                        "tertiary-container": "#b6ae48",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#eedeea",
+                        "on-primary-fixed-variant": "#7c008e",
+                        "on-surface-variant": "#514250",
+                        "secondary": "#824988",
+                        "on-primary-fixed": "#36003f",
+                        "on-tertiary-container": "#454100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "margin": "24px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "unit": "4px",
+                        "md": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "tabular-nums": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-inverse-surface dark:bg-inverse-surface border-r border-outline-variant/20 h-screen w-64 fixed left-0 top-0 flex flex-col py-lg px-md gap-sm transition-all duration-200 ease-in-out z-50">
+<div class="mb-xl flex items-center gap-sm px-sm">
+<span class="material-symbols-outlined text-inverse-on-surface text-3xl" style="font-variation-settings: 'FILL' 1;">widgets</span>
+<div class="text-headline-lg font-headline-lg font-bold text-inverse-on-surface">OptiTalent</div>
+</div>
+<div class="flex flex-col gap-xs flex-grow">
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="text-label-md font-label-md">Employee Directory</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-label-md font-label-md">Payroll</span>
+</a>
+<!-- Active (Semantic match for Attendance) -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg bg-primary-container text-on-primary-container font-semibold transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="schedule" data-weight="fill" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="text-label-md font-label-md">Time &amp; Attendance</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="text-label-md font-label-md">Recruitment</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="text-label-md font-label-md">Performance</span>
+</a>
+<div class="flex-grow"></div>
+<!-- Inactive -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface-variant hover:text-white hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-64 flex-grow flex flex-col min-h-screen w-[calc(100%-256px)]">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant/30 fixed top-0 right-0 w-[calc(100%-256px)] h-16 shadow-sm flex justify-between items-center px-xl z-40">
+<div class="flex items-center gap-md w-1/3">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-DEFAULT pl-10 pr-4 py-2 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary-container focus:bg-surface transition-all" placeholder="Search records... (Cmd+K)" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors scale-95 active:scale-100 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors scale-95 active:scale-100 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest border border-outline-variant/30 overflow-hidden ml-sm cursor-pointer hover:ring-2 hover:ring-primary-container transition-all">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Professional headshot of a corporate employee in a light-filled modern office environment, facing forward with a subtle smile. High-key lighting, bright white background aesthetic, corporate modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlJR1rcldPNvL8Tt7_urV2qaAn7AIyhd7bOCaaD7HiuDHOxYF40XaRDAq4p5eLSzr6LaFhuJblv3WFsxChX-_T8b2UKs47dP3JptaI1CpfhBrtkCqDvU9ev2xWu39fdINP4gFuATo_pxS8tSmoLcerQJC-1l87rw9066lVJUiNoV7IqnY-AjayZOCyRE-U7MYOaZQbs932W3hEeHIt_dVzqWTe6eDVBjED2wGxz2Tq9ZElDaHPaIFKoA"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="pt-[88px] px-lg pb-lg flex-grow max-w-[1440px] mx-auto w-full">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-xs">Attendance Log</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Engineering Department • Detailed View</p>
+</div>
+<div class="flex gap-md items-center">
+<!-- Date Picker Mockup -->
+<div class="flex items-center bg-surface border border-outline-variant/50 rounded-DEFAULT overflow-hidden focus-within:border-primary-container focus-within:ring-2 focus-within:ring-primary-container/20 transition-all">
+<button class="px-3 py-2 border-r border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="px-md py-2 flex items-center gap-sm cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">calendar_today</span>
+<span class="text-tabular-nums font-tabular-nums text-on-surface">Oct 12 - Oct 18, 2023</span>
+</div>
+<button class="px-3 py-2 border-l border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<button class="bg-surface border border-outline-variant/50 text-on-surface px-md py-sm rounded-DEFAULT flex items-center gap-sm hover:bg-surface-container-low transition-colors text-label-md font-label-md shadow-sm">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+<button class="bg-primary-container text-on-primary-container px-md py-sm rounded-DEFAULT flex items-center gap-sm hover:bg-primary-container/90 transition-colors text-label-md font-label-md shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- KPI Cards Bento Grid -->
+<div class="grid grid-cols-4 gap-md mb-lg">
+<div class="bg-surface border border-outline-variant/30 rounded-DEFAULT p-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Present</span>
+<span class="material-symbols-outlined text-primary text-xl">group</span>
+</div>
+<div class="text-display-lg font-display-lg text-on-surface">142</div>
+<div class="text-body-sm font-body-sm text-green-700 bg-green-50 px-2 py-0.5 rounded inline-flex items-center w-fit mt-xs">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                        +2% vs last week
+                    </div>
+</div>
+<div class="bg-surface border border-outline-variant/30 rounded-DEFAULT p-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Absent</span>
+<span class="material-symbols-outlined text-error text-xl">event_busy</span>
+</div>
+<div class="text-display-lg font-display-lg text-on-surface">4</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-xs">
+                        3 excused, 1 unexcused
+                    </div>
+</div>
+<div class="bg-surface border border-outline-variant/30 rounded-DEFAULT p-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Late Arrivals</span>
+<span class="material-symbols-outlined text-tertiary text-xl">timer</span>
+</div>
+<div class="text-display-lg font-display-lg text-on-surface">12</div>
+<div class="text-body-sm font-body-sm text-error bg-error-container/50 px-2 py-0.5 rounded inline-flex items-center w-fit mt-xs">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                        +5% vs last week
+                    </div>
+</div>
+<div class="bg-surface border border-outline-variant/30 rounded-DEFAULT p-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Avg Hrs/Day</span>
+<span class="material-symbols-outlined text-secondary text-xl">hourglass_empty</span>
+</div>
+<div class="text-display-lg font-display-lg text-on-surface">8.2</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-xs">
+                        Target: 8.0 hrs
+                    </div>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface border border-outline-variant/30 rounded-DEFAULT overflow-hidden shadow-sm flex flex-col">
+<!-- Table Toolbar -->
+<div class="px-md py-sm border-b border-outline-variant/30 bg-surface-container-lowest flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-surface">Daily Records</h2>
+<div class="flex gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-64 bg-surface-container-high border-none rounded-DEFAULT pl-8 pr-3 py-1.5 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search employee..." type="text"/>
+</div>
+</div>
+</div>
+<!-- The Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant/30">
+<tr>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold w-1/4">Employee</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Date</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Clock In</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Clock Out</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Break</th>
+<th class="px-md py-sm text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Total Hrs</th>
+<th class="px-sm py-sm w-10"></th>
+</tr>
+</thead>
+<tbody class="text-body-sm font-body-sm text-on-surface divide-y divide-outline-variant/20">
+<!-- Row 1 (Present) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="px-md py-sm">
+<div class="flex items-center gap-sm">
+<div class="h-8 w-8 rounded-full bg-surface-dim overflow-hidden flex-shrink-0">
+<img alt="Sarah Jenkins" class="w-full h-full object-cover" data-alt="Headshot of a male software engineer with short hair, wearing a dark casual shirt, smiling slightly, standing in front of a blurred bright office background. Professional lighting, corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWmGWRruSmGvTRHJYGPKktAawMVaxUuBEJ_5Jds1tyZjW7tHbVY6QyyzWreOaUr-6lokeKzXkD2mqHxtinAEo4MwC-7o65VyUUIUgkopKrhkr9qOcEj1WWj3ctMBxHo4j8-64fbc7ueTSTZL1W91a36gO0pxVsF0HNYci7ZAOpPpB5wf6OygK541hYOjiRG3WY3okzDJSbyYE15shoB4TGEzC554CyDrtEfD7711c8c5AHVmoklkGHWw"/>
+</div>
+<div>
+<div class="font-medium">Sarah Jenkins</div>
+<div class="text-on-surface-variant text-[11px]">ENG-0142</div>
+</div>
+</div>
+</td>
+<td class="px-md py-sm font-tabular-nums">Oct 18, 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-green-50 text-green-700 border border-green-200">
+                                        Present
+                                    </span>
+</td>
+<td class="px-md py-sm font-tabular-nums text-right">08:55 AM</td>
+<td class="px-md py-sm font-tabular-nums text-right">05:05 PM</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant">45m</td>
+<td class="px-md py-sm font-tabular-nums text-right font-medium">7h 25m</td>
+<td class="px-sm py-sm text-center">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 (Late) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="px-md py-sm">
+<div class="flex items-center gap-sm">
+<div class="h-8 w-8 rounded-full bg-surface-dim overflow-hidden flex-shrink-0">
+<img alt="Michael Chen" class="w-full h-full object-cover" data-alt="Headshot of a female UI designer with glasses, wearing a light colored blazer, looking confident, bright high key modern office setting. Crisp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvFUbZMvQuodmrcBAKpGp80L7N1js6ABqcS449wkozi0zWr39aodtc_D8SMqssBThAPrxHCObgPBP5uZBYr0xbLcH3zNPlLDZ6OXcUcotQsA5G7_Y2_DyL2m9Sk3U_t0AgIHqIv7EMvKjbmAdEMlg9yBJ9QWN9UYKcRUScPKOrKwzUoa4g_87UTJO3em2xWz8LMn8UPn458aNlXBjyrPeiuezP5O-XMuV2LOPP_4NgfRvRG0-znjtCmw"/>
+</div>
+<div>
+<div class="font-medium">Michael Chen</div>
+<div class="text-on-surface-variant text-[11px]">ENG-0188</div>
+</div>
+</div>
+</td>
+<td class="px-md py-sm font-tabular-nums">Oct 18, 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                                        Late
+                                    </span>
+</td>
+<td class="px-md py-sm font-tabular-nums text-right text-orange-700 font-medium">09:30 AM</td>
+<td class="px-md py-sm font-tabular-nums text-right">06:15 PM</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant">1h 00m</td>
+<td class="px-md py-sm font-tabular-nums text-right font-medium">7h 45m</td>
+<td class="px-sm py-sm text-center">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 (Absent) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group bg-surface-container-highest/20">
+<td class="px-md py-sm">
+<div class="flex items-center gap-sm">
+<div class="h-8 w-8 rounded-full bg-surface-dim overflow-hidden flex-shrink-0 flex items-center justify-center text-primary-container font-bold text-xs">
+                                            AJ
+                                        </div>
+<div>
+<div class="font-medium">Amanda Jones</div>
+<div class="text-on-surface-variant text-[11px]">ENG-0201</div>
+</div>
+</div>
+</td>
+<td class="px-md py-sm font-tabular-nums">Oct 18, 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-error-container/30 text-error border border-error/20">
+                                        Absent
+                                    </span>
+</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--:--</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--:--</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--</td>
+<td class="px-md py-sm font-tabular-nums text-right font-medium text-error">0h 00m</td>
+<td class="px-sm py-sm text-center">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 (On Leave) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] group">
+<td class="px-md py-sm">
+<div class="flex items-center gap-sm">
+<div class="h-8 w-8 rounded-full bg-surface-dim overflow-hidden flex-shrink-0">
+<img alt="David Kim" class="w-full h-full object-cover" data-alt="Headshot of a middle-aged male manager with a beard, wearing a light blue button-down shirt, standing in a well-lit corporate hallway. Soft focus background, modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNycM3hUYv-W7-HRm996opKWJ8XQ5Q_nFHaIQt3IgfNDTO0kPF4Td2DSDNLLmoUYdnI2cvyz_HI_78ToSozVmjp-eb_gnYaxzbevZ-LQOcqc95n0fwVu1niOyHnVF5Da2EYpem-yPQYUhI_WZN6CygneRoyw-580AIUJYRswlTjfGn5SNu98F9EpbTiR7PBl6miIllexmShhvYwud_8JNB0hkolbFx3lz-CBFTZo8m50_C5CAiT57rvg"/>
+</div>
+<div>
+<div class="font-medium">David Kim</div>
+<div class="text-on-surface-variant text-[11px]">ENG-0092</div>
+</div>
+</div>
+</td>
+<td class="px-md py-sm font-tabular-nums">Oct 18, 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                        On Leave (PTO)
+                                    </span>
+</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--:--</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--:--</td>
+<td class="px-md py-sm font-tabular-nums text-right text-on-surface-variant italic">--</td>
+<td class="px-md py-sm font-tabular-nums text-right font-medium">8h 00m (Credited)</td>
+<td class="px-sm py-sm text-center">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-md py-sm border-t border-outline-variant/30 bg-surface-container-lowest flex justify-between items-center text-body-sm font-body-sm text-on-surface-variant">
+<div>Showing 1 to 4 of 142 entries</div>
+<div class="flex items-center gap-xs">
+<button class="p-1 rounded hover:bg-surface-container-high transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-DEFAULT bg-primary-container text-on-primary-container font-medium flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded-DEFAULT hover:bg-surface-container-high transition-colors flex items-center justify-center">2</button>
+<button class="w-8 h-8 rounded-DEFAULT hover:bg-surface-container-high transition-colors flex items-center justify-center">3</button>
+<span class="px-1">...</span>
+<button class="w-8 h-8 rounded-DEFAULT hover:bg-surface-container-high transition-colors flex items-center justify-center">15</button>
+<button class="p-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

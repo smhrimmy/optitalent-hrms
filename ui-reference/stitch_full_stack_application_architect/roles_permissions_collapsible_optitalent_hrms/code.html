@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Roles &amp; Permissions - OptiTalent</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-background": "#221921",
+                      "primary-container": "#b941cb",
+                      "on-tertiary-fixed-variant": "#4d4800",
+                      "on-surface-variant": "#514250",
+                      "on-secondary-fixed-variant": "#68316e",
+                      "on-secondary-fixed": "#35003f",
+                      "tertiary-fixed-dim": "#d2ca60",
+                      "secondary-fixed-dim": "#f4aff7",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#faabff",
+                      "on-secondary-container": "#79407f",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#9c21b0",
+                      "secondary": "#824988",
+                      "outline": "#837282",
+                      "inverse-surface": "#372d37",
+                      "surface-variant": "#eedeea",
+                      "on-primary-fixed": "#36003f",
+                      "surface-container-high": "#f4e3f0",
+                      "on-tertiary-container": "#454100",
+                      "on-error": "#ffffff",
+                      "secondary-container": "#fab5fc",
+                      "surface-container-highest": "#eedeea",
+                      "outline-variant": "#d5c0d2",
+                      "surface-container": "#fae9f6",
+                      "surface": "#fff7fa",
+                      "on-tertiary-fixed": "#1f1c00",
+                      "on-surface": "#221921",
+                      "primary-fixed": "#ffd6fd",
+                      "inverse-primary": "#faabff",
+                      "tertiary": "#666000",
+                      "background": "#fff7fa",
+                      "error-container": "#ffdad6",
+                      "primary": "#9c21af",
+                      "tertiary-container": "#b6ae48",
+                      "on-primary-fixed-variant": "#7c008e",
+                      "surface-dim": "#e6d5e2",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#ffeffb",
+                      "secondary-fixed": "#ffd6fd",
+                      "surface-bright": "#fff7fa",
+                      "inverse-on-surface": "#fdecf9",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#100014",
+                      "tertiary-fixed": "#efe679",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "xs": "4px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "margin": "24px",
+                      "unit": "4px",
+                      "xl": "32px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "tabular-nums": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "tabular-nums": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background h-full flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="group/sidebar bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed-dim font-label-md text-label-md font-headline-lg text-headline-lg font-bold text-on-surface dark:text-on-surface h-screen w-64 has-[:checked]:w-[72px] transition-[width] duration-300 ease-in-out relative flex flex-col border-r border-outline-variant dark:border-outline flat no shadows py-md px-sm sticky left-0 top-0 hidden md:flex shrink-0 z-20">
+<input class="hidden" id="sidebar-toggle" type="checkbox"/>
+<label class="absolute -right-3 top-8 bg-surface border border-outline-variant rounded-full w-6 h-6 flex items-center justify-center cursor-pointer shadow-sm text-on-surface-variant hover:text-primary z-50 transition-transform duration-300 group-has-[:checked]/sidebar:rotate-180" for="sidebar-toggle">
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_left">chevron_left</span>
+</label>
+<div class="px-md pb-xl pt-lg overflow-hidden whitespace-nowrap min-h-[80px]">
+<div class="transition-opacity duration-200 opacity-100 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:invisible">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">OptiTalent</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Enterprise HRMS</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto overflow-x-hidden">
+<ul class="space-y-xs">
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Platform management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="business">business</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Companies</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-primary bg-secondary-container transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-primary" data-icon="group" data-weight="fill" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-md text-label-md font-bold text-primary whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Users</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">System Health</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="badge">badge</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Employee management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Payroll</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="person_search">person_search</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Recruitment</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Settings</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="pt-lg border-t border-outline-variant mt-auto overflow-hidden">
+<ul class="space-y-xs">
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="help">help</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Help Center</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 ease-in-out group overflow-hidden" href="#">
+<span class="material-symbols-outlined mr-md group-has-[:checked]/sidebar:mr-0 transition-all shrink-0 text-on-surface-variant group-hover:text-primary transition-colors" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md whitespace-nowrap transition-opacity duration-200 group-has-[:checked]/sidebar:opacity-0 group-has-[:checked]/sidebar:w-0">Sign Out</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-body-md text-body-md font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim w-full h-16 border-b border-outline-variant dark:border-outline flat no shadows cursor-pointer active:opacity-80 flex justify-between items-center px-lg w-full sticky top-0 z-50 shrink-0">
+<div class="flex items-center flex-1">
+<div class="relative w-96 hidden md:block group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search users, roles, or permissions (Cmd+K)" type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-md">
+<button class="flex items-center space-x-sm px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="corporate_fare">corporate_fare</span>
+<span>Acme Corp</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+<div class="flex items-center space-x-sm border-l border-outline-variant pl-md ml-md">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-md ml-2 cursor-pointer border border-primary/20">
+<img alt="User profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsdoDQaGDtazXKznBPL5vZZEg7tSii0GeePfxZVPqCAG7rPB2l7eiSk2k6_Ko23Ne94mJ0NYnkKU3cNKxEVyrlyUOsqsLoqbUAIuE1nPiPYFxUXt2CFfoXFRalXdGtb0z4ccFfFktsWspvgf8LaNRh4iZ5nkXM2NT8Qoow6JduTUqaVYZdOEnbP7LL2GKZTzrvNSAaGNqOSS5_bl1pY6fUrI9qJUWVa3Z2iSnEJRbqdYW6iYgdF-VuPA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 overflow-hidden p-lg flex flex-col space-y-lg max-w-[1440px] mx-auto w-full">
+<div class="flex justify-between items-end shrink-0">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Roles &amp; Permissions</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage access control and operational boundaries across the organization.</p>
+</div>
+<div class="flex space-x-md">
+<button class="px-md py-sm rounded-lg border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container transition-colors">
+                        Clone Role
+                    </button>
+<button class="px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm flex items-center space-x-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>Create Custom Role</span>
+</button>
+</div>
+</div>
+<!-- Two Pane Layout -->
+<div class="flex-1 flex space-x-lg overflow-hidden h-full">
+<!-- Left Pane: Roles List -->
+<div class="w-80 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm shrink-0 overflow-hidden">
+<div class="p-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-label-md text-label-md uppercase text-on-surface-variant tracking-wider">System Roles</h3>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full font-label-md text-[10px]">12 Total</span>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<!-- Active Role -->
+<div class="group flex flex-col p-3 rounded-lg bg-surface-container border border-primary/30 cursor-pointer shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.05)] relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-1 pl-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">HR Admin</span>
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified_user">verified_user</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-1 mb-2 line-clamp-2">Full access to personnel records, payroll configs, and recruiting pipelines.</p>
+<div class="flex items-center space-x-2 pl-1 mt-auto">
+<span class="flex -space-x-2">
+<img alt="User" class="w-5 h-5 rounded-full border border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPJnrwQNA03q6l4pQ7s5sujixrs0OP0Qb3L1fSNEPXIpDJtimMB7dqy8hZiaw3u4S0SinCLpHp0Yzbs9TA8zUKJAeCQGMeTPH60CxrFvgRiUvWfxQDje7l3CpVQHwWxZtKM7XVEBA3ZMrTAq_rzf8-m1Zaxtalv9j27DBRtIA45BbV1D9x1zL9q0QZJKmIO1juwlOpp23rkV2egpeBHdY5enTsNAtsWm8-hBrAwzww42W0BXLdoHiU5Q"/>
+<img alt="User" class="w-5 h-5 rounded-full border border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuMGXlq3LK-2NDse1544TcHlnSQCJrOmGYk79NjSDNPx0FuCZbUHbNjL_YRMfTOJqDMOHn3ZhoCuz0GbTl8yneqIP4SY3aernTQpDmOqz2Re-RNf8XKveZjQZmjlDMFUpKD0qk5p7TLfgmCn72vwmwZD-oP3jwWSqW1mu7l25syZHZS9ZN02yNvedNUImLyUa-vpAUMweeNGwtlaOu8-j4lHgzlEnnWcfJhrfOBCgYIcQbE7HmdTgfTg"/>
+<img alt="User" class="w-5 h-5 rounded-full border border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hE6au_M_tusF6xdid40O73a2AnVw4_ebzgnFerht2YSp4wHjkCM1VJqAdEbrP2ZYnjNBK2jaxfB4zkCDE9iF3R636oGOeK4bSUEe4o6B-IyF8oFwpR9Shyh_z8IDHKf8apHDawG2heVNjX4yzbWkYrw-MOQx3Qut0Shgud1vrRh19v4LaYvXyzs6OMqGYc6ayr1dixeI1lT2XO4eijitRZT7JtqeU5Fj5zxHKey7JN9RlJeb-ERVyw"/>
+</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">+24 assigned</span>
+</div>
+</div>
+<!-- Inactive Roles -->
+<div class="group flex flex-col p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">Super Admin</span>
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="admin_panel_settings">admin_panel_settings</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2 line-clamp-1">Unrestricted system access.</p>
+<div class="font-label-md text-[10px] text-on-surface-variant mt-auto">3 assigned</div>
+</div>
+<div class="group flex flex-col p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">Department Manager</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" data-icon="manage_accounts">manage_accounts</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2 line-clamp-1">Manage direct reports &amp; approvals.</p>
+<div class="font-label-md text-[10px] text-on-surface-variant mt-auto">142 assigned</div>
+</div>
+<div class="group flex flex-col p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">Finance / Payroll</span>
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="account_balance">account_balance</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2 line-clamp-1">Access to payroll &amp; compensation.</p>
+<div class="font-label-md text-[10px] text-on-surface-variant mt-auto">8 assigned</div>
+</div>
+<div class="group flex flex-col p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">Standard Employee</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="badge">badge</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2 line-clamp-1">Self-service portal access only.</p>
+<div class="font-label-md text-[10px] text-on-surface-variant mt-auto">4,892 assigned</div>
+</div>
+<div class="group flex flex-col p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="font-tabular-nums text-tabular-nums text-on-surface">External Recruiter</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="person_search">person_search</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2 line-clamp-1">Limited ATS access.</p>
+<div class="font-label-md text-[10px] text-on-surface-variant mt-auto">12 assigned</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: Permission Matrix -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden relative">
+<!-- Matrix Header -->
+<div class="p-lg border-b border-outline-variant bg-surface-container-lowest shrink-0 sticky top-0 z-10 shadow-sm flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-sm mb-1">
+<h3 class="font-headline-md text-headline-md text-on-background">HR Admin Permissions</h3>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-primary/20">System Role</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure access levels for modules and actions. Changes apply immediately to all assigned users.</p>
+</div>
+<button class="px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm">
+                                Save Changes
+                            </button>
+</div>
+<!-- Legend / Quick Filters -->
+<div class="flex items-center justify-between bg-surface-container px-md py-sm rounded-lg border border-outline-variant">
+<div class="flex items-center space-x-md">
+<span class="font-label-md text-[11px] text-on-surface-variant uppercase tracking-wider mr-2">Levels:</span>
+<div class="flex items-center space-x-1"><div class="w-3 h-3 rounded-full border-2 border-outline-variant bg-surface-container-lowest"></div><span class="font-body-sm text-body-sm text-on-surface">No Access</span></div>
+<div class="flex items-center space-x-1"><div class="w-3 h-3 rounded-full border-2 border-tertiary bg-tertiary/20"></div><span class="font-body-sm text-body-sm text-on-surface">Read Only</span></div>
+<div class="flex items-center space-x-1"><div class="w-3 h-3 rounded-full border-2 border-secondary bg-secondary/20"></div><span class="font-body-sm text-body-sm text-on-surface">Edit</span></div>
+<div class="flex items-center space-x-1"><div class="w-3 h-3 rounded-full border-2 border-primary bg-primary"></div><span class="font-body-sm text-body-sm text-on-surface">Full Control</span></div>
+</div>
+<div class="flex items-center space-x-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Expand All</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Matrix Body -->
+<div class="flex-1 overflow-y-auto p-lg space-y-xl bg-background">
+<!-- Category: Core HR -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+<div class="bg-surface-container-low px-md py-3 border-b border-outline-variant flex items-center justify-between sticky top-0 z-10 shadow-sm">
+<div class="flex items-center space-x-sm">
+<span class="material-symbols-outlined text-primary" data-icon="badge">badge</span>
+<h4 class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Core HR / Employee Directory</h4>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="expand_less">expand_less</span>
+</div>
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-variant/50">
+<tr>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant w-1/3">Resource / Action</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">None</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Read</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Edit</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Full</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium">Employee Profiles (Basic Info)</td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_emp_basic" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_emp_basic" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" name="perm_emp_basic" type="radio"/></td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="perm_emp_basic" type="radio"/></td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium">Sensitive Data (SSN, Banking)</td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_emp_sens" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_emp_sens" type="radio"/></td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" name="perm_emp_sens" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="perm_emp_sens" type="radio"/></td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium">Organizational Chart</td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_org" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_org" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" name="perm_org" type="radio"/></td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="perm_org" type="radio"/></td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium">Offboarding Actions</td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_off" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_off" type="radio"/></td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" name="perm_off" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="perm_off" type="radio"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Category: Payroll -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+<div class="bg-surface-container-low px-md py-3 border-b border-outline-variant flex items-center justify-between sticky top-0 z-10 shadow-sm">
+<div class="flex items-center space-x-sm">
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+<h4 class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Payroll &amp; Compensation</h4>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="expand_less">expand_less</span>
+</div>
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-variant/50">
+<tr>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant w-1/3">Resource / Action</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">None</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Read</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Edit</th>
+<th class="p-sm px-md font-label-md text-label-md uppercase text-on-surface-variant text-center">Full</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium flex items-center space-x-2">
+<span>Salary Information</span>
+<span class="material-symbols-outlined text-error text-[14px]" data-icon="warning">warning</span>
+</td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_pay_sal" type="radio"/></td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_pay_sal" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" name="perm_pay_sal" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="perm_pay_sal" type="radio"/></td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-sm px-md font-body-sm text-body-sm text-on-surface font-medium">Run Payroll Cycles</td>
+<td class="p-sm text-center"><input checked="" class="w-4 h-4 text-outline-variant focus:ring-primary border-outline-variant" name="perm_pay_run" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-tertiary focus:ring-tertiary border-outline-variant" name="perm_pay_run" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-secondary focus:ring-secondary border-outline-variant" disabled="" name="perm_pay_run" type="radio"/></td>
+<td class="p-sm text-center"><input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" disabled="" name="perm_pay_run" type="radio"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Category: Recruitment -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden opacity-75">
+<div class="bg-surface-container-low px-md py-3 border-b border-outline-variant flex items-center justify-between sticky top-0 z-10 shadow-sm">
+<div class="flex items-center space-x-sm">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="person_search">person_search</span>
+<h4 class="font-tabular-nums text-tabular-nums text-on-surface font-semibold">Recruitment / ATS</h4>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
