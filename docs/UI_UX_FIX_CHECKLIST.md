@@ -1,18 +1,23 @@
-# UI/UX Fix Checklist (Phase 4H: Manager OS)
+# UI/UX FIX CHECKLIST
 
-## Mobile & Touch
-- [x] Verify Inbox cards minimum touch targets (44px).
-- [x] Fix horizontal overflow on Team Calendar mobile view.
-- [x] Ensure Capacity Simulator slider is usable on mobile.
+## P0 (Critical - Broken/Security/Blocking)
+- [ ] **Multi-Tenant Role Enforcements**: Hardcoded UI roles must be moved to backend data-layer checks based on Company + User Role matrix.
+- [ ] **Attendance Engine Overhaul**: Must support 24/7 crossing-midnight shifts, configurable policies (half-day thresholds, grace periods), and idempotent events (prevent double clock-ins).
+- [ ] **Route Guards**: Ensure all 155 discovered routes have appropriate RLS/Server-side guards, not just client-side redirects.
 
-## Keyboard & A11y
-- [x] Verify semantic landmarks in Manager Shell (`/manager/layout.tsx`).
-- [x] Ensure focus restoration upon closing the Exception Drawer in Attendance.
-- [x] Implement `prefers-reduced-motion` in Paper & Ink animation tokens.
+## P1 (Major Usability & Functional)
+- [ ] **Mobile-First Redesign (Employee Home)**: Remove oversized headings, tighten cards, prioritize attendance status and primary actions for viewports (320px-414px).
+- [ ] **Mobile-First Redesign (Manager/Admin)**: Ensure actionable items (approvals, staffing gaps) are above the fold without horizontal scrolling.
+- [ ] **Form Validations**: Replace generic "Invalid input" with specific, actionable messages across Core HR forms.
+- [ ] **Data Consistency**: Ensure offline gracefully fails and duplicate submissions are blocked during loading states.
 
-## Security & Regression
-- [x] Run E2E Mobile Suite (`tests/e2e/manager-mobile.spec.ts`).
-- [x] Run RBAC Regression Suite (`tests/security/manager-rbac-regression.test.ts`).
-- [x] Verify no sensitive data is hidden via CSS instead of server-side omission.
+## P2 (Noticeable Quality)
+- [ ] **Empty States**: Replace blank tables with actionable empty states (e.g., "No employees found. [Import CSV]").
+- [ ] **Loading Skeletons**: Replace generic "Loading..." text with structural skeletons in dashboards and tables.
+- [ ] **Table Responsiveness**: Add horizontal scroll wrappers or bottom-sheet details for dense tables on mobile.
+- [ ] **Confirmation Modals**: Replace "Are you sure?" with context-specific warnings for destructive actions.
 
-**Status:** Complete. Ready for Phase 4I (HR Command Center).
+## P3 (Polish & Micro-interactions)
+- [ ] **Button States**: Ensure all primary actions have visual pressed/loading/disabled states.
+- [ ] **Typography & Tabular Nums**: Apply tabular-nums to payroll and attendance time metrics for alignment.
+- [ ] **Toast Notifications**: Standardize duration and clear, actionable messaging.
