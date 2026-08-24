@@ -26,10 +26,13 @@ export function ActionCenter({ actions }: ActionCenterProps) {
 
     if (actions.length === 0) {
         return (
-            <Card className="border-dashed">
-                <CardContent className="p-6 text-center text-muted-foreground">
-                    <CheckSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>You're all caught up!</p>
+            <Card className="border-dashed border-2 bg-muted/10">
+                <CardContent className="p-10 flex flex-col items-center justify-center text-center text-muted-foreground min-h-[200px]">
+                    <div className="rounded-full bg-muted p-4 mb-4">
+                        <CheckSquare className="h-8 w-8 opacity-50" />
+                    </div>
+                    <h3 className="font-medium text-lg text-foreground mb-1">Inbox Zero</h3>
+                    <p className="text-sm max-w-sm">You're all caught up! No pending approvals or required actions at this time.</p>
                 </CardContent>
             </Card>
         );
@@ -45,20 +48,24 @@ export function ActionCenter({ actions }: ActionCenterProps) {
             </CardHeader>
             <CardContent className="space-y-3">
                 {actions.map(action => (
-                    <div key={action.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 border rounded-lg bg-card hover:bg-muted/30 transition-colors gap-4">
-                        <div className="flex gap-3 items-start">
-                            <div className="mt-0.5">
+                    <div key={action.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 border rounded-lg bg-card hover:bg-muted/30 transition-colors gap-4">
+                        <div className="flex gap-3 items-start w-full">
+                            <div className="mt-0.5 shrink-0">
                                 {getIcon(action.source)}
                             </div>
-                            <div>
-                                <h4 className="font-semibold text-sm flex items-center gap-2">
-                                    {action.title}
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-sm flex flex-wrap items-center gap-2 leading-tight">
+                                    <span className="truncate">{action.title}</span>
                                     {action.priority === 'HIGH' && <Badge variant="destructive" className="h-5 text-[10px]">HIGH</Badge>}
                                 </h4>
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{action.description}</p>
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{action.description}</p>
                             </div>
                         </div>
-                        <Button size="sm" onClick={() => router.push(action.actionUrl)} className="w-full sm:w-auto shrink-0">
+                        <Button 
+                            variant="default"
+                            onClick={() => router.push(action.actionUrl)} 
+                            className="w-full sm:w-auto shrink-0 min-h-[44px] sm:min-h-0 touch-manipulation"
+                        >
                             {action.actionLabel}
                         </Button>
                     </div>

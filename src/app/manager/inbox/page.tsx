@@ -210,29 +210,29 @@ function ApprovalCard({ task, onAction }: { task: typeof mockTasks[0], onAction:
                 <div className="bg-slate-50/80 sm:bg-slate-50 sm:w-56 p-4 sm:p-6 border-t sm:border-t-0 sm:border-l flex sm:flex-col gap-2 justify-end sm:justify-start">
                     {!isAI ? (
                         <>
-                            <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={() => onAction(task.id, 'Approved')}>
+                            <Button className="w-full bg-green-600 hover:bg-green-700 text-white min-h-[44px] touch-manipulation" onClick={() => onAction(task.id, 'Approved')}>
                                 <Check className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">Approve</span>
+                                <span className="inline">Approve</span>
                             </Button>
-                            <Button variant="outline" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => onAction(task.id, 'Rejected')}>
+                            <Button variant="outline" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 min-h-[44px] touch-manipulation" onClick={() => onAction(task.id, 'Rejected')}>
                                 <X className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">Reject</span>
+                                <span className="inline">Reject</span>
                             </Button>
                             <div className="hidden sm:block flex-1" />
-                            <div className="hidden sm:flex flex-col gap-1 w-full">
-                                <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground justify-start h-8">
+                            <div className="hidden sm:flex flex-col gap-1 w-full mt-2">
+                                <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground justify-start min-h-[44px] touch-manipulation">
                                     <MessageSquare className="h-3 w-3 mr-2" /> Request changes
                                 </Button>
-                                <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground justify-start h-8">
+                                <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground justify-start min-h-[44px] touch-manipulation">
                                     <CornerUpRight className="h-3 w-3 mr-2" /> Delegate
                                 </Button>
                             </div>
                         </>
                     ) : (
                         <>
-                            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => onAction(task.id, 'Approved')}>
+                            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white min-h-[44px] touch-manipulation" onClick={() => onAction(task.id, 'Approved')}>
                                 <Check className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">Acknowledge</span>
+                                <span className="inline">Acknowledge</span>
                             </Button>
                         </>
                     )}
