@@ -3,6 +3,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { EmptyState } from "@/components/empty-state";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -107,9 +108,21 @@ export const TeamProgressTable = () => {
         }
     };
 
-    if (loading && courses.length === 0) return <div className="flex justify-center p-4"><Loader2 className="animate-spin h-6 w-6" /></div>;
+    if (loading && courses.length === 0) return (
+        <div className="space-y-4">
+            <div className="h-10 bg-muted animate-pulse rounded-md w-full md:w-[300px]"></div>
+            <div className="h-[200px] bg-muted animate-pulse rounded-md w-full"></div>
+        </div>
+    );
     
-    if (courses.length === 0) return <div className="text-center p-4 text-muted-foreground">No courses available. Create a course to track progress.</div>;
+    if (courses.length === 0) return (
+        <div className="p-2">
+            <EmptyState 
+                title="No active courses" 
+                description="Your team hasn't been assigned any learning modules yet."
+            />
+        </div>
+    );
 
     return (
         <div className="space-y-4">

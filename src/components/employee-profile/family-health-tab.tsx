@@ -9,6 +9,7 @@ import { Plus, Edit, Users, HeartPulse, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { UserProfile } from '@/lib/mock-data/employees';
 import { Input } from '../ui/input';
+import { EmptyState } from '../empty-state';
 
 function InfoRow({ label, value, isEditing, onChange }: { label: string, value: React.ReactNode, isEditing?: boolean, onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
     return (
@@ -64,32 +65,39 @@ export function FamilyHealthTab({ employee, setEmployee, isEditing }: { employee
                     {isEditing && <Button variant="outline" size="sm" onClick={() => handleAddItem('dependents')}><Plus className="mr-2 h-4 w-4" /> Add</Button>}
                 </CardHeader>
                 <CardContent>
-                   <Table>
-                       <TableHeader>
-                           <TableRow>
-                               <TableHead>Name</TableHead>
-                               <TableHead>Relationship</TableHead>
-                               <TableHead>Date of Birth</TableHead>
-                               {isEditing && <TableHead className="text-right">Actions</TableHead>}
-                           </TableRow>
-                       </TableHeader>
-                       <TableBody>
-                           {familyInfo.dependents.map((dep: any, i: number) => (
-                               <TableRow key={i}>
-                                   <TableCell className="font-medium">
-                                       {isEditing ? <Input value={dep.name} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'name')} /> : dep.name}
-                                   </TableCell>
-                                   <TableCell>
-                                       {isEditing ? <Input value={dep.relationship} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'relationship')} /> : dep.relationship}
-                                   </TableCell>
-                                   <TableCell>
-                                       {isEditing ? <Input type="date" value={dep.dob} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'dob')} /> : dep.dob}
-                                   </TableCell>
-                                   {isEditing && <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => handleRemoveItem('dependents', i)}><Trash2 className="h-4 w-4 text-destructive"/></Button></TableCell>}
+                    {familyInfo.dependents.length === 0 ? (
+                        <EmptyState 
+                            title="No dependents found" 
+                            description="Add family members or dependents to your profile." 
+                        />
+                    ) : (
+                       <Table>
+                           <TableHeader>
+                               <TableRow>
+                                   <TableHead>Name</TableHead>
+                                   <TableHead>Relationship</TableHead>
+                                   <TableHead>Date of Birth</TableHead>
+                                   {isEditing && <TableHead className="text-right">Actions</TableHead>}
                                </TableRow>
-                           ))}
-                       </TableBody>
-                   </Table>
+                           </TableHeader>
+                           <TableBody>
+                               {familyInfo.dependents.map((dep: any, i: number) => (
+                                   <TableRow key={i}>
+                                       <TableCell className="font-medium">
+                                           {isEditing ? <Input value={dep.name} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'name')} /> : dep.name}
+                                       </TableCell>
+                                       <TableCell>
+                                           {isEditing ? <Input value={dep.relationship} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'relationship')} /> : dep.relationship}
+                                       </TableCell>
+                                       <TableCell>
+                                           {isEditing ? <Input type="date" value={dep.dob} onChange={(e) => handleFieldChange('dependents', e.target.value, i, 'dob')} /> : dep.dob}
+                                       </TableCell>
+                                       {isEditing && <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => handleRemoveItem('dependents', i)}><Trash2 className="h-4 w-4 text-destructive"/></Button></TableCell>}
+                                   </TableRow>
+                               ))}
+                           </TableBody>
+                       </Table>
+                    )}
                 </CardContent>
             </Card>
              <Card>

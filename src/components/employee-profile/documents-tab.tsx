@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { BookUser, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { documents } from '@/lib/mock-data/documents';
+import { EmptyState } from "@/components/empty-state";
 
 export function DocumentsTab() {
      const { toast } = useToast();
@@ -21,30 +22,37 @@ export function DocumentsTab() {
                 <CardDescription>View and download your important employment documents.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Document Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {documents.map((doc, i) => (
-                            <TableRow key={i}>
-                                <TableCell className="font-medium">{doc.name}</TableCell>
-                                <TableCell><Badge variant="secondary">{doc.category}</Badge></TableCell>
-                                <TableCell>{doc.date}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm" onClick={() => handleDownload(doc.name)}>
-                                        <Download className="mr-2 h-4 w-4"/> Download
-                                    </Button>
-                                </TableCell>
+                {documents.length === 0 ? (
+                    <EmptyState 
+                        title="No documents found" 
+                        description="You don't have any uploaded documents yet." 
+                    />
+                ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Document Name</TableHead>
+                                <TableHead>Category</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead className="text-right">Action</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {documents.map((doc, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className="font-medium">{doc.name}</TableCell>
+                                    <TableCell><Badge variant="secondary">{doc.category}</Badge></TableCell>
+                                    <TableCell>{doc.date}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" size="sm" onClick={() => handleDownload(doc.name)}>
+                                            <Download className="mr-2 h-4 w-4"/> Download
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
             </CardContent>
         </Card>
     );

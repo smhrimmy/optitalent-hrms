@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, ShieldCheck, AlertCircle, Clock, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { EmptyState } from '@/components/empty-state';
 
 export default function EmployeeDocumentCenterOS() {
     const [documents, setDocuments] = useState<EmployeeDocument[]>([]);
@@ -136,8 +137,11 @@ export default function EmployeeDocumentCenterOS() {
                         <DocumentCard key={doc.id} document={doc} />
                     ))}
                     {filteredDocs.length === 0 && (
-                        <div className="col-span-full py-12 text-center border rounded-lg border-dashed text-muted-foreground">
-                            No documents found matching "{searchQuery}"
+                        <div className="col-span-full">
+                            <EmptyState 
+                                title="No documents found" 
+                                description={`No documents found matching "${searchQuery}"`} 
+                            />
                         </div>
                     )}
                 </div>
