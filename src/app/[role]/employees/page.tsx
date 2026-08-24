@@ -77,7 +77,7 @@ export default function EmployeesPage() {
   
   const handleAction = async (action: string, employee: UserProfile) => {
       if (action === 'Deactivate') {
-          if (!confirm(`Are you sure you want to deactivate ${employee.full_name}?`)) return;
+          if (!confirm(`Are you sure you want to deactivate ${employee.full_name}? This will immediately revoke their system access and cancel pending workflows.`)) return;
           
           const { error } = await supabase
               .from('employees')

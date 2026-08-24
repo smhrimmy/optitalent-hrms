@@ -319,9 +319,9 @@ export default function TakeAssessmentPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle>
+                            <AlertDialogTitle>Are you sure you want to submit your assessment?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                You cannot change your answers after submitting. Please review your answers before proceeding.
+                                This action cannot be undone and your score will be final. Please review your answers before proceeding.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
