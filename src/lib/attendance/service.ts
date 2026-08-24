@@ -1,8 +1,7 @@
 import { AttendancePunch, WorkSchedule, Exception, AttendanceResult } from './types';
 import { timeEngine } from './engine';
 import { eventRegistry } from '../events/registry';
-import { PermissionService } from '../permissions';
-import { buildAuthRequest } from '../auth-server';
+import { authorize } from '../authorization/engine';
 import crypto from 'crypto';
 
 export class AttendanceService {
@@ -12,10 +11,10 @@ export class AttendanceService {
     async submitPunch(context: any, punch: AttendancePunch, schedule: WorkSchedule): Promise<AttendanceResult> {
         const authResult = authorize({
             context,
-            resource: 'legacy',
-            action: 'legacy'
+            resource: 'attendance:punch',
+            action: 'create'
         });
-        if (!authResult.allowed) throw new Error('Forbidden'););
+        if (!authResult.allowed) throw new Error(`Forbidden: ${authResult.reason}`);
 
         // IP / Geofence Security Validation
         if (schedule.requireGeofence && schedule.allowedIPs) {
@@ -49,10 +48,10 @@ export class AttendanceService {
     async approveException(context: any, exceptionId: string, notes: string): Promise<void> {
         const authResult = authorize({
             context,
-            resource: 'legacy',
-            action: 'legacy'
+            resource: 'attendance:exception',
+            action: 'approve'
         });
-        if (!authResult.allowed) throw new Error('Forbidden');); // Needs proper resource targeting
+        if (!authResult.allowed) throw new Error(`Forbidden: ${authResult.reason}`);
 
         const exception = this.exceptions.find(e => e.id === exceptionId);
         if (!exception) throw new Error('Exception not found');
