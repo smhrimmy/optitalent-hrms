@@ -247,6 +247,5 @@ export default function AttendanceLogUI() {
                     </div>
                 </div>
             </div>
-        </div>
     );
 }
