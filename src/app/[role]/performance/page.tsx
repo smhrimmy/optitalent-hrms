@@ -24,10 +24,13 @@ import { supabase } from '@/lib/supabase';
 export default function PerformancePage() {
   const [result, setResult] = useState<GeneratePerformanceReviewOutput | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   const handleSaveReview = async () => {
       if (!result) return;
+      setSaving(true);
       
       try {
           const { data: { user } } = await supabase.auth.getUser();
@@ -62,6 +65,8 @@ export default function PerformancePage() {
 
       } catch (error: any) {
           toast({ title: "Save Failed", description: error.message, variant: "destructive" });
+      } finally {
+          setSaving(false);
       }
   };
 
@@ -69,6 +74,7 @@ export default function PerformancePage() {
     event.preventDefault();
     setLoading(true);
     setResult(null);
+    setError(null);
 
     const formData = new FormData(event.currentTarget);
     const input = {
@@ -88,11 +94,7 @@ export default function PerformancePage() {
       });
     } catch (e) {
       console.error(e);
-      toast({
-        title: "Generation Failed",
-        description: "There was an error generating the performance review.",
-        variant: "destructive",
-      });
+      setError("There was an error generating the performance review.");
     } finally {
       setLoading(false);
     }
@@ -157,6 +159,11 @@ export default function PerformancePage() {
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Generating...' : 'Generate Review'}
             </Button>
+            {error && (
+              <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20 mt-2">
+                {error}
+              </div>
+            )}
           </form>
 
            <div className="rounded-lg border bg-muted/30 p-4 space-y-4 h-full flex flex-col">
@@ -173,8 +180,9 @@ export default function PerformancePage() {
                     <Button variant="outline" onClick={() => navigator.clipboard.writeText(result.reviewSummary)} className="w-full">
                     Copy Review
                     </Button>
-                    <Button onClick={handleSaveReview} className="w-full">
-                    Save to Profile
+                    <Button onClick={handleSaveReview} disabled={saving} className="w-full">
+                      {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {saving ? 'Saving...' : 'Save to Profile'}
                     </Button>
                 </div>
               </div>

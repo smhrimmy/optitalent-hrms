@@ -12,7 +12,8 @@ import {
     ArrowLeft,
     CheckCircle2,
     AlertTriangle,
-    Users
+    Users,
+    Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -121,6 +122,7 @@ export default function CreateDelegation() {
                 <div className="flex justify-end gap-3 pt-4 border-t">
                     <Button variant="outline" type="button" onClick={() => router.back()}>Cancel</Button>
                     <Button type="submit" disabled={submitting} className="bg-slate-900">
+                        {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {submitting ? 'Creating...' : 'Create Delegation'}
                     </Button>
                 </div>

@@ -17,6 +17,7 @@ export default function AddEmployeeDialog({ onEmployeeAdded }: { onEmployeeAdded
   const [suggestedRole, setSuggestedRole] = useState('');
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -80,8 +81,9 @@ export default function AddEmployeeDialog({ onEmployeeAdded }: { onEmployeeAdded
       setIsOpen(false);
       formRef.current.reset();
       setSuggestedRole('');
+      setError(null);
     } else {
-       toast({ title: "Failed to Add Employee", description: result.message, variant: "destructive" });
+       setError(result.message || "Failed to Add Employee");
     }
     setLoading(false);
   };
@@ -129,6 +131,11 @@ export default function AddEmployeeDialog({ onEmployeeAdded }: { onEmployeeAdded
                 </Button>
                 </div>
             </div>
+            {error && (
+                <div className="col-span-4 p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20 mt-2">
+                    {error}
+                </div>
+            )}
             </div>
              <DialogFooter>
                  <Button type="submit" disabled={loading}>

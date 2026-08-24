@@ -24,23 +24,21 @@ import { supabase } from '@/lib/supabase';
 export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket) => void}) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const { toast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
 
         const formData = new FormData(e.currentTarget);
         const subject = formData.get('subject') as string;
         const description = formData.get('description') as string;
 
         if (!subject || !description) {
-            toast({
-                title: "Missing Information",
-                description: "Please fill out all fields to create a ticket.",
-                variant: "destructive"
-            });
+            setError("Please fill out all fields to create a ticket.");
             setLoading(false);
             return;
         }
@@ -137,11 +135,7 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
             setFile(null);
         } catch(err: any) {
             console.error(err);
-            toast({
-                title: "Submission Failed",
-                description: err.message || "Could not create ticket.",
-                variant: "destructive"
-            });
+            setError(err.message || "Could not create ticket.");
         } finally {
             setLoading(false);
         }
@@ -179,6 +173,11 @@ export function NewTicketDialog({ onNewTicket }: { onNewTicket: (ticket: Ticket)
                             </div>
                             <p className="text-xs text-muted-foreground">Upload images or documents to support your request.</p>
                         </div>
+                        {error && (
+                            <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20 mt-2">
+                                {error}
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button type="submit" disabled={loading}>

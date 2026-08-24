@@ -22,11 +22,13 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 export default function ApplyLeaveDialog({ action }: { action: (formData: FormData) => Promise<{success: boolean, message?: string}> }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
   
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoading(true);
+      setError(null);
       const formData = new FormData(e.currentTarget);
       
       const result = await action(formData);
@@ -35,7 +37,7 @@ export default function ApplyLeaveDialog({ action }: { action: (formData: FormDa
         toast({ title: 'Request Submitted', description: 'Your leave request has been submitted for approval.' });
         setOpen(false);
       } else {
-        toast({ title: 'Submission Failed', description: result.message, variant: 'destructive'});
+        setError(result.message || "Failed to submit request.");
       }
       setLoading(false);
     };
@@ -83,6 +85,11 @@ export default function ApplyLeaveDialog({ action }: { action: (formData: FormDa
                             <Label htmlFor="reason">Reason</Label>
                             <Textarea id="reason" name="reason" placeholder="Please provide a reason for your leave." required />
                         </div>
+                        {error && (
+                            <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20">
+                                {error}
+                            </div>
+                        )}
                      </div>
                     <DialogFooter>
                         <Button type="submit" disabled={loading}>
