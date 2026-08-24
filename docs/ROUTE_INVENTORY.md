@@ -1,63 +1,159 @@
-# Route inventory
+# ROUTE INVENTORY
 
-`page.tsx` files under `src/app`. Role `admin` produces `/admin/super-admin/security`.
-
-| Route | Purpose | Role (nav) | Loading | Empty | Error | Data | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | Marketing / demo entry | public | n/a | n/a | n/a | static | Pass |
-| `/login` | Sign in / up | public | overlay | n/a | toast | Supabase + demo | Pass |
-| `/signup` | Alternate sign up | public | overlay | n/a | toast | Supabase | Pass |
-| `/mfa` | Demo step-up | public | n/a | n/a | toast | sessionStorage | Partial |
-| `/dashboard` | Tenant dashboard / demo bounce | signed-in | BrandLoader | n/a | toast | Supabase | Pass |
-| `/{role}/dashboard` | Role home | all | n/a | events empty copy | n/a | mock KPIs | Partial (demo metrics) |
-| `/{role}/employees` | Directory | HR+ | spinner | mock fallback | toast | Supabase/mock | Pass |
-| `/{role}/employees/[id]` | Person file | HR+ | page | n/a | n/a | mixed | Partial |
-| `/{role}/recruitment` | Applicants | HR/recruiter | spinner | EmptyState | demo rows | Supabase/demo | Pass |
-| `/{role}/recruitment/[id]` | Candidate | HR | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/recruitment/parse` | Resume parse | HR | button | n/a | toast | Genkit | Partial |
-| `/{role}/leaves` | Leave | staff | spinner | empty list | toast | Supabase | Partial |
-| `/{role}/attendance` | Clock | staff | n/a | n/a | toast | Supabase | Partial |
-| `/{role}/attendance/regularize` | Correction | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/payroll` | Pay | finance/HR | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/performance` | Reviews | manager+ | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/learning` | Courses | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/recognition` | Points | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/helpdesk` | Tickets | staff | spinner | demo tickets | toast | Supabase/demo | Pass |
-| `/{role}/company-feed` | Posts | staff | n/a | n/a | n/a | Supabase | Partial |
-| `/{role}/settings` | Account | staff | n/a | n/a | toast | localStorage | Partial |
-| `/{role}/admin/settings` | Org config | admin | n/a | n/a | toast | localStorage | Pass (local) |
-| `/{role}/admin-config` | Feature flags | admin | n/a | n/a | n/a | localStorage | Pass (local) |
-| `/{role}/super-admin/security` | Security policy | admin | pulse | empty IP list | toast | localStorage + cookie | Partial (honest WAF) |
-| `/{role}/super-admin` | SA home | SA | n/a | n/a | n/a | mock | Partial |
-| `/{role}/super-admin/tenants` | Tenants | SA | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/super-admin/backups` | Backup UI | SA | n/a | n/a | n/a | decorative | Fail — not a real backup |
-| `/{role}/super-admin/server-health` | Health UI | SA | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/analytics` | Charts | manager+ | timeout mock | n/a | n/a | demo | Partial |
-| `/{role}/reports` | Reports | manager | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/onboarding` | Candidates | HR | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/shifts` | Shifts | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/assessments` | Tests | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/profile` | Me | staff | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/ai-tools/chatbot` | Chat | flagged | spinner | n/a | message | Genkit | Partial |
-| `/{role}/ai-tools/career-predictor` | Predict | flagged | n/a | n/a | n/a | Genkit | Partial |
-| `/{role}/developer-panel` | Dev | admin | n/a | n/a | n/a | mixed | Partial |
-| `/{role}/expenses` | Claims | flagged | pulse | EmptyState | n/a | local | Pass (local) |
-| `/{role}/assets` | Inventory | flagged | pulse | EmptyState | n/a | local | Pass (local) |
-| `/{role}/timesheets` | Hours | flagged | pulse | EmptyState | n/a | local | Pass (local) |
-| `/{role}/org-chart` | Hierarchy | flagged | n/a | EmptyState | n/a | local | Pass (local) |
-| `/{role}/offboarding` | Exit | HR | pulse | EmptyState | n/a | local | Pass (local) |
-| `/{role}/holidays` | Holidays | HR | pulse | EmptyState | n/a | local | Pass (local) |
-| `/{role}/workflows` | Sketches | admin | n/a | n/a | n/a | local | Partial — not executed |
-| `/{role}/audit` | UI audit | admin | n/a | empty copy | n/a | local | Partial |
-| `/privacy` `/terms` `/cookies` `/help` `/contact` `/accessibility` | Legal | public | n/a | n/a | n/a | static | Pass |
-| `/errors/*` `/offline` `/session-expired` `/suspended` `/coming-soon` `/unsupported` `/empty-search` `/payment-failed` | System | public | n/a | n/a | n/a | static | Pass |
-| `/walkin-drive*` | Hiring event | public | n/a | n/a | n/a | mixed | Partial |
-| `/applicant/[id]` | Applicant portal | public | n/a | n/a | n/a | mixed | Partial |
-| `/api/health` | Liveness | n/a | n/a | n/a | 200 | n/a | Pass |
-| `/api/openapi` | Spec | n/a | n/a | n/a | 200 | n/a | Pass |
-| `/api/keepalive` | Heartbeat | key | n/a | n/a | 401/503 | Supabase | Pass |
-| `/api/tenants/provision` | Tenant | admin key | n/a | n/a | 503 | Supabase | Partial |
-| `/maintenance` | Flag | public | n/a | n/a | n/a | static | Pass if flag |
-| `/demo/errors` | Gallery | public | n/a | n/a | n/a | static | Pass |
-
-Keyboard / mobile columns: new forms tab-ok; full matrix not run on device lab.
+| Route | Purpose | Role | Permission | Loading | Empty | Error | Mobile | Keyboard | Actions | API/data source | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `/` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/admin-config` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/admin/settings` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/ai-tools/career-predictor` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/ai-tools/chatbot` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/analytics` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/assessments` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/assessments/[id]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/assets` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/attendance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/attendance/regularize` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/audit` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/company-feed` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/dashboard` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/developer-panel` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/employee` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/employees` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/employees/[employeeId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/expenses` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/helpdesk` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/holidays` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/learning` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/leaves` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/offboarding` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/onboarding` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/org-chart` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/payroll` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/performance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/profile` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/qa-analyst/quality` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/recognition` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/recruitment` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/recruitment/[applicantId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/recruitment/parse` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/reports` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/settings` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/shifts` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/super-admin` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/super-admin/backups` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/super-admin/security` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/super-admin/server-health` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/super-admin/tenants` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/timesheets` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/[role]/workflows` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/accessibility` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/ai` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/ai/audits` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/ai/governance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/analytics` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/analytics/explorer` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/benefits` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/global` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/global/mobility` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/integrations` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/learning` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/lifecycle` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/marketplace/installed` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/observability` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/payroll` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/payroll/[runId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/payroll/setup` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/planning` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/planning/scenarios` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/policies` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/recruitment` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/recruitment/candidate/[id]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/recruitment/pipeline/[reqId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/requests/builder` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/security/access-simulator` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/system/health` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/workflows` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/workflows/builder` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/workforce` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/admin/workforce/simulator` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/applicant/[applicantId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/coming-soon` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/company-admin/roles/builder` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/company-admin/simulator` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/contact` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/cookies` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/dashboard` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/dashboard/profile` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/demo/errors` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/developers/sandbox` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/activity` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/ai` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/ai/chat` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/ai/settings` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/attendance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/benefits` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/career` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/dashboard` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/documents` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/documents/[id]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/documents/required` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/goals` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/inbox` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/learning` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/notifications` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/notifications/preferences` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/payroll` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/performance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/profile` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/requests` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/employee/timeline` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/empty-search` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/errors/400` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/errors/502` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/errors/504` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/errors/[code]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/help` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/hr` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/hr/insights` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/hr/operations` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/learning/catalog` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/login` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/maintenance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/ai` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/ai/actions` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/ai/chat` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/attendance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/calendar` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/capacity` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/delegation` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/delegation/create` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/hiring` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/hiring/[requisitionId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/hiring/[requisitionId]/[candidateId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/inbox` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/lifecycle` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/one-on-ones` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/performance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/performance/[employeeId]` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/relationships` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/skills` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/team` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/manager/team-performance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/marketplace` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/mfa` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/offline` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/payment-failed` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/privacy` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/process-manager/performance` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/qa-analyst/quality` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/session-expired` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/setup/company` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/signup` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/super-admin` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/suspended` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/terms` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/unsupported` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/walkin-drive` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/walkin-drive/login` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
+| `/walkin-drive/register` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Pending Audit |
